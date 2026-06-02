@@ -130,7 +130,7 @@
       <svg width="24" height="24" viewBox="0 0 150 150"><g fill="none" stroke-width="5.5" stroke-linecap="round"><path d="M75 22 A53 53 0 0 1 124 60" stroke="#B0542F"/><path d="M128 92 A53 53 0 0 1 90 126" stroke="#347f9e"/><path d="M60 126 A53 53 0 0 1 22 88" stroke="#1B948C"/><path d="M22 58 A53 53 0 0 1 60 24" stroke="#4E7B53"/></g></svg>
       Sean <b>Patrick</b> Phelps</a>
     <div class="links">
-      <a href="#about">About</a><a href="#book">Book</a><a href="#podcasts">Podcasts</a><a href="blog.html">Writing</a><a href="#list">Newsletter</a>
+      <a href="#about">About</a><a href="#book">Book</a><a href="#podcasts">Podcasts</a><a href="blog.html">Writing</a><a href="coach.html">Coach</a><a href="#list">Newsletter</a>
     </div>
   </div>
 </nav>
@@ -260,6 +260,17 @@
   </div>
 </section>
 
+<section id="coach" style="padding:10px 0 6px">
+  <div class="narrow">
+    <div style="background:#17211F;color:#F3F1EA;border-radius:16px;padding:46px 38px;text-align:center">
+      <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#347f9e">New · Free</div>
+      <h2 style="font-family:'Fraunces',serif;font-weight:300;font-size:clamp(27px,4vw,40px);letter-spacing:-.01em;margin:12px 0 14px;line-height:1.08;color:#F3F1EA">The Accountability Coach</h2>
+      <p style="color:rgba(243,241,234,.74);max-width:520px;margin:0 auto 26px;font-size:17px;line-height:1.55">Accountability is just consistency with a witness. Set one goal, get a focused plan for the week, and check in as you go. It's the idea behind the book — made into something you can actually use.</p>
+      <a href="coach.html" style="display:inline-flex;align-items:center;gap:8px;background:#B0542F;color:#fff;text-decoration:none;font-weight:600;font-size:16px;padding:14px 30px;border-radius:6px">Set your first goal →</a>
+    </div>
+  </div>
+</section>
+
 <section class="list" id="list">
   <div class="narrow">
     <h2>Join the <b>list</b>.</h2>
@@ -275,58 +286,4 @@
 <section class="work">
   <div class="narrow">
     <div class="kicker">Work With Me</div>
-    <p>Each year I work closely with a small number of operators, and I back a few businesses I believe in. Both are by conversation and referral — not a checkout page. <b>If that's you, <a class="link" href="mailto:seanpatrickphelps@gmail.com?subject=Working%20together">reach out</a>.</b></p>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    <div class="top">
-      <div class="wm">Sean <b>Patrick</b> Phelps<span class="s">The Extraordinary Entrepreneur</span></div>
-      <div class="links">
-        <div class="col"><h5>Explore</h5><a href="#about">About</a><a href="#book">Book</a><a href="#podcasts">Podcasts</a><a href="blog.html">Writing</a></div>
-        <div class="col"><h5>Connect</h5><a href="#list">Newsletter</a><a href="#" target="_blank">LinkedIn</a><a href="mailto:seanpatrickphelps@gmail.com">Contact</a></div>
-      </div>
-    </div>
-    <div class="btm">© 2026 Sean Patrick Phelps · seanpatrickphelps.com</div>
-  </div>
-</footer>
-
-<script>
-  (function(){
-    var form = document.getElementById('signup-form');
-    if(!form) return;
-    form.addEventListener('submit', async function(e){
-      e.preventDefault();
-      var emailEl = document.getElementById('signup-email');
-      var btn = document.getElementById('signup-btn');
-      var fine = document.getElementById('signup-fine');
-      var email = (emailEl.value || '').trim();
-      if(!email) return;
-      btn.disabled = true; btn.textContent = 'Joining…';
-      try{
-        var res = await fetch('/api/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email })
-        });
-        var data = await res.json().catch(function(){ return {}; });
-        if(res.ok && data.ok){
-          form.innerHTML = '<div style="font-family:Fraunces,serif;font-size:21px;color:#fff;padding:6px 0">You\u2019re on the list. Talk soon. \u2014 Sean</div>';
-          if(fine) fine.style.display = 'none';
-        } else {
-          throw new Error((data && data.error) || 'error');
-        }
-      }catch(err){
-        btn.disabled = false; btn.textContent = 'Join';
-        if(fine){
-          fine.textContent = (err && err.message && err.message !== 'error') ? err.message : 'Hmm, that didn\u2019t go through. Try again?';
-          fine.style.color = '#ffd9cb';
-        }
-      }
-    });
-  })();
-</script>
-
-</body>
-</html>
+    <p>Each year I work closely with a small number of operators, and I b
