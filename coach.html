@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Accountability Coach — Sean Patrick Phelps</title>
+<meta name="description" content="A weekly AI accountability coach: set a goal, get a plan, check in, and make consistent progress.">
+<meta name="robots" content="noindex"><!-- private tool; remove if you want it indexed -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Cg fill='none' stroke-width='10' stroke-linecap='round'%3E%3Cpath d='M75 22 A53 53 0 0 1 124 60' stroke='%23B0542F'/%3E%3Cpath d='M128 92 A53 53 0 0 1 90 126' stroke='%23347f9e'/%3E%3Cpath d='M60 126 A53 53 0 0 1 22 88' stroke='%231B948C'/%3E%3Cpath d='M22 58 A53 53 0 0 1 60 24' stroke='%234E7B53'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --snow:#F3F1EA; --paper2:#EAE7DD; --night:#17211F; --slate:#5C636B; --slate2:#787e84;
+    --glacier:#347f9e; --braies:#1B948C; --teton:#4E7B53; --zion:#B0542F;
+    --line:rgba(23,33,31,.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--snow);color:var(--night);font-family:'Hanken Grotesk',sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .mono{font-family:'Space Mono',monospace}
+  nav{border-bottom:1px solid var(--line)}
+  nav .in{display:flex;align-items:center;justify-content:space-between;max-width:880px;margin:0 auto;padding:15px 24px}
+  nav .wm{display:flex;align-items:center;gap:9px;font-family:'Fraunces',serif;font-size:17px;text-decoration:none}
+  nav .wm b{font-weight:600}
+  nav .home{font-size:14px;color:var(--slate);text-decoration:none}
+  nav .home:hover{color:var(--night)}
+  .shell{max-width:760px;margin:0 auto;padding:48px 24px 80px}
+
+  .eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--zion)}
+  h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(32px,5.5vw,48px);line-height:1.04;letter-spacing:-.02em;margin:12px 0 14px}
+  h1 b{font-weight:600}
+  .sub{color:var(--slate);font-size:18px;max-width:560px;margin-bottom:30px}
+
+  /* intake form */
+  .field{margin-bottom:18px}
+  label{display:block;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);margin-bottom:7px}
+  input,textarea{width:100%;font-family:inherit;font-size:16px;color:var(--night);background:#fff;border:1px solid var(--line);border-radius:9px;padding:13px 15px;outline:none;transition:border-color .15s}
+  input:focus,textarea:focus{border-color:var(--glacier)}
+  textarea{min-height:96px;resize:vertical;line-height:1.5}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:560px){.row{grid-template-columns:1fr}}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--zion);color:#fff;border:none;font-family:inherit;font-weight:600;font-size:16px;padding:14px 30px;border-radius:7px;cursor:pointer;transition:background .2s}
+  .btn:hover{background:#974626}
+  .btn:disabled{opacity:.55;cursor:default}
+  .err{color:var(--zion);font-size:14px;margin-top:10px;min-height:18px}
+  .fine{color:var(--slate2);font-size:13px;margin-top:14px}
+
+  /* success */
+  .done{background:#fff;border:1px solid var(--line);border-top:3px solid var(--teton);border-radius:14px;padding:32px}
+  .done h2{font-family:'Fraunces',serif;font-weight:500;font-size:26px;margin-bottom:10px}
+  .done p{color:var(--slate);margin-bottom:18px}
+  .done a.go{color:var(--glacier);font-weight:600;text-decoration:none}
+  .done a.go:hover{text-decoration:underline}
+
+  /* dashboard */
+  .goalbar{background:var(--night);color:var(--snow);border-radius:14px;padding:24px 26px;margin-bottom:22px}
+  .goalbar .wk{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--glacier)}
+  .goalbar h2{font-family:'Fraunces',serif;font-weight:400;font-size:24px;line-height:1.2;margin-top:6px}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px 26px;margin-bottom:22px}
+  .panel h3{font-family:'Fraunces',serif;font-weight:600;font-size:18px;margin-bottom:4px}
+  .panel .focus{color:var(--slate);margin-bottom:18px}
+  .prog{font-family:'Space Mono',monospace;font-size:11px;color:var(--slate2);margin-bottom:14px}
+  .prog .bar{display:inline-block;width:120px;height:6px;background:var(--paper2);border-radius:4px;vertical-align:middle;margin-left:8px;overflow:hidden}
+  .prog .bar i{display:block;height:100%;background:var(--teton);width:0;transition:width .3s}
+  .act{display:flex;gap:13px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);cursor:pointer}
+  .act:first-of-type{border-top:none}
+  .act .box{flex:none;width:21px;height:21px;border:1.5px solid var(--slate2);border-radius:6px;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:.15s}
+  .act.on .box{background:var(--teton);border-color:var(--teton)}
+  .act.on .box svg{opacity:1}
+  .act .box svg{opacity:0;transition:.15s}
+  .act.on .tk{color:var(--slate2);text-decoration:line-through}
+  .act .tk{font-weight:600}
+  .act .wy{color:var(--slate);font-size:14px;display:block;margin-top:2px;font-weight:400;text-decoration:none}
+  .reflect{background:var(--snow);border-left:3px solid var(--braies);border-radius:6px;padding:12px 16px;margin-top:16px;font-size:14.5px;color:#26302e}
+
+  /* chat */
+  .chat h3{font-family:'Fraunces',serif;font-weight:600;font-size:18px;margin-bottom:4px}
+  .chat .hint{color:var(--slate);font-size:14.5px;margin-bottom:16px}
+  .log{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;max-height:420px;overflow-y:auto;padding-right:4px}
+  .msg{max-width:84%;padding:11px 15px;border-radius:14px;font-size:15px;line-height:1.5;white-space:pre-wrap}
+  .msg.coach{background:var(--paper2);color:var(--night);border-bottom-left-radius:4px;align-self:flex-start}
+  .msg.user{background:var(--glacier);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+  .msg.typing{color:var(--slate2);font-style:italic}
+  .composer{display:flex;gap:10px;align-items:flex-end}
+  .composer textarea{min-height:48px;max-height:140px}
+  .composer .send{flex:none;background:var(--night);color:#fff;border:none;border-radius:9px;width:48px;height:48px;cursor:pointer;font-size:18px}
+  .composer .send:disabled{opacity:.5;cursor:default}
+
+  .center{text-align:center;color:var(--slate2);padding:60px 0;font-family:'Fraunces',serif;font-style:italic}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="in">
+    <a class="wm" href="index.html">
+      <svg width="22" height="22" viewBox="0 0 150 150"><g fill="none" stroke-width="6" stroke-linecap="round"><path d="M75 22 A53 53 0 0 1 124 60" stroke="#B0542F"/><path d="M128 92 A53 53 0 0 1 90 126" stroke="#347f9e"/><path d="M60 126 A53 53 0 0 1 22 88" stroke="#1B948C"/><path d="M22 58 A53 53 0 0 1 60 24" stroke="#4E7B53"/></g></svg>
+      Sean <b>Patrick</b> Phelps</a>
+    <a class="home" href="index.html">← Home</a>
+  </div>
+</nav>
+
+<div class="shell">
+
+  <!-- INTAKE VIEW -->
+  <section id="intake" class="hidden">
+    <div class="eyebrow">The Accountability Coach</div>
+    <h1>Pick one goal. <b>Make real progress on it.</b></h1>
+    <p class="sub">Tell the coach what you're working toward. You'll get a focused plan for the week by email, and a private page to check in and think out loud whenever you're stuck.</p>
+
+    <div class="field"><label>Your name</label><input id="f-name" type="text" placeholder="First name" autocomplete="given-name"></div>
+    <div class="field"><label>Email — where your weekly plan lands</label><input id="f-email" type="email" placeholder="you@email.com" autocomplete="email"></div>
+    <div class="field"><label>What's the goal?</label><input id="f-goal" type="text" placeholder="e.g. Land a summer internship in finance"></div>
+    <div class="field"><label>Tell the coach about it</label><textarea id="f-context" placeholder="Where you're starting, why it matters, anything in the way, what you've tried."></textarea></div>
+    <div class="field"><label>Target timeframe (optional)</label><input id="f-time" type="text" placeholder="e.g. by the end of the semester"></div>
+
+    <button class="btn" id="start">Start week 1 →</button>
+    <div class="err" id="ierr"></div>
+    <p class="fine">One short email a week. No spam. Built by Sean Patrick Phelps.</p>
+  </section>
+
+  <!-- SUCCESS VIEW -->
+  <section id="success" class="hidden">
+    <div class="done">
+      <h2>Week 1 is on its way. 📬</h2>
+      <p>Check your inbox for your plan. Your private coach page is below — bookmark it, that's where you'll check in.</p>
+      <a class="go" id="go-coach" href="#">Open your coach page →</a>
+    </div>
+  </section>
+
+  <!-- DASHBOARD VIEW -->
+  <section id="dash" class="hidden">
+    <div class="goalbar">
+      <div class="wk" id="d-week">Week 1</div>
+      <h2 id="d-goal">—</h2>
+    </div>
+
+    <div class="panel" id="planpanel">
+      <h3>This week's focus</h3>
+      <div class="focus" id="d-focus">—</div>
+      <div class="prog" id="d-prog">0 of 0 done <span class="bar"><i id="d-bar"></i></span></div>
+      <div id="d-actions"></div>
+      <div class="reflect hidden" id="d-reflect"></div>
+    </div>
+
+    <div class="panel chat">
+      <h3>Think it through</h3>
+      <p class="hint">Stuck, behind, or just need to talk it out? Check in here — the coach remembers your goal.</p>
+      <div class="log" id="log"></div>
+      <div class="composer">
+        <textarea id="c-input" placeholder="Where are you at this week?"></textarea>
+        <button class="send" id="c-send" title="Send">↑</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="loading" class="center">Loading your coach…</section>
+
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const TOKEN = params.get("t");
+
+function show(view){ ["intake","success","dash","loading"].forEach(v=>$(v).classList.add("hidden")); $(view).classList.remove("hidden"); }
+function esc(s){return String(s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+
+/* ---------- INTAKE ---------- */
+async function startPlan(){
+  const name=$("f-name").value.trim(), email=$("f-email").value.trim(),
+        goal=$("f-goal").value.trim(), context=$("f-context").value.trim(), timeframe=$("f-time").value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||!goal){ $("ierr").textContent="Add a valid email and a goal to begin."; return; }
+  $("start").disabled=true; $("start").textContent="Building your plan…"; $("ierr").textContent="";
+  try{
+    const r=await fetch("/api/coach-start",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,email,goal,context,timeframe})});
+    const d=await r.json();
+    if(!r.ok||!d.ok) throw new Error(d.error||"Something went wrong.");
+    const link="/coach.html?t="+encodeURIComponent(d.token);
+    $("go-coach").href=link;
+    show("success");
+  }catch(e){ $("ierr").textContent=e.message||"Something went wrong."; $("start").disabled=false; $("start").textContent="Start week 1 →"; }
+}
+
+/* ---------- DASHBOARD ---------- */
+let STATE=null;
+const progKey=(i)=>`coachdone:${TOKEN}:w${STATE.week}:${i}`;
+
+async function loadDash(){
+  try{
+    const r=await fetch("/api/coach-state?t="+encodeURIComponent(TOKEN));
+    const d=await r.json();
+    if(!r.ok||!d.ok) throw new Error(d.error||"Not found");
+    STATE=d;
+    $("d-week").textContent="Week "+d.week;
+    $("d-goal").textContent=d.goal;
+    renderPlan(d.plan);
+    renderLog(d.messages);
+    show("dash");
+  }catch(e){ $("loading").textContent="We couldn't find that coach page. Check your link, or start a new goal."; }
+}
+
+function renderPlan(plan){
+  if(!plan){ $("planpanel").classList.add("hidden"); return; }
+  $("d-focus").textContent=plan.focus||"";
+  const wrap=$("d-actions"); wrap.innerHTML="";
+  const acts=plan.actions||[];
+  acts.forEach((a,i)=>{
+    const done=localStorage.getItem(progKey(i))==="1";
+    const el=document.createElement("div");
+    el.className="act"+(done?" on":"");
+    el.innerHTML=`<div class="box"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <div><span class="tk">${esc(a.task)}</span><span class="wy">${esc(a.why||"")}</span></div>`;
+    el.addEventListener("click",()=>{ const now=!el.classList.contains("on"); el.classList.toggle("on",now); localStorage.setItem(progKey(i),now?"1":"0"); updateProg(acts.length); });
+    wrap.appendChild(el);
+  });
+  if(plan.reflection){ $("d-reflect").innerHTML="<strong>Reflect:</strong> "+esc(plan.reflection); $("d-reflect").classList.remove("hidden"); }
+  updateProg(acts.length);
+}
+function updateProg(total){
+  let done=0; for(let i=0;i<total;i++){ if(localStorage.getItem(progKey(i))==="1") done++; }
+  $("d-prog").firstChild.textContent=`${done} of ${total} done `;
+  $("d-bar").style.width=total?(done/total*100)+"%":"0";
+}
+
+/* ---------- CHAT ---------- */
+function bubble(role,text){ const b=document.createElement("div"); b.className="msg "+(role==="coach"?"coach":"user"); b.textContent=text; return b; }
+function renderLog(msgs){
+  const log=$("log"); log.innerHTML="";
+  if(!msgs||!msgs.length){ log.appendChild(bubble("coach","Hey — I've got your goal. Tell me where you're starting this week, or what's in the way, and we'll work it.")); }
+  else msgs.forEach(m=>log.appendChild(bubble(m.role,m.content)));
+  log.scrollTop=log.scrollHeight;
+}
+async function sendMsg(){
+  const inp=$("c-input"); const text=inp.value.trim(); if(!text) return;
+  const log=$("log");
+  log.appendChild(bubble("user",text)); inp.value=""; log.scrollTop=log.scrollHeight;
+  $("c-send").disabled=true;
+  const typing=bubble("coach","…"); typing.classList.add("typing"); log.appendChild(typing); log.scrollTop=log.scrollHeight;
+  try{
+    const r=await fetch("/api/coach-chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({t:TOKEN,message:text})});
+    const d=await r.json();
+    typing.remove();
+    if(!r.ok||!d.ok) throw new Error(d.error||"The coach is unavailable for a moment.");
+    log.appendChild(bubble("coach",d.reply));
+  }catch(e){ typing.remove(); const er=bubble("coach",e.message||"Something went wrong — try again."); er.classList.add("typing"); log.appendChild(er); }
+  log.scrollTop=log.scrollHeight; $("c-send").disabled=false; inp.focus();
+}
+
+/* ---------- BOOT ---------- */
+if(TOKEN){ show("loading"); loadDash(); }
+else { show("intake"); }
+$("start") && $("start").addEventListener("click",startPlan);
+$("c-send") && $("c-send").addEventListener("click",sendMsg);
+$("c-input") && $("c-input").addEventListener("keydown",(e)=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); sendMsg(); }});
+</script>
+</body>
+</html>
