@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sean Patrick Phelps — The Extraordinary Entrepreneur</title>
+<meta name="description" content="Sean Patrick Phelps takes ordinary businesses and brings the extra that makes them great. Writer and investor who has helped over 1,000 people launch their first profitable business.">
+<!-- Social share preview -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://seanpatrickphelps.com">
+<meta property="og:title" content="Sean Patrick Phelps — The Extraordinary Entrepreneur">
+<meta property="og:description" content="I take ordinary businesses and bring the extra that makes them great. Writer, investor, and operator.">
+<!-- TODO: add og:image (a 1200x630 share image) when ready -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sean Patrick Phelps — The Extraordinary Entrepreneur">
+<meta name="twitter:description" content="I take ordinary businesses and bring the extra that makes them great.">
+<!-- Favicon: the Loop mark -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Cg fill='none' stroke-width='10' stroke-linecap='round'%3E%3Cpath d='M75 22 A53 53 0 0 1 124 60' stroke='%23B0542F'/%3E%3Cpath d='M128 92 A53 53 0 0 1 90 126' stroke='%23347f9e'/%3E%3Cpath d='M60 126 A53 53 0 0 1 22 88' stroke='%231B948C'/%3E%3Cpath d='M22 58 A53 53 0 0 1 60 24' stroke='%234E7B53'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --snow:#F3F1EA; --paper2:#EAE7DD; --night:#17211F; --slate:#5C636B; --slate2:#787e84;
+    --glacier:#347f9e; --braies:#1B948C; --teton:#4E7B53; --zion:#B0542F;
+    --line:rgba(23,33,31,.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--snow);color:var(--night);font-family:'Hanken Grotesk',sans-serif;font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:0 32px}
+  .narrow{max-width:720px;margin:0 auto;padding:0 32px}
+  a{color:inherit;text-decoration:none}
+  .eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--slate2)}
+  .link{color:var(--glacier);font-weight:500;border-bottom:1px solid rgba(52,127,158,.35);padding-bottom:1px}
+  .link:hover{border-color:var(--glacier)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14.5px;padding:13px 24px;border-radius:3px;transition:.2s;cursor:pointer;border:none}
+  .btn-pri{background:var(--zion);color:#fff}.btn-pri:hover{background:#974626}
+
+  nav{border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(243,241,234,.9);backdrop-filter:blur(8px);z-index:40}
+  nav .in{display:flex;align-items:center;justify-content:space-between;max-width:960px;margin:0 auto;padding:17px 32px}
+  nav .wm{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:400;font-size:18px}
+  nav .wm b{font-weight:600}
+  nav .links{display:flex;gap:30px;font-size:14.5px;color:var(--slate)}
+  nav .links a:hover{color:var(--night)}
+  @media(max-width:760px){nav .links{display:none}}
+
+  header.hero{padding:84px 0 70px}
+  .hero .grid{display:grid;grid-template-columns:1.25fr .75fr;gap:54px;align-items:center}
+  .hero h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(42px,6.6vw,68px);line-height:1;letter-spacing:-.02em;margin:18px 0 0}
+  .hero h1 b{font-weight:600}
+  .hero .sig{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:clamp(20px,2.6vw,26px);color:var(--zion);margin-top:14px}
+  .hero .lead{font-size:18.5px;color:var(--slate);margin-top:22px;max-width:480px}
+  .hero .acts{display:flex;gap:22px;align-items:center;margin-top:30px;flex-wrap:wrap}
+  .portrait{aspect-ratio:4/5;border-radius:6px;background:radial-gradient(120% 90% at 45% 20%,#a9a89e,#43433c 70%,#2a2a25);filter:grayscale(1) contrast(1.03);position:relative}
+  .portrait::after{content:"YOUR PHOTO";position:absolute;inset:0;display:grid;place-items:center;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;color:rgba(243,241,234,.55)}
+  .facts{margin-top:42px;padding-top:24px;border-top:1px solid var(--line);display:flex;gap:34px;flex-wrap:wrap;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--slate)}
+  .facts b{color:var(--night);font-weight:700}
+  @media(max-width:760px){.hero .grid{grid-template-columns:1fr;gap:34px}.portrait{max-width:280px}header.hero{padding:54px 0 50px}}
+
+  section{padding:70px 0;border-top:1px solid var(--line)}
+  .kicker{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--zion);margin-bottom:16px}
+  h2.sh{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(26px,3.8vw,38px);letter-spacing:-.015em;line-height:1.08}
+  p.body{font-size:18px;color:var(--slate);margin-top:18px}
+  p.body b{color:var(--night);font-weight:600}
+
+  .extra{text-align:center;background:var(--paper2)}
+  .extra p{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(23px,3.4vw,33px);line-height:1.38;letter-spacing:-.01em;max-width:740px;margin:0 auto;color:var(--night)}
+  .extra p b{font-weight:600;font-style:italic;color:var(--zion)}
+
+  .creds{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .cred{border:1px solid var(--line);border-radius:100px;padding:8px 16px;font-size:13.5px;color:var(--night);background:var(--snow)}
+  .cred b{color:var(--glacier)}
+
+  .book .grid{display:grid;grid-template-columns:.7fr 1.3fr;gap:50px;align-items:center}
+  .cover{aspect-ratio:2/3;border-radius:4px;background:var(--snow);color:var(--night);padding:30px 24px;display:flex;flex-direction:column;
+    box-shadow:0 26px 52px -22px rgba(23,33,31,.45);border:1px solid var(--line);max-width:250px;width:100%;margin:0 auto}
+  .cover .top{font-family:'Space Mono',monospace;font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;text-align:center;color:var(--zion)}
+  .cover .ttl{font-family:'Fraunces',serif;font-size:27px;line-height:1;text-align:center;margin-top:16px;white-space:nowrap;letter-spacing:-.015em}
+  .cover .ttl .a{font-weight:300}.cover .ttl .b{font-weight:600}
+  .cover .lp{flex:1;display:flex;align-items:center;justify-content:center}
+  .cover .sub{font-family:'Fraunces',serif;font-style:italic;font-size:12px;text-align:center;color:var(--slate);line-height:1.3}
+  .cover .au{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;text-align:center;margin-top:11px}
+  .book .status{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--slate);margin-top:8px}
+  @media(max-width:760px){.book .grid{grid-template-columns:1fr;gap:36px}.cover{max-width:210px}}
+
+  .shows{margin-top:30px;border-top:1px solid var(--line)}
+  .show{display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding:18px 0;border-bottom:1px solid var(--line)}
+  .show .nm{font-family:'Fraunces',serif;font-weight:500;font-size:20px}
+  .show:hover .nm{color:var(--glacier)}
+  .show .role{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate2);white-space:nowrap}
+  .hostline{margin-top:28px;font-size:17px;color:var(--slate)}
+
+  .list{background:var(--night);color:var(--snow);text-align:center}
+  .list h2{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(26px,3.6vw,38px);letter-spacing:-.01em}
+  .list h2 b{font-weight:600}
+  .list p{color:rgba(243,241,234,.72);margin:14px auto 28px;max-width:430px}
+  .signup{display:flex;gap:10px;max-width:440px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+  .signup input{flex:1;min-width:210px;padding:14px 18px;border-radius:3px;border:none;font-family:inherit;font-size:15px;color:var(--night)}
+  .list .fine{font-family:'Space Mono',monospace;font-size:10.5px;color:rgba(243,241,234,.45);margin-top:16px;letter-spacing:.04em}
+
+  .work{text-align:center}
+  .work p{font-size:18px;color:var(--slate);max-width:600px;margin:18px auto 0}
+  .work p b{color:var(--night);font-weight:600}
+
+  footer{border-top:1px solid var(--line);padding:48px 0 40px}
+  footer .top{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
+  footer .wm{font-family:'Fraunces',serif;font-weight:400;font-size:21px}
+  footer .wm b{font-weight:600}
+  footer .wm .s{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--zion);margin-top:7px}
+  footer .links{display:flex;gap:40px;flex-wrap:wrap}
+  footer .col h5{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--slate2);margin-bottom:11px}
+  footer .col a{display:block;font-size:14px;color:var(--slate);margin-bottom:7px}
+  footer .col a:hover{color:var(--night)}
+  footer .btm{margin-top:36px;font-family:'Space Mono',monospace;font-size:11px;color:var(--slate2);letter-spacing:.06em}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="in">
+    <a class="wm" href="#top">
+      <svg width="24" height="24" viewBox="0 0 150 150"><g fill="none" stroke-width="5.5" stroke-linecap="round"><path d="M75 22 A53 53 0 0 1 124 60" stroke="#B0542F"/><path d="M128 92 A53 53 0 0 1 90 126" stroke="#347f9e"/><path d="M60 126 A53 53 0 0 1 22 88" stroke="#1B948C"/><path d="M22 58 A53 53 0 0 1 60 24" stroke="#4E7B53"/></g></svg>
+      Sean <b>Patrick</b> Phelps</a>
+    <div class="links">
+      <a href="#about">About</a><a href="#book">Book</a><a href="#podcasts">Podcasts</a><a href="#list">Newsletter</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <span class="eyebrow">The Extraordinary Entrepreneur</span>
+        <h1>Sean <b>Patrick</b> Phelps</h1>
+        <div class="sig">I take ordinary businesses and bring the extra that makes them great.</div>
+        <p class="lead">Writer, investor, and operator. Over the last decade I've helped more than a thousand people launch their first profitable business.</p>
+        <div class="acts">
+          <a class="btn btn-pri" href="#list">Join the early list for the book</a>
+          <a class="link" href="#podcasts">Where to hear me →</a>
+        </div>
+      </div>
+      <div class="portrait"></div>
+    </div>
+    <div class="facts">
+      <span><b>1,000+</b> first-time founders trained</span>
+      <span><b>$10M+</b> earned by them</span>
+      <span><b>50</b> states traveled</span>
+    </div>
+  </div>
+</header>
+
+<section class="extra">
+  <div class="narrow">
+    <p>Extraordinary isn't a different kind of business. It's an ordinary one, done with <b>the extra</b> — the care, the system, and the standards most people skip.</p>
+  </div>
+</section>
+
+<section id="about">
+  <div class="narrow">
+    <div class="kicker">About</div>
+    <h2 class="sh">The short version</h2>
+    <p class="body">I'm the son of a small business owner, and I've spent my career proving how much is possible at the community level. I trained and managed <b>over 1,000 college students</b> as they launched their first profitable businesses — putting <b>more than $10 million</b> in their pockets to pay for school.</p>
+    <p class="body">Since then I've built across the table: an MBA, a VC-backed startup, a small business of my own, and a real estate portfolio — in every one of the fifty states.</p>
+    <div class="creds">
+      <span class="cred"><b>·</b> MBA</span>
+      <span class="cred"><b>·</b> VC-backed startup</span>
+      <span class="cred"><b>·</b> Small business cofounder</span>
+      <span class="cred"><b>·</b> Real estate investor</span>
+      <span class="cred"><b>·</b> Traveled all 50 states</span>
+    </div>
+  </div>
+</section>
+
+<section class="book" id="book">
+  <div class="wrap">
+    <div class="grid">
+      <div class="cover">
+        <div class="top">Us vs. the goal — not me vs. you</div>
+        <div class="ttl"><span class="a">Account</span><span class="b">ability</span></div>
+        <div class="lp"><svg width="108" height="108" viewBox="0 0 150 150"><g fill="none" stroke-width="2.7" stroke-linecap="round"><path d="M75 22 A53 53 0 0 1 124 60" stroke="#347f9e"/><path d="M128 92 A53 53 0 0 1 90 126" stroke="#1B948C"/><path d="M60 126 A53 53 0 0 1 22 88" stroke="#4E7B53"/><path d="M22 58 A53 53 0 0 1 60 24" stroke="#B0542F"/></g><path d="M124 60 l8 -3 l-2 9 z" fill="#347f9e"/><path d="M90 126 l-1 8 l8 -4 z" fill="#1B948C"/><path d="M22 88 l-8 3 l2 -9 z" fill="#4E7B53"/><path d="M60 24 l1 -8 l-8 4 z" fill="#B0542F"/></g></svg></div>
+        <div class="sub">An algorithm for<br>consistent success</div>
+        <div class="au">Sean Patrick Phelps</div>
+      </div>
+      <div>
+        <div class="kicker">The Book</div>
+        <h2 class="sh">Accountability</h2>
+        <p class="body">A field-tested system for turning intention into consistent results — the simple loop I've used to help a thousand people follow through. Built around a single idea: make it <b>us vs. the goal</b>, never me vs. you.</p>
+        <p class="status">Publishing late 2026 · Early access list open now</p>
+        <div style="margin-top:22px"><a class="btn btn-pri" href="#list">Get early access</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="podcasts">
+  <div class="narrow">
+    <div class="kicker">Podcasts</div>
+    <h2 class="sh">Where to hear me</h2>
+    <p class="body">I don't host a show of my own — I visit them. Recent and ongoing conversations on building, investing, and helping young people find their footing:</p>
+    <div class="shows">
+      <!-- TODO: set each href to the episode/show link -->
+      <a class="show" href="#" target="_blank"><span class="nm">The Edge of Excellence</span><span class="role">Host &amp; Guest</span></a>
+      <a class="show" href="#" target="_blank"><span class="nm">The Accredited Investor</span><span class="role">Guest</span></a>
+      <a class="show" href="#" target="_blank"><span class="nm">The Way to College</span><span class="role">Guest</span></a>
+      <a class="show" href="#" target="_blank"><span class="nm">Tim Stating the Obvious</span><span class="role">Guest</span></a>
+      <a class="show" href="#" target="_blank"><span class="nm">Coffee with Jon</span><span class="role">Guest</span></a>
+      <div class="show"><span class="nm" style="color:var(--slate2);font-style:italic;font-weight:400">More coming soon</span><span class="role"></span></div>
+    </div>
+    <p class="hostline">Hosting a podcast? I'd be glad to come on and talk shop. <a class="link" href="mailto:hello@seanpatrickphelps.com?subject=Podcast%20invitation">Get in touch →</a></p>
+  </div>
+</section>
+
+<section class="list" id="list">
+  <div class="narrow">
+    <h2>Join the <b>list</b>.</h2>
+    <p>Early access to the book, and occasional notes on building extraordinary businesses. Nothing else.</p>
+    <!-- TODO: replace action with your newsletter provider's form endpoint (Kit, Beehiiv, Mailchimp, Substack) -->
+    <form class="signup" action="YOUR_NEWSLETTER_FORM_ACTION" method="post" target="_blank">
+      <input type="email" name="email_address" placeholder="you@email.com" aria-label="Email address" required>
+      <button type="submit" class="btn btn-pri">Join</button>
+    </form>
+    <div class="fine">No spam. Unsubscribe anytime.</div>
+  </div>
+</section>
+
+<section class="work">
+  <div class="narrow">
+    <div class="kicker">Work With Me</div>
+    <p>Each year I work closely with a small number of operators, and I back a few businesses I believe in. Both are by conversation and referral — not a checkout page. <b>If that's you, <a class="link" href="mailto:hello@seanpatrickphelps.com?subject=Working%20together">reach out</a>.</b></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="top">
+      <div class="wm">Sean <b>Patrick</b> Phelps<span class="s">The Extraordinary Entrepreneur</span></div>
+      <div class="links">
+        <div class="col"><h5>Explore</h5><a href="#about">About</a><a href="#book">Book</a><a href="#podcasts">Podcasts</a></div>
+        <div class="col"><h5>Connect</h5><a href="#list">Newsletter</a><a href="#" target="_blank">LinkedIn</a><a href="mailto:hello@seanpatrickphelps.com">Contact</a></div>
+      </div>
+    </div>
+    <div class="btm">© 2026 Sean Patrick Phelps · seanpatrickphelps.com</div>
+  </div>
+</footer>
+
+</body>
+</html>
