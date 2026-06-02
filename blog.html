@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Writing — Sean Patrick Phelps</title>
+<meta name="description" content="Field notes from Sean Patrick Phelps on building businesses, career prep, AI, and helping young people find their footing.">
+<link rel="canonical" href="https://seanpatrickphelps.com/blog.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Writing — Sean Patrick Phelps">
+<meta property="og:description" content="Field notes on building businesses, career prep, AI, and helping young people find their footing.">
+<meta property="og:url" content="https://seanpatrickphelps.com/blog.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Cg fill='none' stroke-width='10' stroke-linecap='round'%3E%3Cpath d='M75 22 A53 53 0 0 1 124 60' stroke='%23B0542F'/%3E%3Cpath d='M128 92 A53 53 0 0 1 90 126' stroke='%23347f9e'/%3E%3Cpath d='M60 126 A53 53 0 0 1 22 88' stroke='%231B948C'/%3E%3Cpath d='M22 58 A53 53 0 0 1 60 24' stroke='%234E7B53'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,400..600&family=Hanken+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --snow:#F3F1EA; --paper2:#EAE7DD; --night:#17211F; --slate:#5C636B; --slate2:#787e84;
+    --glacier:#347f9e; --braies:#1B948C; --teton:#4E7B53; --zion:#B0542F;
+    --line:rgba(23,33,31,.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--snow);color:var(--night);font-family:'Hanken Grotesk',sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 30px}
+  a{color:inherit;text-decoration:none}
+
+  nav{border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(243,241,234,.9);backdrop-filter:blur(8px);z-index:40}
+  nav .in{display:flex;align-items:center;justify-content:space-between;max-width:1080px;margin:0 auto;padding:16px 30px}
+  nav .wm{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-weight:400;font-size:18px}
+  nav .wm b{font-weight:600}
+  nav .links{display:flex;gap:26px;font-size:14.5px;color:var(--slate)}
+  nav .links a:hover{color:var(--night)}
+  nav .links a.on{color:var(--zion);font-weight:600}
+  @media(max-width:760px){nav .links{display:none}}
+
+  header.hero{padding:60px 0 30px;border-bottom:1px solid var(--line)}
+  header .eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--zion)}
+  header h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(38px,6vw,60px);letter-spacing:-.02em;margin:14px 0 12px;line-height:1}
+  header p{color:var(--slate);font-size:18px;max-width:560px}
+
+  .posts{padding:24px 0 10px}
+  .post{display:block;border-bottom:1px solid var(--line);padding:30px 0;transition:padding .18s}
+  .post:hover{padding-left:8px}
+  .post .cat{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--glacier);font-weight:700}
+  .post h2{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(22px,3vw,29px);line-height:1.18;letter-spacing:-.01em;margin:10px 0 10px;max-width:760px}
+  .post:hover h2{color:var(--glacier)}
+  .post p{color:var(--slate);font-size:16px;max-width:680px;margin-bottom:14px}
+  .post .meta{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--slate2);display:flex;gap:14px;align-items:center}
+  .post .read{color:var(--zion);font-weight:700}
+
+  .soon{padding:34px 0 60px;color:var(--slate2);font-family:'Fraunces',serif;font-style:italic;font-size:18px}
+
+  footer{border-top:1px solid var(--line);padding:40px 0}
+  footer .top{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:flex-start}
+  footer .wm{font-family:'Fraunces',serif;font-weight:400;font-size:20px}
+  footer .wm b{font-weight:600}
+  footer .wm .s{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--zion);margin-top:7px}
+  footer .links{display:flex;gap:22px;flex-wrap:wrap;font-size:14px;color:var(--slate)}
+  footer .links a:hover{color:var(--night)}
+  footer .btm{margin-top:26px;font-family:'Space Mono',monospace;font-size:11px;color:var(--slate2)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="in">
+    <a class="wm" href="index.html">
+      <svg width="24" height="24" viewBox="0 0 150 150"><g fill="none" stroke-width="5.5" stroke-linecap="round"><path d="M75 22 A53 53 0 0 1 124 60" stroke="#B0542F"/><path d="M128 92 A53 53 0 0 1 90 126" stroke="#347f9e"/><path d="M60 126 A53 53 0 0 1 22 88" stroke="#1B948C"/><path d="M22 58 A53 53 0 0 1 60 24" stroke="#4E7B53"/></g></svg>
+      Sean <b>Patrick</b> Phelps</a>
+    <div class="links">
+      <a href="index.html#about">About</a><a href="index.html#book">Book</a><a href="podcasts.html">Podcasts</a><a href="blog.html" class="on">Writing</a><a href="index.html#list">Newsletter</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Writing</span>
+    <h1>Field Notes</h1>
+    <p>Practical pieces on building businesses, getting career-ready, and helping young people find their footing.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="posts">
+
+    <a class="post" href="ai-career-prep.html">
+      <span class="cat">Career Prep</span>
+      <h2>10 Things You Can Do With AI Before You Book a Career Advisor</h2>
+      <p>The career center is a good resource — but it's a bottleneck. Here are ten things students can do with AI today to show up eighty percent prepared, from résumés and mock interviews to figuring out which careers actually fit.</p>
+      <div class="meta"><span>June 2026</span><span>8 min read</span><span class="read">Read →</span></div>
+    </a>
+
+  </div>
+  <p class="soon">More on the way.</p>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="top">
+      <div class="wm">Sean <b>Patrick</b> Phelps<span class="s">The Extraordinary Entrepreneur</span></div>
+      <div class="links">
+        <a href="index.html#about">About</a><a href="index.html#book">Book</a><a href="podcasts.html">Podcasts</a><a href="blog.html">Writing</a><a href="index.html#list">Newsletter</a><a href="mailto:seanpatrickphelps@gmail.com">Contact</a>
+      </div>
+    </div>
+    <div class="btm">© 2026 Sean Patrick Phelps · seanpatrickphelps.com</div>
+  </div>
+</footer>
+
+</body>
+</html>
