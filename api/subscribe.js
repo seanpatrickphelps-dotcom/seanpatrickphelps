@@ -1,9 +1,26 @@
-// Vercel Serverless Function — receives a newsletter signup and adds the
-// email to a Resend Audience. Runs server-side so your API key stays secret.
+// Vercel Serverless Function — newsletter signup → Resend Audience.
+// Runs server-side so your API key stays secret.
 //
-// Required environment variables (set in Vercel → Settings → Environment Variables):
-//   RESEND_API_KEY      — your existing Resend API key
-//   RESEND_AUDIENCE_ID  — the Audience to add subscribers to (create one in Resend → Audiences)
+// Required environment variable (Vercel → Settings → Environment Variables):
+//   RESEND_API_KEY      — your Resend key (must be "Full access", not sending-only)
+//
+// Optional:
+//   RESEND_AUDIENCE_ID  — a specific audience. If you leave this out, the function
+//                         automatically uses your account's default (first) audience,
+//                         so you don't have to hunt for the ID.
+
+const RESEND = "https://api.resend.com";
+
+async function resolveAudienceId(key) {
+  if (process.env.RESEND_AUDIENCE_ID) return process.env.RESEND_AUDIENCE_ID;
+  const r = await fetch(`${RESEND}/audiences`, {
+    headers: { Authorization: `Bearer ${key}` },
+  });
+  if (!r.ok) return null;
+  const j = await r.json().catch(() => ({}));
+  const list = (j && j.data) || [];
+  return list.length ? list[0].id : null;
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -17,37 +34,36 @@ export default async function handler(req, res) {
     }
 
     const email = ((body && body.email) || "").trim().toLowerCase();
-    const valid = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
-    if (!valid) {
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
       return res.status(400).json({ ok: false, error: "Please enter a valid email." });
     }
 
-    if (!process.env.RESEND_API_KEY || !process.env.RESEND_AUDIENCE_ID) {
-      console.error("Missing RESEND_API_KEY or RESEND_AUDIENCE_ID");
+    const key = process.env.RESEND_API_KEY;
+    if (!key) {
+      console.error("Missing RESEND_API_KEY");
       return res.status(500).json({ ok: false, error: "Server not configured yet." });
     }
 
-    const resp = await fetch(
-      `https://api.resend.com/audiences/${process.env.RESEND_AUDIENCE_ID}/contacts`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, unsubscribed: false }),
-      }
-    );
-
-    // Resend returns 2xx on success. A duplicate is fine — treat it as success.
-    if (resp.ok) {
-      return res.status(200).json({ ok: true });
+    const audienceId = await resolveAudienceId(key);
+    if (!audienceId) {
+      console.error("No audience found. Create one in Resend, or set RESEND_AUDIENCE_ID.");
+      return res.status(500).json({ ok: false, error: "No audience configured yet." });
     }
 
+    const resp = await fetch(`${RESEND}/audiences/${audienceId}/contacts`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${key}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, unsubscribed: false }),
+    });
+
+    if (resp.ok) return res.status(200).json({ ok: true });
+
     const detail = await resp.text();
-    // If the contact already exists, Resend may return an error — still a "win".
     if (/already|exists|duplicate/i.test(detail)) {
-      return res.status(200).json({ ok: true });
+      return res.status(200).json({ ok: true }); // already subscribed = success
     }
 
     console.error("Resend error:", resp.status, detail);
