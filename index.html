@@ -215,12 +215,11 @@
   <div class="narrow">
     <h2>Join the <b>list</b>.</h2>
     <p>Early access to the book, and occasional notes on building extraordinary businesses. Nothing else.</p>
-    <!-- TODO: replace action with your newsletter provider's form endpoint (Kit, Beehiiv, Mailchimp, Substack) -->
-    <form class="signup" action="YOUR_NEWSLETTER_FORM_ACTION" method="post" target="_blank">
-      <input type="email" name="email_address" placeholder="you@email.com" aria-label="Email address" required>
-      <button type="submit" class="btn btn-pri">Join</button>
+    <form class="signup" id="signup-form">
+      <input type="email" id="signup-email" placeholder="you@email.com" aria-label="Email address" required>
+      <button type="submit" class="btn btn-pri" id="signup-btn">Join</button>
     </form>
-    <div class="fine">No spam. Unsubscribe anytime.</div>
+    <div class="fine" id="signup-fine">No spam. Unsubscribe anytime.</div>
   </div>
 </section>
 
@@ -243,6 +242,42 @@
     <div class="btm">© 2026 Sean Patrick Phelps · seanpatrickphelps.com</div>
   </div>
 </footer>
+
+<script>
+  (function(){
+    var form = document.getElementById('signup-form');
+    if(!form) return;
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      var emailEl = document.getElementById('signup-email');
+      var btn = document.getElementById('signup-btn');
+      var fine = document.getElementById('signup-fine');
+      var email = (emailEl.value || '').trim();
+      if(!email) return;
+      btn.disabled = true; btn.textContent = 'Joining…';
+      try{
+        var res = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
+        });
+        var data = await res.json().catch(function(){ return {}; });
+        if(res.ok && data.ok){
+          form.innerHTML = '<div style="font-family:Fraunces,serif;font-size:21px;color:#fff;padding:6px 0">You\u2019re on the list. Talk soon. \u2014 Sean</div>';
+          if(fine) fine.style.display = 'none';
+        } else {
+          throw new Error((data && data.error) || 'error');
+        }
+      }catch(err){
+        btn.disabled = false; btn.textContent = 'Join';
+        if(fine){
+          fine.textContent = (err && err.message && err.message !== 'error') ? err.message : 'Hmm, that didn\u2019t go through. Try again?';
+          fine.style.color = '#ffd9cb';
+        }
+      }
+    });
+  })();
+</script>
 
 </body>
 </html>
