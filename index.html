@@ -52,8 +52,7 @@
   .hero .sig{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:clamp(20px,2.6vw,26px);color:var(--zion);margin-top:14px}
   .hero .lead{font-size:18.5px;color:var(--slate);margin-top:22px;max-width:480px}
   .hero .acts{display:flex;gap:22px;align-items:center;margin-top:30px;flex-wrap:wrap}
-  .portrait{aspect-ratio:4/5;border-radius:6px;background:radial-gradient(120% 90% at 45% 20%,#a9a89e,#43433c 70%,#2a2a25);filter:grayscale(1) contrast(1.03);position:relative}
-  .portrait::after{content:"YOUR PHOTO";position:absolute;inset:0;display:grid;place-items:center;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;color:rgba(243,241,234,.55)}
+  .portrait{aspect-ratio:4/5;border-radius:6px;width:100%;object-fit:cover;display:block}
   .facts{margin-top:42px;padding-top:24px;border-top:1px solid var(--line);display:flex;gap:34px;flex-wrap:wrap;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--slate)}
   .facts b{color:var(--night);font-weight:700}
   @media(max-width:760px){.hero .grid{grid-template-columns:1fr;gap:34px}.portrait{max-width:280px}header.hero{padding:54px 0 50px}}
@@ -141,7 +140,7 @@
           <a class="link" href="#podcasts">Where to hear me →</a>
         </div>
       </div>
-      <div class="portrait"></div>
+      <img class="portrait" src="sean.jpg.png" alt="Sean Patrick Phelps">
     </div>
     <div class="facts">
       <span><b>1,000+</b> first-time founders trained</span>
