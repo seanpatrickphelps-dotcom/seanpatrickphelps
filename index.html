@@ -83,11 +83,19 @@
   .book .status{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--slate);margin-top:8px}
   @media(max-width:760px){.book .grid{grid-template-columns:1fr;gap:36px}.cover{max-width:210px}}
 
-  .shows{margin-top:30px;border-top:1px solid var(--line)}
-  .show{display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding:18px 0;border-bottom:1px solid var(--line)}
-  .show .nm{font-family:'Fraunces',serif;font-weight:500;font-size:20px}
-  .show:hover .nm{color:var(--glacier)}
-  .show .role{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate2);white-space:nowrap}
+  .episodes{margin-top:30px;border-top:1px solid var(--line)}
+  .episode{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 0;border-bottom:1px solid var(--line);transition:padding .18s}
+  .episode[href]:hover{padding-left:7px}
+  .episode .ep-main{min-width:0}
+  .episode .ep-title{font-family:'Fraunces',serif;font-weight:500;font-size:19px;line-height:1.25}
+  .episode[href]:hover .ep-title{color:var(--glacier)}
+  .episode .ep-show{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate2);margin-top:5px}
+  .episode .ep-listen{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--zion);white-space:nowrap}
+  .episode .ep-soon{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:18px;color:var(--slate2)}
+  .listen-on{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:26px}
+  .listen-on .lbl{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--slate2)}
+  .plat{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--night);border-radius:100px;padding:9px 18px;font-weight:600;font-size:14px;transition:.2s}
+  .plat:hover{background:var(--night);color:var(--snow)}
   .hostline{margin-top:28px;font-size:17px;color:var(--slate)}
 
   .list{background:var(--night);color:var(--snow);text-align:center}
@@ -197,16 +205,57 @@
   <div class="narrow">
     <div class="kicker">Podcasts</div>
     <h2 class="sh">Where to hear me</h2>
-    <p class="body">I don't host a show of my own — I visit them. Recent and ongoing conversations on building, investing, and helping young people find their footing:</p>
-    <div class="shows">
-      <!-- TODO: set each href to the episode/show link -->
-      <a class="show" href="#" target="_blank"><span class="nm">The Edge of Excellence</span><span class="role">Host &amp; Guest</span></a>
-      <a class="show" href="#" target="_blank"><span class="nm">The Accredited Investor</span><span class="role">Guest</span></a>
-      <a class="show" href="#" target="_blank"><span class="nm">The Way to College</span><span class="role">Guest</span></a>
-      <a class="show" href="#" target="_blank"><span class="nm">Tim Stating the Obvious</span><span class="role">Guest</span></a>
-      <a class="show" href="#" target="_blank"><span class="nm">Coffee with Jon</span><span class="role">Guest</span></a>
-      <div class="show"><span class="nm" style="color:var(--slate2);font-style:italic;font-weight:400">More coming soon</span><span class="role"></span></div>
+    <p class="body">I guest-host <strong>The Edge of Excellence</strong> and join other shows about building, investing, and helping young people find their footing. A few conversations worth a listen:</p>
+    <div class="episodes">
+      <!--
+        TO ADD MORE EPISODES, copy one <a> block and fill in:
+          href  = the episode link   title = the conversation   show = show name · your role
+        For more Edge of Excellence episodes, find them at https://collegeworks.com/podcast/
+        (each is listed with its number; click "Go to podcast" and copy the URL).
+      -->
+      <a class="episode" href="https://collegeworks.com/podcasts/129-sean-phelps-balancing-act-entrepreneurship-life/" target="_blank" rel="noopener">
+        <div class="ep-main">
+          <div class="ep-title">Balancing Act: Entrepreneurship &amp; Life</div>
+          <div class="ep-show">The Edge of Excellence · Ep. 129 · Featured guest</div>
+        </div>
+        <span class="ep-listen">Listen →</span>
+      </a>
+      <a class="episode" href="https://collegeworks.com/podcasts/jaime-rogozinski-the-new-frontier-of-finance-and-friendship/" target="_blank" rel="noopener">
+        <div class="ep-main">
+          <div class="ep-title">Jaime Rogozinski — The New Frontier of Finance &amp; Friendship</div>
+          <div class="ep-show">The Edge of Excellence · Ep. 164 · Guest host</div>
+        </div>
+        <span class="ep-listen">Listen →</span>
+      </a>
+      <a class="episode" href="https://collegeworks.com/podcasts/keaton-petite-from-chaos-to-clarity-mastering-productivity-in-a-digital-world/" target="_blank" rel="noopener">
+        <div class="ep-main">
+          <div class="ep-title">Keaton Petite — From Chaos to Clarity</div>
+          <div class="ep-show">The Edge of Excellence · Ep. 157 · Guest host</div>
+        </div>
+        <span class="ep-listen">Listen →</span>
+      </a>
+      <a class="episode" href="https://podcasts.apple.com/us/podcast/149-r-t-custer-leading-the-way-unleashing-your/id1554338077?i=1000702658858" target="_blank" rel="noopener">
+        <div class="ep-main">
+          <div class="ep-title">R.T. Custer — Leading the Way</div>
+          <div class="ep-show">The Edge of Excellence · Ep. 149 · Guest host</div>
+        </div>
+        <span class="ep-listen">Listen →</span>
+      </a>
+      <a class="episode" href="https://podcasts.apple.com/us/podcast/145-eric-rose-brave-new-ventures-habits-that-redefine/id1554338077?i=1000698741722" target="_blank" rel="noopener">
+        <div class="ep-main">
+          <div class="ep-title">Eric Rose — Habits That Redefine</div>
+          <div class="ep-show">The Edge of Excellence · Ep. 145 · Guest host</div>
+        </div>
+        <span class="ep-listen">Listen →</span>
+      </a>
     </div>
+    <div class="listen-on">
+      <span class="lbl">Hear every episode:</span>
+      <a class="plat" href="https://podcasts.apple.com/us/podcast/the-edge-of-excellence-podcast/id1554338077" target="_blank" rel="noopener">Apple Podcasts</a>
+      <a class="plat" href="https://open.spotify.com/show/0DR3gnaTqg0a1mclQQLiIl" target="_blank" rel="noopener">Spotify</a>
+    </div>
+    <p class="body" style="font-size:15px;margin-top:22px">Also a guest on <em>The Accredited Investor</em>, <em>The Way to College</em>, <em>Tim Stating the Obvious</em>, and <em>Coffee with Jon</em> — links coming soon.</p>
+    <p style="margin-top:14px"><a class="link" href="podcasts.html">See all episodes →</a></p>
     <p class="hostline">Hosting a podcast? I'd be glad to come on and talk shop. <a class="link" href="mailto:hello@seanpatrickphelps.com?subject=Podcast%20invitation">Get in touch →</a></p>
   </div>
 </section>
