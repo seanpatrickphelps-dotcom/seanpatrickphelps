@@ -13,7 +13,7 @@ const SB = process.env.SUPABASE_URL;
 const SB_KEY = process.env.SUPABASE_SERVICE_KEY;
 const ANTHROPIC = process.env.ANTHROPIC_API_KEY;
 const RESEND = process.env.RESEND_API_KEY;
-const FROM = process.env.COACH_FROM_EMAIL || "Sean's Coach <onboarding@resend.dev>";
+const FROM = process.env.COACH_FROM_EMAIL || "Sean's Coach <coach@seanpatrickphelps.com>";
 const APP_URL = process.env.APP_URL || "https://seanpatrickphelps.com";
 const MODEL = "claude-sonnet-4-6"; // swap if you prefer a cheaper/faster model
 
