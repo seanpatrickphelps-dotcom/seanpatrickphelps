@@ -1,5 +1,7 @@
 // /api/coach-chat.js — a check-in turn. Stores the user's message, asks Claude for a coach
-// reply using the goal + recent history, stores and returns the reply.
+// reply using the goal + current plan + recent history, stores and returns the reply.
+import { chatSystemPrompt } from "../lib/coach-kb.js";
+
 const SB = process.env.SUPABASE_URL;
 const SB_KEY = process.env.SUPABASE_SERVICE_KEY;
 const ANTHROPIC = process.env.ANTHROPIC_API_KEY;
@@ -16,7 +18,19 @@ async function sb(path, { method = "GET", body } = {}) {
   return t ? JSON.parse(t) : null;
 }
 
-const CHAT_SYSTEM = `You are an accountability coach in the voice of Sean Patrick Phelps: warm but direct, practical, never preachy. Your stance is "us vs. the goal — not me vs. you." Keep replies short (2-5 sentences). Acknowledge what they did, be honest about what's missing, and end with ONE focused question or one concrete next step. No filler, no bullet lists unless they ask.`;
+// Render the stored plan (JSON object or JSON string) into context the coach can use.
+function planSummary(plan) {
+  if (!plan) return "Current plan: none on file yet.";
+  let p = plan;
+  if (typeof p === "string") { try { p = JSON.parse(p); } catch { return `Current plan: ${plan}`; } }
+  const lines = ["This week's plan they committed to:"];
+  if (p.focus) lines.push(`Focus: ${p.focus}`);
+  if (Array.isArray(p.actions) && p.actions.length) {
+    lines.push("Actions:");
+    for (const a of p.actions) lines.push(`- ${a.task}${a.why ? ` (${a.why})` : ""}`);
+  }
+  return lines.length > 1 ? lines.join("\n") : "Current plan: on file but no details.";
+}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ ok: false, error: "Method not allowed" });
@@ -31,6 +45,10 @@ export default async function handler(req, res) {
     if (!users || !users.length) return res.status(404).json({ ok: false, error: "Not found" });
     const u = users[0];
 
+    // current plan they committed to (latest), so the check-in diagnostic has something to work with
+    const plans = await sb(`coach_plans?user_id=eq.${u.id}&order=created_at.desc&limit=1&select=plan,week_number`);
+    const currentPlan = plans && plans.length ? plans[0].plan : null;
+
     // last 20 messages for context
     const prior = await sb(`coach_messages?user_id=eq.${u.id}&order=created_at.desc&limit=20&select=role,content`);
     const history = (prior || []).reverse().map((m) => ({ role: m.role === "coach" ? "assistant" : "user", content: m.content }));
@@ -39,7 +57,14 @@ export default async function handler(req, res) {
     // store the user's message
     await sb("coach_messages", { method: "POST", body: { user_id: u.id, role: "user", content: message, channel: "page" } });
 
-    const ctx = `${CHAT_SYSTEM}\n\nTheir goal: ${u.goal}\nContext they gave: ${u.context || "—"}\nCurrent week: ${u.week_number}`;
+    const ctx = `${chatSystemPrompt()}
+
+This person's current goal and plan. Use it to run the check-in:
+Goal: ${u.goal}
+Context they gave: ${u.context || "—"}
+Current week: ${u.week_number}
+${planSummary(currentPlan)}`;
+
     const r = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: { "x-api-key": ANTHROPIC, "anthropic-version": "2023-06-01", "content-type": "application/json" },
@@ -50,7 +75,6 @@ export default async function handler(req, res) {
     const reply = (d.content || []).filter((x) => x.type === "text").map((x) => x.text).join("\n").trim();
 
     await sb("coach_messages", { method: "POST", body: { user_id: u.id, role: "coach", content: reply, channel: "page" } });
-
     return res.status(200).json({ ok: true, reply });
   } catch (e) {
     console.error(e);
