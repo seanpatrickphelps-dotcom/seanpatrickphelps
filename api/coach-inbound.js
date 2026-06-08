@@ -23,16 +23,23 @@ async function sb(path, { method = "GET", body } = {}) {
   return t ? JSON.parse(t) : null;
 }
 
-// Render the stored plan (JSON object or JSON string) into context the coach can use.
-function planSummary(plan) {
+// Render the stored plan + progress into context the coach can use.
+function planSummary(plan, progress) {
   if (!plan) return "Current plan: none on file yet.";
   let p = plan;
   if (typeof p === "string") { try { p = JSON.parse(p); } catch { return `Current plan: ${plan}`; } }
+  const prog = progress && typeof progress === "object" ? progress : {};
   const lines = ["This week's plan they committed to:"];
   if (p.focus) lines.push(`Focus: ${p.focus}`);
   if (Array.isArray(p.actions) && p.actions.length) {
-    lines.push("Actions:");
-    for (const a of p.actions) lines.push(`- ${a.task}${a.why ? ` (${a.why})` : ""}`);
+    let done = 0;
+    lines.push("Actions (a checked box means they already marked it done on their coach page):");
+    p.actions.forEach((a, i) => {
+      const isDone = prog[String(i)] === true;
+      if (isDone) done++;
+      lines.push(`- [${isDone ? "x" : " "}] ${a.task}${a.why ? ` (${a.why})` : ""}`);
+    });
+    lines.push(`Progress so far: ${done} of ${p.actions.length} done. Use this; do not ask about tasks they have already checked off.`);
   }
   return lines.length > 1 ? lines.join("\n") : "Current plan: on file but no details.";
 }
@@ -99,8 +106,9 @@ export default async function handler(req, res) {
     const u = users[0];
 
     // Same context the page chat uses: goal, current plan, recent history.
-    const plans = await sb(`coach_plans?user_id=eq.${u.id}&order=created_at.desc&limit=1&select=plan,week_number`);
+    const plans = await sb(`coach_plans?user_id=eq.${u.id}&order=created_at.desc&limit=1&select=plan,week_number,progress`);
     const currentPlan = plans && plans.length ? plans[0].plan : null;
+    const currentProgress = plans && plans.length ? plans[0].progress : {};
     const prior = await sb(`coach_messages?user_id=eq.${u.id}&order=created_at.desc&limit=20&select=role,content`);
     const history = (prior || []).reverse().map((m) => ({ role: m.role === "coach" ? "assistant" : "user", content: m.content }));
     history.push({ role: "user", content: message });
@@ -113,7 +121,7 @@ This person's current goal and plan. Use it to run the check-in:
 Goal: ${u.goal}
 Context they gave: ${u.context || "—"}
 Current week: ${u.week_number}
-${planSummary(currentPlan)}`;
+${planSummary(currentPlan, currentProgress)}`;
 
     const ar = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
