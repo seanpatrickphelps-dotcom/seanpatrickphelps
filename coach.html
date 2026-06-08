@@ -187,7 +187,13 @@ async function startPlan(){
 
 /* ---------- DASHBOARD ---------- */
 let STATE=null;
-const progKey=(i)=>`coachdone:${TOKEN}:w${STATE.week}:${i}`;
+let PROGRESS={};
+async function saveProgress(i,done){
+  try{
+    await fetch("/api/coach-progress",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({t:TOKEN,index:i,done})});
+    return true;
+  }catch(e){ return false; }
+}
 
 async function loadDash(){
   try{
@@ -205,23 +211,35 @@ async function loadDash(){
 
 function renderPlan(plan){
   if(!plan){ $("planpanel").classList.add("hidden"); return; }
+  PROGRESS=(STATE&&STATE.progress&&typeof STATE.progress==="object")?STATE.progress:{};
   $("d-focus").textContent=plan.focus||"";
   const wrap=$("d-actions"); wrap.innerHTML="";
   const acts=plan.actions||[];
   acts.forEach((a,i)=>{
-    const done=localStorage.getItem(progKey(i))==="1";
+    const done=PROGRESS[String(i)]===true;
     const el=document.createElement("div");
     el.className="act"+(done?" on":"");
     el.innerHTML=`<div class="box"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
       <div><span class="tk">${esc(a.task)}</span><span class="wy">${esc(a.why||"")}</span></div>`;
-    el.addEventListener("click",()=>{ const now=!el.classList.contains("on"); el.classList.toggle("on",now); localStorage.setItem(progKey(i),now?"1":"0"); updateProg(acts.length); });
+    el.addEventListener("click",async ()=>{
+      const now=!el.classList.contains("on");
+      el.classList.toggle("on",now);
+      if(now) PROGRESS[String(i)]=true; else delete PROGRESS[String(i)];
+      updateProg(acts.length);
+      const ok=await saveProgress(i,now);
+      if(!ok){ // revert if the save failed
+        el.classList.toggle("on",!now);
+        if(now) delete PROGRESS[String(i)]; else PROGRESS[String(i)]=true;
+        updateProg(acts.length);
+      }
+    });
     wrap.appendChild(el);
   });
   if(plan.reflection){ $("d-reflect").innerHTML="<strong>Reflect:</strong> "+esc(plan.reflection); $("d-reflect").classList.remove("hidden"); }
   updateProg(acts.length);
 }
 function updateProg(total){
-  let done=0; for(let i=0;i<total;i++){ if(localStorage.getItem(progKey(i))==="1") done++; }
+  let done=0; for(let i=0;i<total;i++){ if(PROGRESS[String(i)]===true) done++; }
   $("d-prog").firstChild.textContent=`${done} of ${total} done `;
   $("d-bar").style.width=total?(done/total*100)+"%":"0";
 }
