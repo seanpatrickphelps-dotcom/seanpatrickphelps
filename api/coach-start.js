@@ -14,6 +14,7 @@
 // Requires /lib/guardrails.js and the hit_rate_limit function from rate_limits.sql.
 
 import { validateIntake, getIp, checkRateLimit } from "../lib/guardrails.js";
+import { planSystemPrompt } from "../lib/coach-kb.js";
 
 const SB = process.env.SUPABASE_URL;
 const SB_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -48,14 +49,9 @@ async function claude(system, userMsg, max_tokens = 900) {
   return (d.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
 }
 
-const PLAN_SYSTEM = `You are an accountability coach in the voice of Sean Patrick Phelps: warm but no-nonsense, practical, and grounded. Your stance is "us vs. the goal — not me vs. you." You help people make consistent weekly progress.
-Return ONLY valid JSON (no markdown, no code fences) with exactly this shape:
-{"greeting":"one short personal line","focus":"the single theme for this week, one sentence","actions":[{"task":"concrete action","why":"one line on why it matters"}],"reflection":"one question worth journaling on","closing":"one encouraging line"}
-Give 3-5 actions that are realistic for ONE week. Be specific, not generic.`;
-
 async function generatePlan({ goal, context, timeframe, weekNumber }) {
   const msg = `Goal: ${goal}\nContext: ${context || "—"}\nTimeframe: ${timeframe || "—"}\nThis is week ${weekNumber}.\n\nWrite this week's plan now.`;
-  const raw = await claude(PLAN_SYSTEM, msg);
+  const raw = await claude(planSystemPrompt({ weekNumber }), msg);
   const json = raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1);
   return JSON.parse(json);
 }
