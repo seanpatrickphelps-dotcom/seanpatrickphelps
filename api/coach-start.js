@@ -56,7 +56,7 @@ async function generatePlan({ goal, context, timeframe, weekNumber }) {
   return JSON.parse(json);
 }
 
-function planEmailHtml({ name, plan, link, weekNumber }) {
+function planEmailHtml({ name, plan, link, icsLink, weekNumber }) {
   const actions = (plan.actions || []).map((a) =>
     `<tr><td style="padding:0 0 14px 0;vertical-align:top;width:26px"><div style="width:9px;height:9px;border-radius:50%;background:#347f9e;margin-top:6px"></div></td><td style="padding:0 0 14px 0"><strong style="color:#17211F">${esc(a.task)}</strong><br><span style="color:#5C636B;font-size:14px">${esc(a.why || "")}</span></td></tr>`
   ).join("");
@@ -73,6 +73,7 @@ function planEmailHtml({ name, plan, link, weekNumber }) {
       ${plan.reflection ? `<div style="background:#F3F1EA;border-left:3px solid #4E7B53;padding:12px 16px;border-radius:6px;margin:14px 0;color:#26302e;font-size:14.5px"><strong>Reflect:</strong> ${esc(plan.reflection)}</div>` : ""}
       <p style="color:#26302e;font-size:15px;margin:18px 0 22px">${esc(plan.closing || "Let's go. One week at a time.")}</p>
       <a href="${esc(link)}" style="display:inline-block;background:#B0542F;color:#fff;text-decoration:none;font-weight:600;padding:13px 26px;border-radius:6px;font-size:15px">Open your coach page →</a>
+      ${icsLink ? `<a href="${esc(icsLink)}" style="display:inline-block;margin:10px 0 0 10px;background:#fff;color:#3E97BC;text-decoration:none;font-weight:600;padding:13px 22px;border-radius:6px;font-size:15px;border:1px solid #3E97BC">Add a daily reminder</a>` : ""}
       <p style="color:#787e84;font-size:12.5px;margin:22px 0 0">Reply to this email anytime to check in, or use your coach page above. — Sean</p>
     </div>
   </div></div>`;
@@ -115,7 +116,7 @@ export default async function handler(req, res) {
     await sb("coach_plans", { method: "POST", body: { user_id: user.id, week_number: 1, plan } });
 
     const link = `${APP_URL}/coach.html?t=${tok}`;
-    await sendEmail(email, `Week 1: ${goal.slice(0, 60)}`, planEmailHtml({ name, plan, link, weekNumber: 1 }));
+    await sendEmail(email, `Week 1: ${goal.slice(0, 60)}`, planEmailHtml({ name, plan, link, icsLink: `${APP_URL}/api/coach-ics?t=${tok}`, weekNumber: 1 }));
 
     return res.status(200).json({ ok: true, token: tok });
   } catch (e) {
