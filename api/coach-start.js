@@ -8,6 +8,12 @@
 //   RESEND_API_KEY         — your Resend key (full access)
 //   COACH_FROM_EMAIL       — e.g. "Sean's Coach <coach@seanpatrickphelps.com>" (default: onboarding@resend.dev)
 //   APP_URL                — e.g. https://seanpatrickphelps.com (default)
+//
+// Guardrails: input validation + per-email/per-IP rate limiting run BEFORE the
+// Claude call, so blocked or invalid requests never cost an API call.
+// Requires /lib/guardrails.js and the hit_rate_limit function from rate_limits.sql.
+
+import { validateIntake, getIp, checkRateLimit } from "../lib/guardrails.js";
 
 const SB = process.env.SUPABASE_URL;
 const SB_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -91,13 +97,18 @@ export default async function handler(req, res) {
   try {
     let b = req.body;
     if (typeof b === "string") { try { b = JSON.parse(b); } catch { b = {}; } }
-    const name = (b.name || "").trim();
-    const email = (b.email || "").trim().toLowerCase();
-    const goal = (b.goal || "").trim();
-    const context = (b.context || "").trim();
-    const timeframe = (b.timeframe || "").trim();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !goal)
-      return res.status(400).json({ ok: false, error: "Add your email and a goal to get started." });
+
+    // 1. Validate input (format + length caps). Cheap, runs first.
+    const v = validateIntake(b);
+    if (!v.ok) return res.status(400).json({ ok: false, error: v.error });
+    const { name, email, goal, context, timeframe } = v.fields;
+
+    // 2. Rate limit by email and IP. Blocks before any billed Claude call.
+    const limit = await checkRateLimit({ url: SB, key: SB_KEY }, { email, ip: getIp(req) });
+    if (!limit.ok) {
+      res.setHeader("Retry-After", limit.retryAfterSeconds);
+      return res.status(429).json({ ok: false, error: "You've hit today's limit for new plans. Try again tomorrow." });
+    }
 
     const tok = token();
     const plan = await generatePlan({ goal, context, timeframe, weekNumber: 1 });
@@ -113,6 +124,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, token: tok });
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ ok: false, error: "Couldn't start your plan right now — try again in a moment." });
+    return res.status(500).json({ ok: false, error: "Couldn't start your plan. Please try again in a moment." });
   }
 }
