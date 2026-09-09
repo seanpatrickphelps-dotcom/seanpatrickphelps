@@ -6,7 +6,7 @@
 <title>The Training Log, Phase II</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,100;1,9..144,400,100&family=Hanken+Grotesk:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--night:#17211F;--snow:#EFEEE7;--glacier:#3E97BC;--braies:#1B948C;--teton:#4E7B53;--rust:#BC5E38;--slate:#5C636B;--line:#CFCFC7}
+:root{--night:#17211F;--snow:#EFEEE7;--glacier:#3E97BC;--braies:#1B948C;--teton:#4E7B53;--rust:#BC5E38;--slate:#5C636B;--line:#CFCFC7;--amber:#C9962B}
 *{box-sizing:border-box}
 body{margin:0;background:var(--snow);color:var(--night);font-family:'Hanken Grotesk',sans-serif;font-size:16px;-webkit-font-smoothing:antialiased}
 .serif{font-family:'Fraunces',serif;font-variation-settings:'opsz' 144,'wght' 600,'SOFT' 100}
@@ -23,36 +23,70 @@ h2{font-size:20px;margin:22px 0 8px}
 p.lead{color:var(--slate);margin:0 0 16px;line-height:1.5}
 label.f{display:block;margin:12px 0 4px}
 input,select{width:100%;padding:12px;border:1px solid var(--line);background:#fff;font:inherit;font-size:16px}
-input.n{font-family:'Space Mono';text-align:center;padding:10px 4px}
+input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;font-size:15px}
 .btn{display:inline-block;width:100%;padding:14px;border:0;background:var(--night);color:var(--snow);font-family:'Space Mono';font-size:12px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;margin-top:14px}
 .btn.rust{background:var(--rust)}.btn.ghost{background:none;border:1px solid var(--night);color:var(--night)}
 .btn.sm{width:auto;padding:8px 12px;font-size:10px;margin:0}
+.btn:disabled{opacity:.5}
 .err{color:var(--rust);margin-top:10px;min-height:20px}
+.dash{background:var(--night);color:var(--snow);padding:14px 16px;margin:0 -16px 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.dash .k{font-family:'Space Mono';font-size:8.5px;letter-spacing:.14em;color:#9BA2A6;text-transform:uppercase}
+.dash .v{font-family:'Fraunces';font-size:20px;line-height:1.1;margin-top:3px}
+.dash .v small{font-size:12px;color:#9BA2A6;font-family:'Hanken Grotesk'}
+.dash .wk{grid-column:1/-1;font-family:'Space Mono';font-size:10px;letter-spacing:.16em;color:var(--glacier);border-bottom:1px solid #33403C;padding-bottom:8px}
 .days{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
-.day{border:1px solid var(--night);padding:12px 8px;text-align:center;cursor:pointer;background:#fff}
+.day{border:1px solid var(--night);padding:12px 6px;text-align:center;cursor:pointer;background:#fff}
 .day .n{font-family:'Fraunces';font-size:34px;line-height:1}
-.day .l{font-family:'Space Mono';font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-top:6px;color:var(--slate)}
-.board{margin-top:8px}
-.row{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:10px 0;gap:10px}
-.row .nm{font-family:'Fraunces';font-variation-settings:'opsz' 32,'wght' 600,'SOFT' 100;font-size:16px}
-.row .meta{color:var(--slate);font-size:13px;margin-top:2px}
+.day .l{font-family:'Space Mono';font-size:8px;letter-spacing:.1em;text-transform:uppercase;margin-top:6px;color:var(--slate)}
+.banner{border-left:4px solid var(--rust);background:#fff;padding:12px 14px;margin-top:14px}
+.banner .mono{color:var(--rust);font-weight:700}
+.banner p{margin:6px 0 0;font-size:14px;line-height:1.45;color:var(--slate)}
+.card{background:#fff;border:1px solid var(--line);padding:14px;margin-top:10px}
+.card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card .nm{font-family:'Fraunces';font-variation-settings:'opsz' 32,'wght' 600,'SOFT' 100;font-size:17px}
+.card .big{font-family:'Fraunces';font-size:30px;line-height:1;margin-top:6px}
+.card .big small{font-size:13px;color:var(--slate);font-family:'Hanken Grotesk'}
+.card .row2{display:flex;gap:18px;margin-top:8px;flex-wrap:wrap}
+.card .kv{font-size:12px;color:var(--slate)}.card .kv b{display:block;color:var(--night);font-family:'Space Mono';font-size:12px;letter-spacing:.04em}
+.series{font-family:'Space Mono';font-size:12px;margin-top:8px;color:var(--slate)}
+.miles{display:flex;gap:4px;margin-top:10px}
+.miles span{flex:1;text-align:center;font-family:'Space Mono';font-size:10px;padding:5px 0;border:1px solid var(--line);color:var(--slate)}
+.miles span.next{background:var(--night);color:var(--snow);border-color:var(--night)}
 .tag{font-family:'Space Mono';font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 8px;white-space:nowrap}
-.ahead{background:var(--teton);color:#fff}.onpace{background:var(--glacier);color:#fff}.behind{background:var(--rust);color:#fff}.start{background:#ddd;color:var(--night)}
+.AHEAD{background:var(--teton);color:#fff}.ONPACE{background:var(--glacier);color:#fff}.TRENDINGUP{background:var(--braies);color:#fff}.HOLD{background:var(--amber);color:#fff}.REHAB{background:var(--rust);color:#fff}.BUILDING{background:#ddd;color:var(--night)}
+.lt-green{background:var(--teton);color:#fff}.lt-yellow{background:var(--amber);color:#fff}.lt-red{background:var(--rust);color:#fff}
+.ready{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:8px}
+.ready .k{font-family:'Space Mono';font-size:9px;letter-spacing:.12em;color:var(--slate);text-transform:uppercase;margin-bottom:4px}
+.prehab{background:#fff;border:1px solid var(--line);padding:14px;margin-top:14px}
+.prehab .it{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:15px}
+.prehab .it:first-of-type{border-top:0}
+.prehab input[type=checkbox]{width:22px;height:22px;margin:0}
+.scale{display:flex;gap:4px;margin-top:6px}
+.scale button{flex:1;padding:8px 0;border:1px solid var(--line);background:#fff;font-family:'Space Mono';font-size:12px;cursor:pointer}
+.scale button.on{background:var(--night);color:var(--snow);border-color:var(--night)}
+.joint{margin-top:10px}.joint .k{font-family:'Space Mono';font-size:9px;letter-spacing:.12em;color:var(--slate);text-transform:uppercase}
 .ex{border-top:2px solid var(--night);padding:14px 0 6px;margin-top:8px}
 .ex .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .ex .nm{font-family:'Fraunces';font-variation-settings:'opsz' 32,'wght' 600,'SOFT' 100;font-size:19px;line-height:1.15}
-.ex .rx{font-family:'Space Mono';font-size:13px;margin-top:4px;color:var(--night)}
-.ex .why{color:var(--slate);font-size:13px;margin-top:6px;line-height:1.45}
-.ex .last{color:var(--slate);font-size:12px;margin-top:4px;font-family:'Space Mono'}
-.sets{margin-top:10px}
-.set{display:grid;grid-template-columns:28px 1fr 1fr 1fr 44px;gap:6px;align-items:center;margin-bottom:6px}
+.lt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.lt .k{font-family:'Space Mono';font-size:9px;letter-spacing:.14em;color:var(--slate);text-transform:uppercase}
+.lt .v{font-family:'Space Mono';font-size:13px;margin-top:3px;line-height:1.4}
+.lt .v.today{font-size:16px;font-weight:700}
+.why{display:none;color:var(--slate);font-size:13px;margin-top:8px;line-height:1.45;border-left:3px solid var(--glacier);padding-left:10px}
+.why.on{display:block}
+.whyb{background:none;border:1px solid var(--line);font-family:'Space Mono';font-size:9px;letter-spacing:.14em;padding:4px 8px;cursor:pointer;color:var(--slate);margin-top:6px}
+.todaynote{font-size:13px;color:var(--rust);margin-top:6px;font-weight:600}
+.hd,.set{display:grid;grid-template-columns:34px 1fr 1fr 1fr 1fr;gap:6px;align-items:center;margin-top:6px}
+.hd{font-family:'Space Mono';font-size:9px;letter-spacing:.12em;color:var(--slate);text-transform:uppercase;margin-top:10px}
 .set .k{font-family:'Space Mono';font-size:11px;color:var(--slate)}
-.set .pain{width:44px;height:42px;border:1px solid var(--line);background:#fff;font-family:'Space Mono';font-size:9px;letter-spacing:.06em;cursor:pointer;color:var(--slate)}
-.set .pain.on{background:var(--rust);color:#fff;border-color:var(--rust)}
-.set input.saved{border-color:var(--teton);background:#f3f7f3}
-.hd{display:grid;grid-template-columns:28px 1fr 1fr 1fr 44px;gap:6px;font-family:'Space Mono';font-size:9px;letter-spacing:.12em;color:var(--slate);text-transform:uppercase;margin-top:8px}
+.set.heavy .k{color:var(--rust);font-weight:700}
+.set input.saved,.set select.saved{border-color:var(--teton);background:#f3f7f3}
+.set.saved .k:after{content:" ✓";color:var(--teton)}
 .readout{background:var(--night);color:var(--snow);padding:20px;margin-top:16px;line-height:1.55;font-size:17px}
 .readout .serif{font-size:22px;margin-bottom:8px;display:block}
+.nrow{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:10px 0;gap:10px}
+.nrow .nm{font-family:'Fraunces';font-variation-settings:'opsz' 32,'wght' 600,'SOFT' 100;font-size:16px}
+.nrow .meta{color:var(--slate);font-size:13px;margin-top:2px}
 .goal-edit{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:8px}
 .small{font-size:12px;color:var(--slate)}
 .status{position:fixed;bottom:0;left:0;right:0;background:var(--night);color:#9BA2A6;font-family:'Space Mono';font-size:10px;letter-spacing:.12em;padding:8px 16px;text-transform:uppercase}
@@ -67,7 +101,7 @@ input.n{font-family:'Space Mono';text-align:center;padding:10px 4px}
 
 <section id="sAuth" class="screen on">
   <h1 class="serif">Log the lift.<br>Earn the next one.</h1>
-  <p class="lead">Every set you log decides next session's load and reps, and every session gets measured against the number you set for the end of the block. Sign in, or make an account and the Phase II plan is yours to run.</p>
+  <p class="lead">Completing the prescription with reps in reserve, symmetry, and no pain earns progression. Poor recovery earns restraint. Pain earns modification. Sign in, or make an account and the Phase II plan is yours to run.</p>
   <label class="f mono">Email</label><input id="email" type="email" autocomplete="email">
   <label class="f mono">Password</label><input id="pass" type="password" autocomplete="current-password">
   <button class="btn" id="login">Sign in</button>
@@ -76,20 +110,33 @@ input.n{font-family:'Space Mono';text-align:center;padding:10px 4px}
 </section>
 
 <section id="sHome" class="screen">
+  <div class="dash" id="dash"></div>
   <h1 class="serif">Pick the day.</h1>
-  <p class="lead">Five workouts, one rotation. The number under each is where the last session left it.</p>
   <div class="days" id="days"></div>
+  <div id="deloadBanner"></div>
   <h2 class="serif">The scoreboard.</h2>
-  <p class="lead">Every goal you set, measured against a straight line from where you started to the day it is due.</p>
-  <div class="board" id="board"></div>
+  <p class="lead">Trend on the last four exposures, the next milestone, and what you have actually lifted versus what the math estimates.</p>
+  <div id="board"></div>
 </section>
 
 <section id="sWork" class="screen">
   <div class="mono" id="wDayLabel"></div>
   <h1 class="serif" id="wTitle"></h1>
-  <label class="f mono">Bodyweight today</label>
-  <div style="display:flex;gap:8px;align-items:center"><input class="n" id="bw" type="number" step="0.1" inputmode="decimal" style="max-width:140px"><button class="btn sm" id="startBtn">Start session</button><span class="small" id="sessNote"></span></div>
+  <div id="startBox">
+    <p class="lead">Four inputs, then the day adjusts to how you actually showed up. The app recommends, you decide.</p>
+    <div class="ready">
+      <div><div class="k">Bodyweight</div><input class="n" id="bw" type="number" step="0.1" inputmode="decimal"></div>
+      <div><div class="k">Sleep 1-5</div><select class="n" id="sleep"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+      <div><div class="k">Energy 1-5</div><select class="n" id="energy"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+      <div><div class="k">Soreness 1-5</div><select class="n" id="sore"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+    </div>
+    <div id="deloadOpt"></div>
+    <button class="btn" id="startBtn">Start session</button>
+  </div>
+  <div id="readyBox"></div>
+  <div id="prehabBox"></div>
   <div id="exList"></div>
+  <div id="afterBox"></div>
   <button class="btn rust" id="finishBtn" style="display:none">Finish and get the readout</button>
   <button class="btn ghost" id="backBtn">Back</button>
 </section>
@@ -105,7 +152,12 @@ input.n{font-family:'Space Mono';text-align:center;padding:10px 4px}
 
 <section id="sGoals" class="screen">
   <h1 class="serif">Set the numbers.</h1>
-  <p class="lead">Starting load is where the pace line begins, the goal is where it ends, and the date is when. Blank goal means the exercise just progresses without a scoreboard line. Increment is the smallest jump the app will ever suggest.</p>
+  <div class="card"><div class="nm">Body</div><div class="goal-edit" style="grid-template-columns:1fr 1fr 1fr">
+    <div><div class="mono" style="font-size:9px">Start weight</div><input class="n p-start_bodyweight" type="number" step="0.1"></div>
+    <div><div class="mono" style="font-size:9px">Goal weight</div><input class="n p-goal_bodyweight" type="number" step="0.1"></div>
+    <div><div class="mono" style="font-size:9px">Goal date</div><input class="p-goal_date" type="date"></div></div>
+    <button class="btn sm" id="saveProfile" style="margin-top:8px">Save</button></div>
+  <p class="lead" style="margin-top:16px">Per exercise: starting load is where the trend begins, the goal is where it ends, the date is when. Increment is the smallest jump the app will ever suggest.</p>
   <div id="goalList"></div>
   <button class="btn ghost" id="goalsBack">Back</button>
 </section>
@@ -118,18 +170,21 @@ const API = "/api";
 const DAYS = {1:"Bench Strength",2:"Heavy Pull",3:"Posterior Chain",4:"Bench Volume",5:"Athletic Pull"};
 const DAYNAME = {1:"Monday",2:"Tuesday",3:"Wednesday",4:"Thursday",5:"Friday"};
 let token = localStorage.getItem("train_token") || null;
-let state = { day:null, session_id:null, exercises:[], suggestions:[] };
+let state = {};
 const $ = (id) => document.getElementById(id);
 const show = (id) => { document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on")); $(id).classList.add("on"); window.scrollTo(0,0); };
 const say = (t) => { $("status").textContent = t; };
+const fmt = (v) => v==null ? "" : v;
+const cls = (s) => (s||"").replace(/\s/g,"");
 
 async function api(path, opts={}) {
-  const r = await fetch(API + path, { ...opts, headers: { "Content-Type":"application/json", ...(token ? {Authorization:"Bearer "+token} : {}), ...(opts.headers||{}) } });
+  const r = await fetch(API + path, { ...opts, headers: { "Content-Type":"application/json", ...(token ? {Authorization:"Bearer "+token} : {}) } });
   const data = await r.json().catch(()=>({}));
   if (r.status === 401) { signOut(); throw new Error(data.error || "Sign in again."); }
   if (!r.ok) throw new Error(data.error || "Request failed.");
   return data;
 }
+const post = (body) => api("/train-log", { method:"POST", body: JSON.stringify(body) });
 
 // ---------- auth ----------
 async function auth(action) {
@@ -145,17 +200,34 @@ function signOut(){ token=null; localStorage.removeItem("train_token"); $("btnOu
 $("login").onclick = () => auth("login"); $("signup").onclick = () => auth("signup"); $("btnOut").onclick = signOut;
 
 // ---------- home ----------
+function dashHtml(d) {
+  const b = d.bench, p = d.pullups, u = d.pushups, r = d.rdl;
+  const kv = (k, v) => `<div><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  const arrow = (c, unit="") => c ? `${fmt(c.start)} <small>→</small> ${fmt(c.now)} <small>→ ${fmt(c.goal)}${unit}</small>` : "<small>set a goal</small>";
+  return `<div class="wk">PHASE II · WEEK ${d.week} OF ${d.weeks}</div>` +
+    kv("Body", `${fmt(d.body.start)||"?"} <small>→</small> ${fmt(d.body.now)||"?"} <small>→ ${fmt(d.body.goal)}</small>`) +
+    kv("Bench e1RM", arrow(b)) + kv("RDL e1RM", arrow(r)) + kv("Pull-ups", arrow(p)) + kv("Push-ups", arrow(u)) +
+    kv("Pain today", d.pain_today==null ? "<small>no session</small>" : `${d.pain_today} <small>/ 5</small>`);
+}
+function cardHtml(c) {
+  const series = c.series?.length ? `<div class="series">Last ${c.series.length}: ${c.series.join(" → ")}</div>` : `<div class="series">No exposures yet</div>`;
+  const miles = c.milestones?.length ? `<div class="miles">${c.milestones.map(m=>`<span class="${m===c.next_milestone?"next":""}">${m}</span>`).join("")}</div>` : "";
+  const chg = c.change_pct!=null && c.exposures>1 ? `<span class="kv"><b>${c.change_pct>0?"+":""}${c.change_pct}%</b>this block</span>` : "";
+  return `<div class="card"><div class="top"><div><div class="nm">${c.name}</div><div class="big">${fmt(c.now_label||c.now)} <small>${c.unit}</small></div></div><span class="tag ${cls(c.status)}">${c.status}</span></div>
+    <div class="row2">${chg}${c.best_label?`<span class="kv"><b>${c.best_label}</b>best actual</span>`:""}${c.next_milestone?`<span class="kv"><b>${c.next_milestone}</b>next milestone</span>`:""}<span class="kv"><b>${fmt(c.goal_label||c.goal)}</b>goal${c.goal_date?" by "+c.goal_date:""}</span>${c.projected?`<span class="kv"><b>${c.projected}</b>projected</span>`:""}</div>
+    ${series}${miles}</div>`;
+}
 async function loadHome() {
   say("Loading");
   const d = await api("/train-next?board=1");
+  state.profile = d.profile; state.deload = d.deload; state.exercises = d.exercises;
   $("who").textContent = d.user.email; $("btnOut").style.display = "inline-block"; $("btnGoals").style.display = "inline-block";
+  $("dash").innerHTML = dashHtml(d.dashboard);
   $("days").innerHTML = Object.keys(DAYS).map(k => `<div class="day" data-day="${k}"><div class="n serif">${k}</div><div class="l">${DAYS[k]}</div></div>`).join("");
   document.querySelectorAll(".day").forEach(el => el.onclick = () => openDay(Number(el.dataset.day)));
-  $("board").innerHTML = d.suggestions.filter(s=>s.pace).map(s => {
-    const ex = d.exercises.find(e=>e.id===s.exercise_id); const p = s.pace;
-    return `<div class="row"><div><div class="nm">${ex.name}</div><div class="meta">${p.now} now, ${p.expected} expected, ${p.goal} goal ${p.unit}. ${p.weeks_left} weeks left.</div></div><span class="tag ${p.status.replace(" ","")}">${p.status}</span></div>`;
-  }).join("") || `<div class="small">No goals set yet. Tap Goals to add one.</div>`;
-  if (d.last_bodyweight) $("bw").value = d.last_bodyweight.bodyweight;
+  $("deloadBanner").innerHTML = d.deload.recommended ? `<div class="banner"><span class="mono">Deload recommended</span><p>${d.deload.reasons.join(". ")}. For one week: primary lifts about 90 percent, working sets cut by a third, accessories cut in half, nothing to failure. Tick "deload" when you start a session to apply it. Your call.</p></div>` : "";
+  $("board").innerHTML = d.cards.map(cardHtml).join("") || `<div class="small">No goals set yet. Tap Goals.</div>`;
+  if (d.last_bodyweight) $("bw").value = d.last_bodyweight;
   show("sHome"); say("Ready");
 }
 
@@ -163,64 +235,91 @@ async function loadHome() {
 async function openDay(day) {
   say("Loading day " + day);
   const d = await api("/train-next?day=" + day);
-  state = { day, session_id: d.open_session ? d.open_session.id : null, exercises: d.exercises, suggestions: d.suggestions };
+  state = { ...state, day, session: d.open_session, exercises: d.exercises, suggestions: d.suggestions, prehab: d.prehab, readiness: d.readiness, deload: d.deload };
   $("wDayLabel").textContent = `Workout ${day} · ${DAYNAME[day]}`; $("wTitle").textContent = DAYS[day];
-  $("sessNote").textContent = state.session_id ? "Resumed today's open session." : "";
-  renderExercises(); show("sWork"); say("Ready");
+  $("deloadOpt").innerHTML = d.deload.recommended ? `<label style="display:flex;gap:10px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" id="deloadChk" style="width:22px;height:22px;margin:0">Apply the recommended deload today</label>` : "";
+  renderWork(); show("sWork"); say("Ready");
 }
-function fmt(v){ return v==null ? "" : v; }
-function renderExercises() {
-  const started = !!state.session_id;
-  $("exList").innerHTML = state.exercises.map(ex => {
-    const s = state.suggestions.find(x=>x.exercise_id===ex.id) || {};
-    const isCarry = ex.rule==="carry", isBw = ex.rule==="bodyweight";
-    const rx = isBw ? `${ex.sets} x ${fmt(s.reps)} reps` : isCarry ? `${fmt(s.load)} lb x ${fmt(s.seconds)} sec, ${ex.sets} sets` : `${fmt(s.load)} x ${fmt(s.reps)}, ${ex.sets} sets`;
-    const last = s.last ? `Last ${s.last.date}: ` + s.last.sets.map(t=>`${t.load??"bw"}x${t.reps??(t.seconds+"s")}${t.pain_flag?"!":""}`).join(" ") : "No history yet";
-    const pace = s.pace ? `<span class="tag ${s.pace.status.replace(" ","")}">${s.pace.status}</span>` : "";
-    const rows = Array.from({length:ex.sets}, (_,i)=>i+1).map(n => `
-      <div class="set" data-ex="${ex.id}" data-set="${n}">
-        <div class="k">${n}</div>
-        ${isBw ? `<div></div>` : `<input class="n load" type="number" step="0.5" inputmode="decimal" placeholder="${fmt(s.load)}" value="${fmt(s.load)}" ${started?"":"disabled"}>`}
-        ${isCarry ? `<input class="n secs" type="number" inputmode="numeric" placeholder="${fmt(s.seconds)}" ${started?"":"disabled"}>` : `<input class="n reps" type="number" inputmode="numeric" placeholder="${fmt(s.reps)}" ${started?"":"disabled"}>`}
-        <input class="n rir" type="number" inputmode="numeric" placeholder="RIR" min="0" max="5" ${started?"":"disabled"}>
-        <button class="pain" ${started?"":"disabled"}>PAIN</button>
-      </div>`).join("");
-    return `<div class="ex"><div class="top"><div><div class="nm">${ex.name}</div><div class="rx">${rx}</div></div>${pace}</div>
-      <div class="why">${s.why||""}${ex.note?` <span class="small">${ex.note}</span>`:""}</div><div class="last">${last}</div>
-      <div class="hd"><div></div><div>${isBw?"":"Load"}</div><div>${isCarry?"Seconds":"Reps"}</div><div>RIR</div><div></div></div>
-      <div class="sets">${rows}</div></div>`;
-  }).join("");
+function scaleHtml(name, val) {
+  return `<div class="scale" data-scale="${name}">${[0,1,2,3,4,5].map(n=>`<button type="button" class="${val==n?"on":""}" data-v="${n}">${n}</button>`).join("")}</div>`;
+}
+function renderWork() {
+  const s = state.session, started = !!s;
+  $("startBox").style.display = started ? "none" : "block";
+  $("readyBox").innerHTML = started && state.readiness ? `<div class="banner" style="border-color:${({green:"var(--teton)",yellow:"var(--amber)",red:"var(--rust)"})[state.readiness.level]}"><span class="mono" style="color:var(--night)">Readiness ${state.readiness.score??""} · ${state.readiness.label}${s.deload?" · DELOAD":""}</span><p>${state.readiness.note}${s.bodyweight?` Bodyweight ${s.bodyweight}.`:""}</p></div>` : "";
+  // pre-hab
+  const p = state.prehab;
+  $("prehabBox").innerHTML = started && p ? `<div class="prehab"><span class="mono" style="color:var(--glacier);font-weight:700">${p.title}</span>
+    ${p.items.map((it,i)=>`<label class="it"><input type="checkbox" class="pre" data-i="${i}" ${s.prehab_done?"checked":""}>${it}</label>`).join("")}
+    ${p.joints.map(j=>`<div class="joint"><div class="k">${j} before</div>${scaleHtml("before:"+j, s.pain_before?.[j])}</div>`).join("")}</div>` : "";
+  // exercises
+  $("exList").innerHTML = state.exercises.map(ex => exHtml(ex, state.suggestions.find(x=>x.exercise_id===ex.id)||{}, started)).join("");
+  $("afterBox").innerHTML = started && p ? `<div class="prehab"><span class="mono" style="color:var(--glacier);font-weight:700">AFTER</span>${p.joints.map(j=>`<div class="joint"><div class="k">${j} after</div>${scaleHtml("after:"+j, s.pain_after?.[j])}</div>`).join("")}</div>` : "";
   $("finishBtn").style.display = started ? "block" : "none";
+  wire();
+}
+function exHtml(ex, sg, started) {
+  const uni = ex.unilateral, carry = ex.kind==="carry", bw = ex.kind==="bodyweight", pull = /pull-up/i.test(ex.name);
+  const rx = bw ? `${sg.sets} x ${fmt(sg.reps)} reps` : carry ? `${fmt(sg.load)} lb x ${fmt(sg.seconds)} sec, ${sg.sets} sets` : `${fmt(sg.load)} x ${fmt(sg.reps)}, ${sg.sets} sets`;
+  const L = sg.last;
+  const last = L ? `${L.load!=null?L.load+" x ":""}${L.reps?.length?L.reps.join("/"):L.secs?.filter(x=>x!=null).join("/")+"s"}${L.avg_rir!=null?` · RIR ${Math.round(L.avg_rir*10)/10}`:""} · pain ${L.max_pain}${L.heavy?` · heavy ${L.heavy.load}x${L.heavy.reps}`:""}${L.asymmetry!=null?` · L/R gap ${L.asymmetry}%`:""}` : "No history";
+  const light = sg.light ? `<span class="tag lt-${sg.light}">${sg.status==="pain_hold"?"PAIN HOLD":sg.status}</span>` : "";
+  const heavyRow = sg.heavy ? `<div class="set heavy" data-ex="${ex.id}" data-set="1" data-kind="heavy"><div class="k">HVY</div><input class="n load" type="number" step="2.5" value="${fmt(sg.heavy.load)}" ${started?"":"disabled"}><input class="n reps" type="number" placeholder="${sg.heavy.reps}" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
+  const benchRow = bw && sg.benchmark_due ? `<div class="todaynote">Benchmark due: one max clean set, stop when form breaks.</div><div class="set heavy" data-ex="${ex.id}" data-set="1" data-kind="benchmark"><div class="k">MAX</div><div></div><input class="n reps" type="number" placeholder="max" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
+  const rows = [];
+  for (let n=1; n<=sg.sets; n++) for (const side of (uni ? ["L","R"] : [null])) {
+    rows.push(`<div class="set" data-ex="${ex.id}" data-set="${n}" data-kind="work" ${side?`data-side="${side}"`:""}><div class="k">${n}${side?side:""}</div>
+      ${bw ? (pull ? `<input class="n assist" type="number" placeholder="assist" ${started?"":"disabled"}>` : `<div></div>`) : `<input class="n load" type="number" step="0.5" value="${fmt(sg.load)}" ${started?"":"disabled"}>`}
+      ${carry ? `<input class="n secs" type="number" placeholder="${fmt(sg.seconds)}" ${started?"":"disabled"}>` : `<input class="n reps" type="number" placeholder="${fmt(sg.reps)}" ${started?"":"disabled"}>`}
+      <input class="n rir" type="number" placeholder="RIR" min="0" max="5" ${started?"":"disabled"}>${painSel(started)}</div>`);
+  }
+  return `<div class="ex"><div class="top"><div class="nm">${ex.name}</div>${light}</div>
+    <div class="lt"><div><div class="k">Last</div><div class="v">${last}</div></div><div><div class="k">Today</div><div class="v today">${rx}</div>${sg.heavy?`<div class="v">then ${sg.heavy.load} x ${sg.heavy.reps}</div>`:""}</div></div>
+    ${sg.today?`<div class="todaynote">${sg.today}</div>`:""}
+    <button class="whyb" type="button">WHY?</button><div class="why">${sg.why||""}${ex.note?` ${ex.note}`:""}${sg.heavy?` ${sg.heavy.note}`:""}${uni?" Weak side goes first. The strong side never exceeds the weak side's reps.":""}</div>
+    <div class="hd"><div></div><div>${bw?(pull?"Assist":""):"Load"}</div><div>${carry?"Seconds":"Reps"}</div><div>RIR</div><div>Pain</div></div>
+    ${rows.join("")}${heavyRow}${benchRow}</div>`;
+}
+function painSel(started){ return `<select class="n pain" ${started?"":"disabled"}>${[0,1,2,3,4,5].map(n=>`<option value="${n}">${n}</option>`).join("")}</select>`; }
+function wire() {
+  document.querySelectorAll(".whyb").forEach(b => b.onclick = () => b.nextElementSibling.classList.toggle("on"));
   document.querySelectorAll(".set").forEach(row => {
-    row.querySelectorAll("input").forEach(inp => inp.addEventListener("change", () => saveSet(row)));
-    const pb = row.querySelector(".pain"); pb.onclick = () => { pb.classList.toggle("on"); saveSet(row); };
+    row.querySelectorAll("input,select").forEach(el => el.addEventListener("change", () => saveSet(row)));
+  });
+  document.querySelectorAll(".pre").forEach(cb => cb.onchange = async () => {
+    const all = [...document.querySelectorAll(".pre")].every(c=>c.checked);
+    await post({ action:"prehab", session_id: state.session.id, prehab_done: all }); say(all ? "Prep done" : "Saved");
+  });
+  document.querySelectorAll(".scale button").forEach(b => b.onclick = async () => {
+    const sc = b.parentElement; sc.querySelectorAll("button").forEach(x=>x.classList.remove("on")); b.classList.add("on");
+    const [when, joint] = sc.dataset.scale.split(":"); const key = when==="before" ? "pain_before" : "pain_after";
+    state.session[key] = { ...(state.session[key]||{}), [joint]: Number(b.dataset.v) };
+    await post({ action:"prehab", session_id: state.session.id, [key]: state.session[key] }); say("Saved");
   });
 }
 async function saveSet(row) {
-  if (!state.session_id) return;
+  if (!state.session) return;
   const g = (c) => { const el = row.querySelector("."+c); return el ? el.value : ""; };
-  const reps = g("reps"), secs = g("secs");
-  if (reps==="" && secs==="") return;
+  if (g("reps")==="" && g("secs")==="") return;
   say("Saving");
   try {
-    await api("/train-log", { method:"POST", body: JSON.stringify({ action:"set", session_id: state.session_id, exercise_id: Number(row.dataset.ex), set_number: Number(row.dataset.set), load: g("load"), reps, seconds: secs, rir: g("rir"), pain_flag: row.querySelector(".pain").classList.contains("on") }) });
-    row.querySelectorAll("input").forEach(i=>i.classList.add("saved")); say("Saved");
+    await post({ action:"set", session_id: state.session.id, exercise_id: Number(row.dataset.ex), set_number: Number(row.dataset.set), side: row.dataset.side||null, set_kind: row.dataset.kind||"work",
+      load: g("load"), reps: g("reps"), seconds: g("secs"), rir: g("rir"), pain: g("pain")||0, assist_load: g("assist") });
+    row.classList.add("saved"); say(Number(g("pain"))>=3 ? "Saved. Pain 3+: that exercise holds." : "Saved");
   } catch (e) { say("Save failed: " + e.message); }
 }
 $("startBtn").onclick = async () => {
   say("Starting");
-  const d = await api("/train-log", { method:"POST", body: JSON.stringify({ action:"start", day: state.day, bodyweight: $("bw").value || null }) });
-  state.session_id = d.session_id; $("sessNote").textContent = d.resumed ? "Resumed today's open session." : "Session open. Every set saves as you enter it.";
-  renderExercises(); say("Ready");
+  const d = await post({ action:"start", day: state.day, bodyweight: $("bw").value, sleep: $("sleep").value, energy: $("energy").value, soreness: $("sore").value, deload: !!$("deloadChk")?.checked });
+  await openDay(state.day); // re-fetch so today's prescription reflects readiness and deload
 };
 $("finishBtn").onclick = async () => {
-  say("Getting the readout");
-  $("finishBtn").disabled = true;
+  say("Getting the readout"); $("finishBtn").disabled = true;
   try {
-    const d = await api("/train-log", { method:"POST", body: JSON.stringify({ action:"finish", session_id: state.session_id }) });
+    const d = await post({ action:"finish", session_id: state.session.id });
     $("readout").innerHTML = `<span class="serif">Workout ${state.day}, logged.</span>${d.readout.replace(/\n/g,"<br>")}`;
-    $("nextList").innerHTML = d.next.map(n => `<div class="row"><div><div class="nm">${n.name}</div><div class="meta">${n.why||""}</div></div><div class="mono" style="white-space:nowrap">${n.load!=null?n.load:"bw"}${n.reps?" x "+n.reps:""}${n.seconds?" x "+n.seconds+"s":""}</div></div>`).join("");
-    show("sDone");
+    $("nextList").innerHTML = d.next.map(n => `<div class="nrow"><div><div class="nm">${n.name}</div><div class="meta">${n.why||""}</div></div><div class="mono" style="white-space:nowrap">${n.load!=null?n.load:"bw"}${n.reps?" x "+n.reps:""}${n.seconds?" x "+n.seconds+"s":""}</div></div>`).join("");
+    state.session = null; show("sDone");
   } catch (e) { say("Finish failed: " + e.message); }
   $("finishBtn").disabled = false; say("Ready");
 };
@@ -229,9 +328,9 @@ $("backBtn").onclick = loadHome; $("homeBtn").onclick = loadHome;
 // ---------- goals ----------
 $("btnGoals").onclick = async () => {
   say("Loading goals");
-  const all = [];
-  for (const day of [1,2,3,4,5]) { const d = await api("/train-next?day="+day); all.push(...d.exercises); }
-  $("goalList").innerHTML = all.map(ex => `<div class="ex" data-id="${ex.id}"><div class="nm">${ex.name}</div><div class="small">Workout ${ex.workout_day} · ${ex.rule} · ${ex.sets} x ${ex.rep_low}${ex.rep_high!==ex.rep_low?"-"+ex.rep_high:""}</div>
+  const p = state.profile || {};
+  document.querySelector(".p-start_bodyweight").value = fmt(p.start_bodyweight); document.querySelector(".p-goal_bodyweight").value = fmt(p.goal_bodyweight); document.querySelector(".p-goal_date").value = fmt(p.goal_date);
+  $("goalList").innerHTML = state.exercises.map(ex => `<div class="ex" data-id="${ex.id}"><div class="nm">${ex.name}</div><div class="small">Workout ${ex.workout_day} · ${ex.kind}${ex.unilateral?" · per side":""} · ${ex.sets} x ${ex.rep_low}${ex.rep_high!==ex.rep_low?"-"+ex.rep_high:""}</div>
     <div class="goal-edit">
       <div><div class="mono" style="font-size:9px">Start load</div><input class="n g-start_load" type="number" step="0.5" value="${fmt(ex.start_load)}"></div>
       <div><div class="mono" style="font-size:9px">Increment</div><input class="n g-increment" type="number" step="0.5" value="${fmt(ex.increment)}"></div>
@@ -240,16 +339,14 @@ $("btnGoals").onclick = async () => {
     </div>
     <div style="display:flex;gap:8px;align-items:center;margin-top:8px"><div class="mono" style="font-size:9px">Goal date</div><input class="g-goal_date" type="date" value="${fmt(ex.goal_date)}" style="max-width:180px"><button class="btn sm save">Save</button></div></div>`).join("");
   document.querySelectorAll("#goalList .ex").forEach(el => el.querySelector(".save").onclick = async () => {
-    const v = (k) => el.querySelector(".g-"+k).value;
-    say("Saving goal");
-    await api("/train-log", { method:"POST", body: JSON.stringify({ action:"goal", exercise_id:Number(el.dataset.id), start_load:v("start_load"), increment:v("increment"), goal_load:v("goal_load"), goal_reps:v("goal_reps"), goal_date:v("goal_date") }) });
-    say("Saved");
+    const v = (k) => el.querySelector(".g-"+k).value; say("Saving goal");
+    await post({ action:"goal", exercise_id:Number(el.dataset.id), start_load:v("start_load"), increment:v("increment"), goal_load:v("goal_load"), goal_reps:v("goal_reps"), goal_date:v("goal_date") }); say("Saved");
   });
   show("sGoals"); say("Ready");
 };
+$("saveProfile").onclick = async () => { const v = (k) => document.querySelector(".p-"+k).value; say("Saving"); await post({ action:"profile", start_bodyweight:v("start_bodyweight"), goal_bodyweight:v("goal_bodyweight"), goal_date:v("goal_date") }); say("Saved"); };
 $("goalsBack").onclick = loadHome;
 
-// ---------- boot ----------
 if (token) loadHome().catch(()=>signOut());
 </script>
 </body>
