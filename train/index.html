@@ -354,6 +354,7 @@ $("saveProfile").onclick = async () => { const v = (k) => document.querySelector
 $("goalsBack").onclick = loadHome;
 
 if (token) loadHome().catch(()=>signOut());
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("/train/sw.js");
 </script>
 </body>
 </html>
