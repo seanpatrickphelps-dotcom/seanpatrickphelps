@@ -38,7 +38,8 @@ export default async function handler(req, res) {
 
     if (board) {
       const cards = all.filter((e) => e.goal_load || e.goal_reps).map((ex) => scoreboard(ex, hist[ex.id] || [], lastBw));
-      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all });
+      const openAny = sessions.find((s) => !s.finished) || null;
+      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all, open_session: openAny });
     }
 
     const exercises = all.filter((e) => e.workout_day === day);
@@ -48,7 +49,8 @@ export default async function handler(req, res) {
       const s = suggest(ex, (hist[ex.id] || []).slice(0, 3), { strengthBench });
       return open ? applyToday(s, ex, ready.level, open.deload) : s;
     });
-    return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, deload, prehab: PREHAB[day] || null, open_session: open, readiness: ready, exercises, suggestions });
+    const logged = open ? sets.filter((s) => s.session_id === open.id).map(({ exercise_id, set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load }) => ({ exercise_id, set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load })) : [];
+    return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, deload, prehab: PREHAB[day] || null, open_session: open, readiness: ready, exercises, suggestions, logged });
   } catch (e) {
     return json(res, e.status || 500, { error: e.message });
   }
