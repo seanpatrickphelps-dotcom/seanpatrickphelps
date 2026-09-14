@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>The Training Log, Phase II</title>
-  <link rel="manifest" href="/train/manifest.json">
+<link rel="manifest" href="/train/manifest.json">
 <meta name="theme-color" content="#17211F">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -176,21 +176,56 @@ const API = "/api";
 const DAYS = {1:"Bench Strength",2:"Heavy Pull",3:"Posterior Chain",4:"Bench Volume",5:"Athletic Pull"};
 const DAYNAME = {1:"Monday",2:"Tuesday",3:"Wednesday",4:"Thursday",5:"Friday"};
 let token = localStorage.getItem("train_token") || null;
+let refreshTok = localStorage.getItem("train_refresh") || null;
 let state = {};
+let refreshing = null;
+const QKEY = "train_queue";
 const $ = (id) => document.getElementById(id);
 const show = (id) => { document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on")); $(id).classList.add("on"); window.scrollTo(0,0); };
 const say = (t) => { $("status").textContent = t; };
 const fmt = (v) => v==null ? "" : v;
 const cls = (s) => (s||"").replace(/\s/g,"");
 
-async function api(path, opts={}) {
+function saveTokens(d) { token = d.access_token; refreshTok = d.refresh_token || refreshTok; localStorage.setItem("train_token", token); if (refreshTok) localStorage.setItem("train_refresh", refreshTok); }
+function tokenExpiresIn() { try { return JSON.parse(atob(token.split(".")[1])).exp * 1000 - Date.now(); } catch { return 0; } }
+async function refresh() {
+  if (!refreshTok) return false;
+  if (refreshing) return refreshing;
+  refreshing = (async () => {
+    try {
+      const r = await fetch(API + "/train-auth", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ action:"refresh", refresh_token: refreshTok }) });
+      const d = await r.json().catch(()=>({}));
+      if (!r.ok || !d.access_token) return false;
+      saveTokens(d); return true;
+    } catch { return false; } finally { refreshing = null; }
+  })();
+  return refreshing;
+}
+async function api(path, opts={}, retried=false) {
+  if (token && tokenExpiresIn() < 5*60*1000) await refresh();   // refresh before it expires, not after
   const r = await fetch(API + path, { ...opts, headers: { "Content-Type":"application/json", ...(token ? {Authorization:"Bearer "+token} : {}) } });
   const data = await r.json().catch(()=>({}));
-  if (r.status === 401) { signOut(); throw new Error(data.error || "Sign in again."); }
+  if (r.status === 401) {
+    if (!retried && await refresh()) return api(path, opts, true);
+    signOut(); throw new Error(data.error || "Sign in again.");
+  }
   if (!r.ok) throw new Error(data.error || "Request failed.");
   return data;
 }
 const post = (body) => api("/train-log", { method:"POST", body: JSON.stringify(body) });
+
+// Offline queue: a set that fails to save waits in localStorage and retries until it lands.
+function queueGet(){ try { return JSON.parse(localStorage.getItem(QKEY)||"[]"); } catch { return []; } }
+function queuePut(q){ localStorage.setItem(QKEY, JSON.stringify(q)); }
+async function flushQueue() {
+  let q = queueGet(); if (!q.length) return;
+  say(`Retrying ${q.length} unsaved set${q.length>1?"s":""}`);
+  const left = [];
+  for (const item of q) { try { await post(item); } catch { left.push(item); } }
+  queuePut(left); say(left.length ? `${left.length} still unsaved, will retry` : "All sets saved");
+}
+setInterval(() => { if (token && navigator.onLine) flushQueue(); }, 30000);
+window.addEventListener("online", () => flushQueue());
 
 // ---------- auth ----------
 async function auth(action) {
@@ -198,11 +233,11 @@ async function auth(action) {
   try {
     const d = await api("/train-auth", { method:"POST", body: JSON.stringify({ action, email:$("email").value.trim(), password:$("pass").value }) });
     if (d.needs_confirmation) { $("authErr").textContent = "Check your email to confirm the account, then sign in."; say("Ready"); return; }
-    token = d.access_token; localStorage.setItem("train_token", token);
+    saveTokens(d);
     await loadHome();
   } catch (e) { $("authErr").textContent = e.message; say("Ready"); }
 }
-function signOut(){ token=null; localStorage.removeItem("train_token"); $("btnOut").style.display="none"; $("btnGoals").style.display="none"; $("who").textContent=""; show("sAuth"); }
+function signOut(){ token=null; refreshTok=null; localStorage.removeItem("train_token"); localStorage.removeItem("train_refresh"); $("btnOut").style.display="none"; $("btnGoals").style.display="none"; $("who").textContent=""; show("sAuth"); }
 $("login").onclick = () => auth("login"); $("signup").onclick = () => auth("signup"); $("btnOut").onclick = signOut;
 
 // ---------- home ----------
@@ -234,6 +269,7 @@ async function loadHome() {
   $("deloadBanner").innerHTML = d.deload.recommended ? `<div class="banner"><span class="mono">Deload recommended</span><p>${d.deload.reasons.join(". ")}. For one week: primary lifts about 90 percent, working sets cut by a third, accessories cut in half, nothing to failure. Tick "deload" when you start a session to apply it. Your call.</p></div>` : "";
   $("board").innerHTML = d.cards.map(cardHtml).join("") || `<div class="small">No goals set yet. Tap Goals.</div>`;
   if (d.last_bodyweight) $("bw").value = d.last_bodyweight;
+  if (d.open_session && !state.leftSession) { await openDay(d.open_session.workout_day); return; }
   show("sHome"); say("Ready");
 }
 
@@ -241,7 +277,7 @@ async function loadHome() {
 async function openDay(day) {
   say("Loading day " + day);
   const d = await api("/train-next?day=" + day);
-  state = { ...state, day, session: d.open_session, exercises: d.exercises, suggestions: d.suggestions, prehab: d.prehab, readiness: d.readiness, deload: d.deload };
+  state = { ...state, day, session: d.open_session, exercises: d.exercises, suggestions: d.suggestions, prehab: d.prehab, readiness: d.readiness, deload: d.deload, logged: d.logged || [], leftSession: false };
   $("wDayLabel").textContent = `Workout ${day} · ${DAYNAME[day]}`; $("wTitle").textContent = DAYS[day];
   $("deloadOpt").innerHTML = d.deload.recommended ? `<label style="display:flex;gap:10px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" id="deloadChk" style="width:22px;height:22px;margin:0">Apply the recommended deload today</label>` : "";
   renderWork(); show("sWork"); say("Ready");
@@ -262,6 +298,15 @@ function renderWork() {
   $("exList").innerHTML = state.exercises.map(ex => exHtml(ex, state.suggestions.find(x=>x.exercise_id===ex.id)||{}, started)).join("");
   $("afterBox").innerHTML = started && p ? `<div class="prehab"><span class="mono" style="color:var(--glacier);font-weight:700">AFTER</span>${p.joints.map(j=>`<div class="joint"><div class="k">${j} after</div>${scaleHtml("after:"+j, s.pain_after?.[j])}</div>`).join("")}</div>` : "";
   $("finishBtn").style.display = started ? "block" : "none";
+  // Prefill everything already saved for this session, plus anything still queued on the phone.
+  const pending = queueGet().filter(q => state.session && q.session_id === state.session.id);
+  for (const L of [...(state.logged||[]), ...pending]) {
+    const row = [...document.querySelectorAll(".set")].find(r => Number(r.dataset.ex)===Number(L.exercise_id) && Number(r.dataset.set)===Number(L.set_number) && (r.dataset.side||null)===(L.side||null) && (r.dataset.kind||"work")===(L.set_kind||"work"));
+    if (!row) continue;
+    const put = (c,v) => { const el = row.querySelector("."+c); if (el && v!=null && v!=="") el.value = v; };
+    put("load", L.load); put("reps", L.reps); put("secs", L.seconds); put("rir", L.rir); put("pain", L.pain ?? 0); put("assist", L.assist_load);
+    row.classList.add("saved");
+  }
   wire();
 }
 function exHtml(ex, sg, started) {
@@ -290,7 +335,10 @@ function painSel(started){ return `<select class="n pain" ${started?"":"disabled
 function wire() {
   document.querySelectorAll(".whyb").forEach(b => b.onclick = () => b.nextElementSibling.classList.toggle("on"));
   document.querySelectorAll(".set").forEach(row => {
-    row.querySelectorAll("input,select").forEach(el => el.addEventListener("change", () => saveSet(row)));
+    row.querySelectorAll("input,select").forEach(el => {
+      el.addEventListener("change", () => saveSet(row));
+      el.addEventListener("input", () => { row.dataset.dirty = "1"; clearTimeout(row._t); row._t = setTimeout(() => saveSet(row), 1200); });
+    });
   });
   document.querySelectorAll(".pre").forEach(cb => cb.onchange = async () => {
     const all = [...document.querySelectorAll(".pre")].every(c=>c.checked);
@@ -308,11 +356,17 @@ async function saveSet(row) {
   const g = (c) => { const el = row.querySelector("."+c); return el ? el.value : ""; };
   if (g("reps")==="" && g("secs")==="") return;
   say("Saving");
+  const item = { action:"set", session_id: state.session.id, exercise_id: Number(row.dataset.ex), set_number: Number(row.dataset.set), side: row.dataset.side||null, set_kind: row.dataset.kind||"work",
+      load: g("load"), reps: g("reps"), seconds: g("secs"), rir: g("rir"), pain: g("pain")||0, assist_load: g("assist") };
+  row.classList.add("saved"); delete row.dataset.dirty;   // the row is safe the moment it is queued
   try {
-    await post({ action:"set", session_id: state.session.id, exercise_id: Number(row.dataset.ex), set_number: Number(row.dataset.set), side: row.dataset.side||null, set_kind: row.dataset.kind||"work",
-      load: g("load"), reps: g("reps"), seconds: g("secs"), rir: g("rir"), pain: g("pain")||0, assist_load: g("assist") });
-    row.classList.add("saved"); say(Number(g("pain"))>=3 ? "Saved. Pain 3+: that exercise holds." : "Saved");
-  } catch (e) { say("Save failed: " + e.message); }
+    await post(item);
+    say(Number(g("pain"))>=3 ? "Saved. Pain 3+: that exercise holds." : "Saved");
+  } catch (e) {
+    if (!token) return;                       // signed out for real, nothing to retry
+    const q = queueGet().filter(x => !(x.session_id===item.session_id && x.exercise_id===item.exercise_id && x.set_number===item.set_number && x.side===item.side && x.set_kind===item.set_kind));
+    q.push(item); queuePut(q); say("No signal, set queued. It saves when you are back online.");
+  }
 }
 $("startBtn").onclick = async () => {
   say("Starting");
@@ -322,6 +376,8 @@ $("startBtn").onclick = async () => {
 $("finishBtn").onclick = async () => {
   say("Getting the readout"); $("finishBtn").disabled = true;
   try {
+    await flushQueue();
+    if (queueGet().length) throw new Error("Some sets are still unsaved. Get signal, wait for the retry, then finish.");
     const d = await post({ action:"finish", session_id: state.session.id });
     $("readout").innerHTML = `<span class="serif">Workout ${state.day}, logged.</span>${d.readout.replace(/\n/g,"<br>")}`;
     $("nextList").innerHTML = d.next.map(n => `<div class="nrow"><div><div class="nm">${n.name}</div><div class="meta">${n.why||""}</div></div><div class="mono" style="white-space:nowrap">${n.load!=null?n.load:"bw"}${n.reps?" x "+n.reps:""}${n.seconds?" x "+n.seconds+"s":""}</div></div>`).join("");
@@ -329,7 +385,12 @@ $("finishBtn").onclick = async () => {
   } catch (e) { say("Finish failed: " + e.message); }
   $("finishBtn").disabled = false; say("Ready");
 };
-$("backBtn").onclick = loadHome; $("homeBtn").onclick = loadHome;
+$("backBtn").onclick = () => { state.leftSession = true; loadHome(); }; $("homeBtn").onclick = loadHome;
+// Android kills background tabs. The moment the page is hidden, push every half-typed row through the queue.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "hidden") return;
+  document.querySelectorAll(".set[data-dirty]").forEach(row => { clearTimeout(row._t); saveSet(row); });
+});
 
 // ---------- goals ----------
 $("btnGoals").onclick = async () => {
@@ -353,8 +414,7 @@ $("btnGoals").onclick = async () => {
 $("saveProfile").onclick = async () => { const v = (k) => document.querySelector(".p-"+k).value; say("Saving"); await post({ action:"profile", start_bodyweight:v("start_bodyweight"), goal_bodyweight:v("goal_bodyweight"), goal_date:v("goal_date") }); say("Saved"); };
 $("goalsBack").onclick = loadHome;
 
-if (token) loadHome().catch(()=>signOut());
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("/train/sw.js");
+if (token) loadHome().then(flushQueue).catch(()=>signOut());
 </script>
 </body>
 </html>
