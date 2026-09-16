@@ -3,6 +3,19 @@
 // Header: Authorization: Bearer <access_token>
 import { json, db, requireUser, ensureSeeded, suggest, applyToday, scoreboard, deloadCheck, historyByExercise, readiness, sessionStats, PREHAB } from "../lib/train.js";
 
+// Consecutive planned sessions finished without missing two in a row (Rule 07: never miss twice).
+function streakOf(sessions) {
+  const done = sessions.filter((s) => s.finished).map((s) => s.session_date).sort().reverse();
+  if (!done.length) return { count: 0, last: null };
+  const uniq = [...new Set(done)];
+  let count = 1;
+  for (let i = 1; i < uniq.length; i++) {
+    const gap = (new Date(uniq[i - 1]) - new Date(uniq[i])) / 864e5;
+    if (gap <= 4) count++; else break;   // a normal week has gaps of 1 to 3 days; 4+ breaks it
+  }
+  return { count, last: uniq[0] };
+}
+
 export default async function handler(req, res) {
   try {
     const user = await requireUser(req);
@@ -39,7 +52,39 @@ export default async function handler(req, res) {
     if (board) {
       const cards = all.filter((e) => e.goal_load || e.goal_reps).map((ex) => scoreboard(ex, hist[ex.id] || [], lastBw));
       const openAny = sessions.find((s) => !s.finished) || null;
-      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all, open_session: openAny });
+      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all, open_session: openAny, streak: streakOf(sessions) });
+    }
+
+    // Calendar: every session in a month, one line each.
+    if (req.query.month) {
+      const [y, m] = String(req.query.month).split("-").map(Number);
+      const from = `${y}-${String(m).padStart(2, "0")}-01`;
+      const to = new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 10);
+      const rows = await db(`sessions?user_id=eq.${uid}&session_date=gte.${from}&session_date=lt.${to}&select=id,workout_day,session_date,bodyweight,finished,readiness,deload&order=session_date`);
+      const ids = rows.map((r) => r.id);
+      const counts = {};
+      if (ids.length) {
+        const ss = await db(`sets?user_id=eq.${uid}&session_id=in.(${ids.join(",")})&select=session_id,pain,load,reps`);
+        for (const x of ss) {
+          const c = (counts[x.session_id] ||= { sets: 0, pain: 0, volume: 0 });
+          c.sets++; c.pain = Math.max(c.pain, Number(x.pain || 0)); c.volume += Number(x.load || 0) * Number(x.reps || 0);
+        }
+      }
+      return json(res, 200, { month: `${y}-${String(m).padStart(2, "0")}`, days: rows.map((r) => ({ ...r, ...(counts[r.id] || { sets: 0, pain: 0, volume: 0 }) })), streak: streakOf(sessions) });
+    }
+
+    // One past session, with every set grouped by exercise.
+    if (req.query.session) {
+      const sid = Number(req.query.session);
+      const sess = (await db(`sessions?id=eq.${sid}&user_id=eq.${uid}&select=*`))[0];
+      if (!sess) return json(res, 404, { error: "Session not found." });
+      const ss = await db(`sets?user_id=eq.${uid}&session_id=eq.${sid}&select=*&order=exercise_id,set_number`);
+      const exs = all.filter((e) => e.workout_day === sess.workout_day);
+      const detail = exs.map((ex) => {
+        const mine = ss.filter((x) => x.exercise_id === ex.id);
+        return mine.length ? { name: ex.name, kind: ex.kind, unilateral: ex.unilateral, sets: mine.map(({ set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load }) => ({ set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load })), stats: sessionStats(ex, mine) } : null;
+      }).filter(Boolean);
+      return json(res, 200, { session: sess, detail });
     }
 
     const exercises = all.filter((e) => e.workout_day === day);
