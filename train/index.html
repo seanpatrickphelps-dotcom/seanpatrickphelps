@@ -95,6 +95,26 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
 .nrow .meta{color:var(--slate);font-size:13px;margin-top:2px}
 .goal-edit{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:8px}
 .small{font-size:12px;color:var(--slate)}
+.cal{background:#fff;border:1px solid var(--line);padding:14px;margin-top:10px}
+.cal .hd2{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal .hd2 .m{font-family:'Fraunces';font-size:18px}
+.cal .hd2 button{background:none;border:1px solid var(--line);font-family:'Space Mono';font-size:14px;padding:4px 12px;cursor:pointer}
+.cal .dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-family:'Space Mono';font-size:8px;letter-spacing:.1em;color:var(--slate);text-align:center;margin-bottom:4px}
+.cal .grid2{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal .c{aspect-ratio:1;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Space Mono';font-size:11px;color:var(--slate);position:relative;background:#fff}
+.cal .c.empty{border-color:transparent}
+.cal .c.today{outline:2px solid var(--night);outline-offset:-2px}
+.cal .c.has{cursor:pointer;color:#fff;font-weight:700}
+.cal .c .wd{font-size:8px;opacity:.85;margin-top:2px}
+.cal .c.open{background:repeating-linear-gradient(45deg,var(--slate),var(--slate) 4px,#7a828a 4px,#7a828a 8px);color:#fff}
+.cal .c .dot{position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--rust)}
+.cal .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-family:'Space Mono';font-size:8.5px;letter-spacing:.08em;color:var(--slate)}
+.cal .legend i{display:inline-block;width:9px;height:9px;margin-right:4px;vertical-align:-1px}
+.cal .sum{margin-top:10px;font-size:12px;color:var(--slate);border-top:1px solid var(--line);padding-top:8px}
+.det .exblock{border-top:1px solid var(--line);padding:10px 0}
+.det .exblock .nm{font-family:'Fraunces';font-variation-settings:'opsz' 32,'wght' 600,'SOFT' 100;font-size:16px}
+.det .exblock .sets2{font-family:'Space Mono';font-size:12px;color:var(--slate);margin-top:4px;line-height:1.5}
+.det .exblock .sets2 b{color:var(--night)}
 .status{position:fixed;bottom:0;left:0;right:0;background:var(--night);color:#9BA2A6;font-family:'Space Mono';font-size:10px;letter-spacing:.12em;padding:8px 16px;text-transform:uppercase}
 </style>
 </head>
@@ -120,6 +140,8 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
   <h1 class="serif">Pick the day.</h1>
   <div class="days" id="days"></div>
   <div id="deloadBanner"></div>
+  <h2 class="serif">The month.</h2>
+  <div class="cal" id="cal"></div>
   <h2 class="serif">The scoreboard.</h2>
   <p class="lead">Trend on the last four exposures, the next milestone, and what you have actually lifted versus what the math estimates.</p>
   <div id="board"></div>
@@ -154,6 +176,14 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
   <h2 class="serif">Next time, do this.</h2>
   <div id="nextList"></div>
   <button class="btn" id="homeBtn">Back to the days</button>
+</section>
+
+<section id="sDetail" class="screen det">
+  <div class="mono" id="dMeta"></div>
+  <h1 class="serif" id="dTitle"></h1>
+  <div id="dReadout"></div>
+  <div id="dBody"></div>
+  <button class="btn ghost" id="detBack">Back</button>
 </section>
 
 <section id="sGoals" class="screen">
@@ -258,6 +288,62 @@ function cardHtml(c) {
     <div class="row2">${chg}${c.best_label?`<span class="kv"><b>${c.best_label}</b>best actual</span>`:""}${c.next_milestone?`<span class="kv"><b>${c.next_milestone}</b>next milestone</span>`:""}<span class="kv"><b>${fmt(c.goal_label||c.goal)}</b>goal${c.goal_date?" by "+c.goal_date:""}</span>${c.projected?`<span class="kv"><b>${c.projected}</b>projected</span>`:""}</div>
     ${series}${miles}</div>`;
 }
+const DAYCOL = {1:"var(--rust)",2:"var(--glacier)",3:"var(--teton)",4:"var(--rust)",5:"var(--glacier)"};
+let calMonth = null;
+async function loadCal(month) {
+  const now = new Date();
+  calMonth = month || calMonth || `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+  $("cal").innerHTML = `<div class="small">Loading…</div>`;
+  const d = await api("/train-next?month=" + calMonth);
+  const [y,m] = calMonth.split("-").map(Number);
+  const first = new Date(y, m-1, 1), days = new Date(y, m, 0).getDate(), lead = first.getDay();
+  const byDate = {}; for (const s of d.days) (byDate[s.session_date] ||= []).push(s);
+  const today = new Date().toISOString().slice(0,10);
+  let cells = "";
+  for (let i=0;i<lead;i++) cells += `<div class="c empty"></div>`;
+  for (let n=1;n<=days;n++) {
+    const iso = `${y}-${String(m).padStart(2,"0")}-${String(n).padStart(2,"0")}`;
+    const ss = byDate[iso] || [];
+    const done = ss.filter(s=>s.finished), open = ss.find(s=>!s.finished);
+    const s0 = done[0] || open;
+    const cl = ["c", iso===today?"today":"", s0?(open&&!done.length?"open":"has"):""].filter(Boolean).join(" ");
+    const style = done.length ? `background:${DAYCOL[s0.workout_day]};border-color:${DAYCOL[s0.workout_day]}` : "";
+    const pain = ss.some(s=>s.pain>=3) ? `<span class="dot"></span>` : "";
+    cells += `<div class="${cl}" style="${style}" ${s0?`data-sid="${s0.id}"`:""}>${pain}${n}${s0?`<span class="wd">W${s0.workout_day}</span>`:""}</div>`;
+  }
+  const label = first.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+  const finished = d.days.filter(s=>s.finished);
+  const bw = d.days.filter(s=>s.bodyweight).map(s=>s.bodyweight);
+  $("cal").innerHTML = `<div class="hd2"><button data-nav="-1">‹</button><span class="m">${label}</span><button data-nav="1">›</button></div>
+    <div class="dow"><div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div></div>
+    <div class="grid2">${cells}</div>
+    <div class="legend"><span><i style="background:var(--rust)"></i>Bench, 1 and 4</span><span><i style="background:var(--glacier)"></i>Pull, 2 and 5</span><span><i style="background:var(--teton)"></i>Posterior, 3</span><span><i style="background:var(--slate)"></i>Unfinished</span><span><i style="background:var(--rust);border-radius:50%"></i>Pain 3+</span></div>
+    <div class="sum">${finished.length} session${finished.length===1?"":"s"} this month${bw.length?` · bodyweight ${bw[0]} to ${bw.at(-1)}`:""}${d.streak?.count?` · ${d.streak.count} in a row`:""}</div>`;
+  $("cal").querySelectorAll("[data-nav]").forEach(b => b.onclick = () => {
+    const dt = new Date(y, m-1+Number(b.dataset.nav), 1);
+    loadCal(`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}`);
+  });
+  $("cal").querySelectorAll("[data-sid]").forEach(c => c.onclick = () => openSession(Number(c.dataset.sid)));
+}
+
+async function openSession(sid) {
+  say("Loading session");
+  const d = await api("/train-next?session=" + sid);
+  const s = d.session;
+  $("dMeta").textContent = `${s.session_date} · Workout ${s.workout_day}${s.finished?"":" · unfinished"}`;
+  $("dTitle").textContent = DAYS[s.workout_day] || `Workout ${s.workout_day}`;
+  const bits = [s.bodyweight?`Bodyweight ${s.bodyweight}`:"", s.readiness?`Readiness ${s.readiness.toUpperCase()}`:"", s.deload?"Deload":""].filter(Boolean).join(" · ");
+  $("dReadout").innerHTML = (bits?`<p class="lead">${bits}</p>`:"") + (s.readout?`<div class="readout">${s.readout.replace(/\n/g,"<br>")}</div>`:"");
+  $("dBody").innerHTML = d.detail.map(x => {
+    const rows = x.sets.map(t => `${t.set_kind!=="work"?`<b>${t.set_kind==="heavy"?"HVY":"MAX"}</b> `:""}${t.side?t.side+" ":""}${t.load!=null?t.load+"x":""}${t.reps??(t.seconds+"s")}${t.assist_load?` (assist ${t.assist_load})`:""}${t.rir!=null?` @${t.rir}`:""}${t.pain?` pain ${t.pain}`:""}`).join(" · ");
+    const st = x.stats;
+    const extra = [st.e1rm?`e1RM ${Math.round(st.e1rm*10)/10}`:"", st.avg_rir!=null?`avg RIR ${Math.round(st.avg_rir*10)/10}`:"", st.asymmetry!=null?`L/R gap ${st.asymmetry}%`:"", st.volume?`volume ${Math.round(st.volume)}`:""].filter(Boolean).join(" · ");
+    return `<div class="exblock"><div class="nm">${x.name}</div><div class="sets2">${rows}</div>${extra?`<div class="small" style="margin-top:3px">${extra}</div>`:""}</div>`;
+  }).join("") || `<p class="lead">No sets logged in this session.</p>`;
+  show("sDetail"); say("Ready");
+}
+$("detBack").onclick = () => { show("sHome"); window.scrollTo(0,0); };
+
 async function loadHome() {
   say("Loading");
   const d = await api("/train-next?board=1");
@@ -268,6 +354,7 @@ async function loadHome() {
   document.querySelectorAll(".day").forEach(el => el.onclick = () => openDay(Number(el.dataset.day)));
   $("deloadBanner").innerHTML = d.deload.recommended ? `<div class="banner"><span class="mono">Deload recommended</span><p>${d.deload.reasons.join(". ")}. For one week: primary lifts about 90 percent, working sets cut by a third, accessories cut in half, nothing to failure. Tick "deload" when you start a session to apply it. Your call.</p></div>` : "";
   $("board").innerHTML = d.cards.map(cardHtml).join("") || `<div class="small">No goals set yet. Tap Goals.</div>`;
+  loadCal().catch(()=>{ $("cal").innerHTML = `<div class="small">Calendar unavailable.</div>`; });
   if (d.last_bodyweight) $("bw").value = d.last_bodyweight;
   if (d.open_session && !state.leftSession) { await openDay(d.open_session.workout_day); return; }
   show("sHome"); say("Ready");
