@@ -46,6 +46,8 @@
   .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:42px 0 20px}
   .epcard{background:#fff;border:1px solid var(--line);border-top:3px solid var(--show,var(--glacier));border-radius:13px;padding:24px;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
   .epcard:hover{transform:translateY(-5px);box-shadow:0 22px 44px -24px rgba(23,33,31,.4)}
+  .epcard .thumb{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:16px;background:var(--paper2);background:color-mix(in srgb,var(--show,var(--glacier)) 14%,var(--snow))}
+  .epcard .thumb.art{object-fit:contain;padding:10px}
   .epcard .badge{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--show,var(--glacier));font-weight:700}
   .epcard h3{font-family:'Fraunces',serif;font-weight:500;font-size:20px;line-height:1.2;margin:11px 0 10px}
   .epcard p{font-size:14.5px;color:var(--slate);line-height:1.5;flex:1}
@@ -112,10 +114,125 @@
             other shows → var(--teton) / var(--braies) / var(--zion) (so they stand apart when mixed in)
         badge   = SHOW · ROLE · EP ##
         href    = episode link        h3 = title        p = snippet        date = date
+        img     = images/podcasts/<file>.jpg, class="thumb" for video stills (16:9),
+                  class="thumb art" for square cover art; always add alt + loading="lazy"
       Newest episodes go at the top.
     -->
 
+    <a class="epcard" style="--show:var(--braies)" href="https://podcasts.apple.com/us/podcast/turning-constant-turnover-into-a-strength-with/id1325942361?i=1000798184911" target="_blank" rel="noopener">
+      <img class="thumb art" src="images/podcasts/modern-cto.jpg" alt="Cover art for the Modern CTO podcast" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">Modern CTO · Guest</span>
+      <h3>Turning Constant Turnover Into a Strength</h3>
+      <p>How to run a business where most of the team turns over every year, why hiring on objective criteria can beat going with your gut, and what a college degree is worth in the age of AI.</p>
+      <span class="foot"><span class="date">Oct 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--teton)" href="https://www.youtube.com/watch?v=rSx-28SU9Dw" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-coffee-with-jon.jpg" alt="Video still of Jon Dwoskin and Sean Phelps on Coffee with Jon" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">Coffee with Jon · Guest</span>
+      <h3>Sean Phelps – President – College Works</h3>
+      <p>With Jon Dwoskin on sourcing 100,000 college students to hire 1,000 — and coaching every one of them every two weeks, rookies and fifth-year veterans alike.</p>
+      <span class="foot"><span class="date">Oct 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--braies)" href="https://darrenmitchell.com.au/2026/10/20/sean-phelps-on-leadership-student-empowerment/" target="_blank" rel="noopener">
+      <img class="thumb art" src="images/podcasts/exceptional-sales-leader-942.jpg" alt="Episode art for The Exceptional Sales Leader Podcast, Episode 942 with Sean Phelps" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">Exceptional Sales Leader · Guest · Ep 942</span>
+      <h3>Leadership &amp; Student Empowerment</h3>
+      <p>With Darren Mitchell on accountability, servant leadership, recruiting resilient college students, and being honest with new recruits about the realities of sales.</p>
+      <span class="foot"><span class="date">Oct 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--teton)" href="https://babyboomer.org/shows/the-grampion/why-training-employees-to-leave-can-help-your-business-grow/" target="_blank" rel="noopener">
+      <img class="thumb art" src="images/podcasts/the-grampion.jpg" alt="Cover art for The Grampion, hosted by Jim Tracy" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">The Grampion · Guest</span>
+      <h3>Why Training Employees to Leave Can Help Your Business Grow</h3>
+      <p>With Jim Tracy on the road from college intern to president of College Works Painting — leadership, accountability, and mentoring young entrepreneurs.</p>
+      <span class="foot"><span class="date">Sep 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--braies)" href="https://www.youtube.com/watch?v=sVVhKbfWgtU" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-11th-thing-ep44.jpg" alt="Video thumbnail for The 11th Thing Podcast, Episode 44: The Accountability Culture with Sean Phelps" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">The 11th Thing · Guest · Ep 44</span>
+      <h3>The Accountability Culture</h3>
+      <p>With Paul Aladenika on building accountability around “us versus the goal, never me versus you” — and why organizations need to be extraordinary at the ordinary.</p>
+      <span class="foot"><span class="date">Sep 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--teton)" href="https://podcasts.apple.com/us/podcast/leadership-career-accelerator-build-executive-presence/id1855695140?i=1000782840209" target="_blank" rel="noopener">
+      <img class="thumb art" src="images/podcasts/leadership-career-accelerator.jpg" alt="Cover art for the Leadership Career Accelerator podcast" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">Leadership Career Accelerator · Guest · Ep 39</span>
+      <h3>Why Real Leadership Starts Before You Get the Title</h3>
+      <p>With Barry Moline on why accountability is a process, not a personality trait, and how young professionals earn responsibility before the title.</p>
+      <span class="foot"><span class="date">Aug 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--braies)" href="https://www.youtube.com/watch?v=45126TNlNRU" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-reinvention-e45.jpg" alt="Video thumbnail for ReInvention E45 with Sean Phelps" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">ReInvention · Guest · E45</span>
+      <h3>The Career Skills That Matter Most in an Automated World</h3>
+      <p>With Todd Jason on the human skills AI can’t easily replace, why clarity is the most underrated advantage, and what accountability really means.</p>
+      <span class="foot"><span class="date">Jul 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--glacier)" href="https://podcasts.apple.com/us/podcast/198-colin-mcguire-how-a-hustle-portfolio-ignited/id1554338077?i=1000776725627" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-198.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 198: Colin McGuire" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">Edge of Excellence · Guest host · Ep 198</span>
+      <h3>Colin McGuire — How a “Hustle Portfolio” Ignited a National Brand</h3>
+      <p>Reconnecting with College Works alum Colin McGuire — from a hundred-plus door-to-door pitches to launching Glimmr inside Target, and why patience beats hype.</p>
+      <span class="foot"><span class="date">Jul 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--teton)" href="https://directory.libsyn.com/episode/index/show/leadersedge360/id/42061080" target="_blank" rel="noopener">
+      <img class="thumb art" src="images/podcasts/leadership-and-learning.jpg" alt="Cover art for The Leadership and Learning Podcast with Randy Goruk" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">Leadership &amp; Learning · Guest · Ep 168</span>
+      <h3>Scaling Your Business Through Coaching and Accountability</h3>
+      <p>With Randy Goruk on accountability as “account + ability,” a question-based way to diagnose a miss, and clarity, coaching, and incentives before consequences.</p>
+      <span class="foot"><span class="date">Jul 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--glacier)" href="https://podcasts.apple.com/us/podcast/196-how-to-turn-ordinary-days-into-extraordinary-results/id1554338077?i=1000774839265" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-196.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 196: How To Turn Ordinary Days Into Extraordinary Results" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">Edge of Excellence · Co-host · Ep 196</span>
+      <h3>How To Turn Ordinary Days Into Extraordinary Results</h3>
+      <p>Co-hosting with Matt Stewart: four veteran College Works managers on running six-figure businesses before graduation, real profit, and building systems.</p>
+      <span class="foot"><span class="date">Jun 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--glacier)" href="https://podcasts.apple.com/us/podcast/195-todd-baldwin-life-losses-and-the-victory-mindset/id1554338077?i=1000773876225" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-195.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 195: Todd Baldwin" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">Edge of Excellence · Guest host · Ep 195</span>
+      <h3>Todd Baldwin — Life, Losses, and the Victory Mindset</h3>
+      <p>CNBC’s “Millennial Millionaire” Todd Baldwin on building a real estate portfolio with no family money or connections — and the mindset shifts behind real wealth.</p>
+      <span class="foot"><span class="date">Jun 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--braies)" href="https://www.youtube.com/watch?v=tghFx5rCLsU" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-way-to-college.jpg" alt="Video still of Sean Phelps on The Way to College Podcast" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">The Way to College · Guest</span>
+      <h3>Building Skills with College Works Painting’s Sean Phelps</h3>
+      <p>With Jose Saldivar on hardworking parents, working young, and why students shouldn’t wait until graduation to start building real experience.</p>
+      <span class="foot"><span class="date">Jun 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--zion)" href="https://podcasts.apple.com/us/podcast/193-crush-fear-your-first-business-launch-survival/id1554338077?i=1000771824391" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-193.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 193: Crush Fear: Your First Business Launch Survival Guide" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">Edge of Excellence · Roundtable guest · Ep 193</span>
+      <h3>Crush Fear: Your First Business Launch Survival Guide</h3>
+      <p>The College Works executive team on launching a business in your 20s, conquering the fear of failure, and owning both setbacks and victories.</p>
+      <span class="foot"><span class="date">Jun 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
+    <a class="epcard" style="--show:var(--teton)" href="https://accreditedinvestorpodcast.buzzsprout.com/1867793/episodes/19294748-from-intern-to-president-leadership-lessons-that-compound-with-sean-patrick-phelps" target="_blank" rel="noopener">
+      <img class="thumb art" src="images/podcasts/accredited-investor.jpg" alt="Cover art for the Accredited Investor Podcast with Jonathan Tuttle" width="480" height="270" loading="lazy" decoding="async">
+      <span class="badge">Accredited Investor · Guest · S4 Ep 69</span>
+      <h3>From Intern To President: Leadership Lessons That Compound</h3>
+      <p>With Jonathan Tuttle on “involved” management, why face-to-face trust still out-converts digital marketing, and a simple accountability cadence.</p>
+      <span class="foot"><span class="date">Jun 2026</span><span class="listen">Listen →</span></span>
+    </a>
+
     <a class="epcard" style="--show:var(--glacier)" href="https://podcasts.apple.com/us/podcast/192-jerome-stewart-darius-mirshahzadeh-how-to-navigate-ai/id1554338077?i=1000770724552" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-192.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 192: Jerome Stewart &amp; Darius Mirshahzadeh" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 192</span>
       <h3>Jerome Stewart &amp; Darius Mirshahzadeh — How to Navigate AI</h3>
       <p>A candid conversation on how to navigate AI — where it's genuinely useful, and how to put it to work without losing the human edge.</p>
@@ -123,6 +240,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://podcasts.apple.com/us/podcast/191-stephen-bauer-secrets-of-excellence-most-never-share/id1554338077?i=1000769600922" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-191.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 191: Stephen Bauer" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 191</span>
       <h3>Stephen Bauer — Secrets of Excellence Most Never Share</h3>
       <p>Stephen Bauer opens up about the hard-won principles behind real excellence — the ones most people keep to themselves.</p>
@@ -130,6 +248,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://podcasts.apple.com/us/podcast/188-dao-ho-how-to-build-an-inspiring-balanced-life/id1554338077?i=1000766186845" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-188.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 188: Dao Ho" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 188</span>
       <h3>Dao Ho — How to Build an Inspiring, Balanced Life</h3>
       <p>Dao Ho on building a life that's both driven and genuinely balanced — and why the two don't have to be at odds.</p>
@@ -137,6 +256,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://podcasts.apple.com/us/podcast/182-will-taylor-what-happens-when-you-ignore-the-safe-path/id1554338077?i=1000756941352" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-182.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 182: Will Taylor" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 182</span>
       <h3>Will Taylor — What Happens When You Ignore the Safe Path</h3>
       <p>Will Taylor on what you find when you ignore the safe path — the trade-offs, the risk, and the payoff waiting on the other side.</p>
@@ -144,6 +264,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://podcasts.apple.com/us/podcast/179-michael-kleydman-launching-brands-at-walmart-and/id1554338077?i=1000752848108" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-179.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 179: Michael Kleydman" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 179</span>
       <h3>Michael Kleydman — Launching Brands at Walmart</h3>
       <p>Michael Kleydman on the realities of launching consumer brands — and what it actually takes to get a product onto Walmart's shelves.</p>
@@ -151,6 +272,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://podcasts.apple.com/us/podcast/176-john-erik-metcalf-how-to-really-build-a-purpose/id1554338077?i=1000749107972" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-176.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 176: John Erik Metcalf" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 176</span>
       <h3>John Erik Metcalf — How to Really Build a Purpose</h3>
       <p>Entrepreneur John Erik Metcalf, CEO and co-founder of Upgraded, on building something with real purpose — and the battle-tested strategies behind it.</p>
@@ -158,6 +280,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://collegeworks.com/podcasts/jaime-rogozinski-the-new-frontier-of-finance-and-friendship/" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-164.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 164: Jaime Rogozinski" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 164</span>
       <h3>Jaime Rogozinski — The New Frontier of Finance &amp; Friendship</h3>
       <p>The founder of WallStreetBets on building a misunderstood online movement, the trademark battles along the way, and why learning from failure beats trying to avoid it.</p>
@@ -165,6 +288,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://collegeworks.com/podcasts/keaton-petite-from-chaos-to-clarity-mastering-productivity-in-a-digital-world/" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-157.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 157: Keaton Petite" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 157</span>
       <h3>Keaton Petite — From Chaos to Clarity</h3>
       <p>A consultant on the shifting shape of work and learning — and why self-discovery, passion, and intentionality are what actually lead to fulfillment.</p>
@@ -172,6 +296,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://collegeworks.com/podcasts/dave-foster-breakthrough-moments-transforming-trials-into-triumph-in-your-journey/" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-155.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 155: Dave Foster" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 155</span>
       <h3>Dave Foster — Breakthrough Moments</h3>
       <p>On growth, career reinvention, and perseverance — how the hardest moments end up shaping both success and character.</p>
@@ -179,6 +304,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://collegeworks.com/podcasts/ian-beacraft-an-inventive-spirit-in-a-changing-world/" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-151.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 151: Ian Beacraft" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 151</span>
       <h3>Ian Beacraft — An Inventive Spirit in a Changing World</h3>
       <p>A futurist and AI expert on adaptability, taking real risks, and why the clearest, most obvious path usually isn't the right one.</p>
@@ -186,6 +312,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://collegeworks.com/podcasts/r-t-custer-leading-the-way-unleashing-your-entrepreneurial-spirit/" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-149.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 149: R.T. Custer" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 149</span>
       <h3>R.T. Custer — Leading the Way</h3>
       <p>The founder of Vortic Watch Company on going from corporate life to entrepreneurship, building a brand people believe in, and creative problem-solving.</p>
@@ -193,6 +320,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://collegeworks.com/podcasts/eric-rose-brave-new-ventures-habits-that-redefine-your-journey/" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-145.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 145: Eric Rose" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 145</span>
       <h3>Eric Rose — Brave New Ventures</h3>
       <p>The founder of Sprints Running Apparel on balancing a corporate career with building a brand from the ground up, and the habits that redefine a journey.</p>
@@ -200,6 +328,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--zion)" href="https://collegeworks.com/podcasts/129-sean-phelps-balancing-act-entrepreneurship-life/" target="_blank" rel="noopener">
+      <img class="thumb" src="images/podcasts/yt-eoe-129.jpg" alt="Video thumbnail for The Edge of Excellence, Ep 129: Sean Phelps" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Featured guest · Ep 129</span>
       <h3>Sean Phelps — Balancing Act: Entrepreneurship &amp; Life</h3>
       <p>My own turn in the chair: why real-world experience beats credentials, how College Works shaped me, and integrating work, family, and a life you actually want.</p>
@@ -207,6 +336,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://podcasts.apple.com/us/podcast/109-david-boyd-how-to-achieve-success-in-construction/id1554338077?i=1000614107957" target="_blank" rel="noopener">
+      <img class="thumb art" src="images/podcasts/edge-of-excellence.jpg" alt="Cover art for The Edge of Excellence podcast" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 109</span>
       <h3>David Boyd — How to Achieve Success in Construction</h3>
       <p>David Boyd on what it really takes to build success in construction — the discipline and decisions that separate the good from the great.</p>
@@ -214,6 +344,7 @@
     </a>
 
     <a class="epcard" style="--show:var(--glacier)" href="https://podcasts.apple.com/us/podcast/106-orlando-ordonez-finding-passion-and-purpose-in/id1554338077?i=1000611429296" target="_blank" rel="noopener">
+      <img class="thumb art" src="images/podcasts/edge-of-excellence.jpg" alt="Cover art for The Edge of Excellence podcast" width="480" height="270" loading="lazy" decoding="async">
       <span class="badge">Edge of Excellence · Guest host · Ep 106</span>
       <h3>Orlando Ordonez — Finding Passion and Purpose</h3>
       <p>Orlando Ordonez on finding genuine passion and purpose in your work — and building a career and a life around it.</p>
@@ -222,7 +353,7 @@
 
   </div>
 
-  <p class="alsoline">Also a guest on <em>The Accredited Investor</em>, <em>The Way to College</em>, <em>Tim Stating the Obvious</em>, and <em>Coffee with Jon</em> — episodes being added.</p>
+  <p class="alsoline">Also a guest on <em>Tim Stating the Obvious</em> — episode being added.</p>
 
   <div class="host">
     <h2>Hosting a podcast? <b>Let's talk.</b></h2>
