@@ -86,7 +86,10 @@
   .episodes{margin-top:30px;border-top:1px solid var(--line)}
   .episode{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 0;border-bottom:1px solid var(--line);transition:padding .18s}
   .episode[href]:hover{padding-left:7px}
-  .episode .ep-main{min-width:0}
+  .episode .ep-thumb{flex:0 0 auto;display:block;width:112px;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:6px;background:var(--paper2)}
+  .episode .ep-thumb.art{object-fit:contain;padding:4px}
+  .episode .ep-main{min-width:0;flex:1}
+  @media(max-width:520px){.episode{gap:14px}.episode .ep-thumb{width:84px}.episode .ep-title{font-size:17px}.episode .ep-listen{display:none}}
   .episode .ep-title{font-family:'Fraunces',serif;font-weight:500;font-size:19px;line-height:1.25}
   .episode[href]:hover .ep-title{color:var(--glacier)}
   .episode .ep-show{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate2);margin-top:5px}
@@ -208,54 +211,66 @@
     <p class="body">I guest-host <strong>The Edge of Excellence</strong> and join other shows about building, investing, and helping young people find their footing. A few conversations worth a listen:</p>
     <div class="episodes">
       <!--
-        TO ADD MORE EPISODES, copy one <a> block and fill in:
-          href  = the episode link   title = the conversation   show = show name · your role
-        For more Edge of Excellence episodes, find them at https://collegeworks.com/podcast/
-        (each is listed with its number; click "Go to podcast" and copy the URL).
+        LATEST EPISODES — keep the ~6 most recent, newest first (copy from podcasts.html):
+          href  = the episode link   img = same file/alt as its podcasts.html card
+          (class="ep-thumb" for video stills, "ep-thumb art" for square cover art)
+          title = the conversation   show = show name · your role · Mon YYYY
       -->
-      <a class="episode" href="https://collegeworks.com/podcasts/129-sean-phelps-balancing-act-entrepreneurship-life/" target="_blank" rel="noopener">
+      <a class="episode" href="https://podcasts.apple.com/us/podcast/turning-constant-turnover-into-a-strength-with/id1325942361?i=1000798184911" target="_blank" rel="noopener">
+        <img class="ep-thumb art" src="images/podcasts/modern-cto.jpg" alt="Cover art for the Modern CTO podcast" width="480" height="270" loading="lazy" decoding="async">
         <div class="ep-main">
-          <div class="ep-title">Balancing Act: Entrepreneurship &amp; Life</div>
-          <div class="ep-show">The Edge of Excellence · Ep. 129 · Featured guest</div>
+          <div class="ep-title">Turning Constant Turnover Into a Strength</div>
+          <div class="ep-show">Modern CTO · Guest · Oct 2026</div>
         </div>
         <span class="ep-listen">Listen →</span>
       </a>
-      <a class="episode" href="https://collegeworks.com/podcasts/jaime-rogozinski-the-new-frontier-of-finance-and-friendship/" target="_blank" rel="noopener">
+      <a class="episode" href="https://www.youtube.com/watch?v=rSx-28SU9Dw" target="_blank" rel="noopener">
+        <img class="ep-thumb" src="images/podcasts/yt-coffee-with-jon.jpg" alt="Video still of Jon Dwoskin and Sean Phelps on Coffee with Jon" width="480" height="270" loading="lazy" decoding="async">
         <div class="ep-main">
-          <div class="ep-title">Jaime Rogozinski — The New Frontier of Finance &amp; Friendship</div>
-          <div class="ep-show">The Edge of Excellence · Ep. 164 · Guest host</div>
+          <div class="ep-title">Sean Phelps – President – College Works</div>
+          <div class="ep-show">Coffee with Jon · Guest · Oct 2026</div>
         </div>
         <span class="ep-listen">Listen →</span>
       </a>
-      <a class="episode" href="https://collegeworks.com/podcasts/keaton-petite-from-chaos-to-clarity-mastering-productivity-in-a-digital-world/" target="_blank" rel="noopener">
+      <a class="episode" href="https://darrenmitchell.com.au/2026/10/20/sean-phelps-on-leadership-student-empowerment/" target="_blank" rel="noopener">
+        <img class="ep-thumb art" src="images/podcasts/exceptional-sales-leader-942.jpg" alt="Episode art for The Exceptional Sales Leader Podcast, Episode 942 with Sean Phelps" width="480" height="270" loading="lazy" decoding="async">
         <div class="ep-main">
-          <div class="ep-title">Keaton Petite — From Chaos to Clarity</div>
-          <div class="ep-show">The Edge of Excellence · Ep. 157 · Guest host</div>
+          <div class="ep-title">Leadership &amp; Student Empowerment</div>
+          <div class="ep-show">Exceptional Sales Leader · Guest · Ep 942 · Oct 2026</div>
         </div>
         <span class="ep-listen">Listen →</span>
       </a>
-      <a class="episode" href="https://podcasts.apple.com/us/podcast/149-r-t-custer-leading-the-way-unleashing-your/id1554338077?i=1000702658858" target="_blank" rel="noopener">
+      <a class="episode" href="https://babyboomer.org/shows/the-grampion/why-training-employees-to-leave-can-help-your-business-grow/" target="_blank" rel="noopener">
+        <img class="ep-thumb art" src="images/podcasts/the-grampion.jpg" alt="Cover art for The Grampion, hosted by Jim Tracy" width="480" height="270" loading="lazy" decoding="async">
         <div class="ep-main">
-          <div class="ep-title">R.T. Custer — Leading the Way</div>
-          <div class="ep-show">The Edge of Excellence · Ep. 149 · Guest host</div>
+          <div class="ep-title">Why Training Employees to Leave Can Help Your Business Grow</div>
+          <div class="ep-show">The Grampion · Guest · Sep 2026</div>
         </div>
         <span class="ep-listen">Listen →</span>
       </a>
-      <a class="episode" href="https://podcasts.apple.com/us/podcast/145-eric-rose-brave-new-ventures-habits-that-redefine/id1554338077?i=1000698741722" target="_blank" rel="noopener">
+      <a class="episode" href="https://www.youtube.com/watch?v=sVVhKbfWgtU" target="_blank" rel="noopener">
+        <img class="ep-thumb" src="images/podcasts/yt-11th-thing-ep44.jpg" alt="Video thumbnail for The 11th Thing Podcast, Episode 44: The Accountability Culture with Sean Phelps" width="480" height="270" loading="lazy" decoding="async">
         <div class="ep-main">
-          <div class="ep-title">Eric Rose — Habits That Redefine</div>
-          <div class="ep-show">The Edge of Excellence · Ep. 145 · Guest host</div>
+          <div class="ep-title">The Accountability Culture</div>
+          <div class="ep-show">The 11th Thing · Guest · Ep 44 · Sep 2026</div>
+        </div>
+        <span class="ep-listen">Listen →</span>
+      </a>
+      <a class="episode" href="https://podcasts.apple.com/us/podcast/leadership-career-accelerator-build-executive-presence/id1855695140?i=1000782840209" target="_blank" rel="noopener">
+        <img class="ep-thumb art" src="images/podcasts/leadership-career-accelerator.jpg" alt="Cover art for the Leadership Career Accelerator podcast" width="480" height="270" loading="lazy" decoding="async">
+        <div class="ep-main">
+          <div class="ep-title">Why Real Leadership Starts Before You Get the Title</div>
+          <div class="ep-show">Leadership Career Accelerator · Guest · Ep 39 · Aug 2026</div>
         </div>
         <span class="ep-listen">Listen →</span>
       </a>
     </div>
     <div class="listen-on">
-      <span class="lbl">Hear every episode:</span>
+      <span class="lbl">Hear every Edge of Excellence episode:</span>
       <a class="plat" href="https://podcasts.apple.com/us/podcast/the-edge-of-excellence-podcast/id1554338077" target="_blank" rel="noopener">Apple Podcasts</a>
       <a class="plat" href="https://open.spotify.com/show/0DR3gnaTqg0a1mclQQLiIl" target="_blank" rel="noopener">Spotify</a>
     </div>
-    <p class="body" style="font-size:15px;margin-top:22px">Also a guest on <em>The Accredited Investor</em>, <em>The Way to College</em>, <em>Tim Stating the Obvious</em>, and <em>Coffee with Jon</em> — links coming soon.</p>
-    <p style="margin-top:14px"><a class="link" href="podcasts.html">See all episodes →</a></p>
+    <p style="margin-top:22px"><a class="link" href="podcasts.html">See all conversations →</a></p>
     <p class="hostline">Hosting a podcast? I'd be glad to come on and talk shop. <a class="link" href="mailto:seanpatrickphelps@gmail.com?subject=Podcast%20invitation">Get in touch →</a></p>
   </div>
 </section>
