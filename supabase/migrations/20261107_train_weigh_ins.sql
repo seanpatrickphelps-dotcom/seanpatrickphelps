@@ -32,4 +32,10 @@ create policy weigh_ins_own on public.weigh_ins
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
 
-grant select, insert, update, delete on public.weigh_ins to service_role, authenticated;
+-- Default privileges on this project grant anon and authenticated ALL on new
+-- tables, including TRUNCATE. RLS does not apply to TRUNCATE, so those grants
+-- have to be removed. authenticated keeps row DML only. service_role is not
+-- revoked. anon gets nothing.
+revoke all on table public.weigh_ins from anon, authenticated;
+grant select, insert, update, delete on table public.weigh_ins to authenticated;
+grant select, insert, update, delete on table public.weigh_ins to service_role;
