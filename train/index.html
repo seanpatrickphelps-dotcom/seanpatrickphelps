@@ -72,7 +72,35 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
 .scale button.on{background:var(--night);color:var(--snow);border-color:var(--night)}
 .joint{margin-top:10px}.joint .k{font-family:'Space Mono';font-size:9px;letter-spacing:.12em;color:var(--slate);text-transform:uppercase}
 .ex{border-top:2px solid var(--night);padding:14px 0 6px;margin-top:8px}
-.ex .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.ex .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.foodgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.foodgrid .k{font-family:'Space Mono';font-size:9px;letter-spacing:.12em;color:var(--slate);text-transform:uppercase;margin-bottom:4px}
+.meter{margin-top:12px}
+.meter .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.meter .k{font-family:'Space Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.meter .num{font-family:'Space Mono';font-size:12px}
+.track{height:8px;background:#e3e2da;margin-top:5px}
+.track i{display:block;height:100%;background:var(--glacier)}
+.track i.over{background:var(--rust)}
+.track i.good{background:var(--teton)}
+.chips{display:flex;gap:8px;margin-top:12px}
+.chips .c2{flex:1;background:var(--snow);border:1px solid var(--line);padding:8px 8px 6px;min-width:0}
+.chips .k{font-family:'Space Mono';font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate)}
+.chips .v{font-family:'Fraunces';font-size:18px;line-height:1.1;margin-top:3px}
+.mtable{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+.mtable th{font-family:'Space Mono';font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);text-align:right;font-weight:400;padding:0 2px 4px}
+.mtable th:first-child,.mtable td.food{text-align:left}
+.mtable td{padding:7px 2px;border-top:1px solid var(--line);vertical-align:top;text-align:right;font-family:'Space Mono';font-size:12px}
+.mtable td.food{font-family:'Hanken Grotesk';font-size:14px;text-align:left;padding-right:8px}
+.mtable tr.tot td{border-top:2px solid var(--night);font-weight:700;color:var(--night)}
+.mtable input{padding:6px 4px;font-size:14px;text-align:right}
+.mtable input.iname,.mtable input.iportion{text-align:left;font-family:'Hanken Grotesk';display:block;width:100%}
+.mtable input.iportion{margin-top:4px}
+.rowbtns input.n{flex:1;margin:0}
+.meal{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.photo{max-width:100%;max-height:140px;display:block;margin-top:8px;object-fit:cover}
+.rowbtns{display:flex;gap:8px;margin-top:8px}
+.rowbtns .btn{margin-top:0}
 .ex .nm{font-family:'Fraunces';font-variation-settings:'opsz' 32,'wght' 600,'SOFT' 100;font-size:19px;line-height:1.15}
 .lt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
 .lt .k{font-family:'Space Mono';font-size:9px;letter-spacing:.14em;color:var(--slate);text-transform:uppercase}
@@ -108,6 +136,16 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
 .cal .c .wd{font-size:8px;opacity:.85;margin-top:2px}
 .cal .c.open{background:repeating-linear-gradient(45deg,var(--slate),var(--slate) 4px,#7a828a 4px,#7a828a 8px);color:#fff}
 .cal .c .dot{position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--rust)}
+.cal .c[data-date]{cursor:pointer}
+.cal .c.ate{box-shadow:inset 0 -3px 0 var(--braies)}
+.cal .c.has.ate,.cal .c.open.ate{box-shadow:inset 0 -3px 0 #fff}
+.cal .c.sel{outline:2px solid var(--braies);outline-offset:-2px}
+.swapfrom{font-family:'Space Mono';font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--glacier);margin-top:4px}
+.exacts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.swapb{background:#fff;border:1px solid var(--night);font-family:'Space Mono';font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:8px 10px;min-height:44px;cursor:pointer;color:var(--night)}
+.swapbox{border:1px solid var(--line);background:var(--snow);padding:10px;margin-top:10px}
+.swapbox .opt{display:block;width:100%;text-align:left;margin-top:8px;padding:12px;border:1px solid var(--night);background:#fff;font:inherit;font-size:16px;cursor:pointer;min-height:44px}
+.swapbox .opt small{display:block;color:var(--slate);font-family:'Space Mono';font-size:9px;letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
 .cal .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-family:'Space Mono';font-size:8.5px;letter-spacing:.08em;color:var(--slate)}
 .cal .legend i{display:inline-block;width:9px;height:9px;margin-right:4px;vertical-align:-1px}
 .cal .sum{margin-top:10px;font-size:12px;color:var(--slate);border-top:1px solid var(--line);padding-top:8px}
@@ -140,6 +178,7 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
   <h1 class="serif">Pick the day.</h1>
   <div class="days" id="days"></div>
   <div id="deloadBanner"></div>
+  <div id="foodCard"></div>
   <h2 class="serif">The month.</h2>
   <div class="cal" id="cal"></div>
   <h2 class="serif">The scoreboard.</h2>
@@ -183,6 +222,7 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
   <h1 class="serif" id="dTitle"></h1>
   <div id="dReadout"></div>
   <div id="dBody"></div>
+  <div id="dFood"></div>
   <button class="btn ghost" id="detBack">Back</button>
 </section>
 
@@ -192,6 +232,15 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
     <div><div class="mono" style="font-size:9px">Start weight</div><input class="n p-start_bodyweight" type="number" step="0.1"></div>
     <div><div class="mono" style="font-size:9px">Goal weight</div><input class="n p-goal_bodyweight" type="number" step="0.1"></div>
     <div><div class="mono" style="font-size:9px">Goal date</div><input class="p-goal_date" type="date"></div></div>
+    <div class="nm" style="margin-top:14px">Daily food</div>
+    <p class="small">Optional targets. Leave them blank and the log still saves, including on a rest day.</p>
+    <div class="goal-edit">
+      <div><div class="mono" style="font-size:9px">Calories</div><input class="n p-target_calories" type="number" min="0" step="1" inputmode="numeric"></div>
+      <div><div class="mono" style="font-size:9px">Protein</div><input class="n p-target_protein" type="number" min="0" step="1" inputmode="numeric"></div>
+      <div><div class="mono" style="font-size:9px">Carbs</div><input class="n p-target_carbs" type="number" min="0" step="1" inputmode="numeric"></div>
+      <div><div class="mono" style="font-size:9px">Fat</div><input class="n p-target_fat" type="number" min="0" step="1" inputmode="numeric"></div>
+      <div><div class="mono" style="font-size:9px">Water oz</div><input class="n p-target_hydration_oz" type="number" min="0" step="1" inputmode="numeric"></div>
+    </div>
     <button class="btn sm" id="saveProfile" style="margin-top:8px">Save</button></div>
   <p class="lead" style="margin-top:16px">Per exercise: starting load is where the trend begins, the goal is where it ends, the date is when. Increment is the smallest jump the app will ever suggest.</p>
   <div id="goalList"></div>
@@ -215,6 +264,13 @@ const show = (id) => { document.querySelectorAll(".screen").forEach(s=>s.classLi
 const say = (t) => { $("status").textContent = t; };
 const fmt = (v) => v==null ? "" : v;
 const cls = (s) => (s||"").replace(/\s/g,"");
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const foodLogged = (row) => !!row && ["calories","protein","carbs","fat"].some((k) => row[k] != null && row[k] !== "");
+state.nutritionByDate = {};
+state.mealsByDate = {};
+state.hydrationByDate = {};
+state.mealDraft = null;
+state.mealPhoto = null;
 
 function saveTokens(d) { token = d.access_token; refreshTok = d.refresh_token || refreshTok; localStorage.setItem("train_token", token); if (refreshTok) localStorage.setItem("train_refresh", refreshTok); }
 function tokenExpiresIn() { try { return JSON.parse(atob(token.split(".")[1])).exp * 1000 - Date.now(); } catch { return 0; } }
@@ -298,32 +354,51 @@ async function loadCal(month) {
   const [y,m] = calMonth.split("-").map(Number);
   const first = new Date(y, m-1, 1), days = new Date(y, m, 0).getDate(), lead = first.getDay();
   const byDate = {}; for (const s of d.days) (byDate[s.session_date] ||= []).push(s);
+  const fed = {};
+  const mealsBy = {};
+  const hydBy = {};
+  state.nutritionByDate = state.nutritionByDate || {};
+  state.mealsByDate = state.mealsByDate || {};
+  state.hydrationByDate = state.hydrationByDate || {};
+  for (const n of d.nutrition || []) fed[n.log_date] = n;
+  for (const m of d.meals || []) (mealsBy[m.log_date] ||= []).push(m);
+  for (const h of d.hydration || []) hydBy[h.log_date] = h.ounces;
   const today = new Date().toISOString().slice(0,10);
   let cells = "";
   for (let i=0;i<lead;i++) cells += `<div class="c empty"></div>`;
   for (let n=1;n<=days;n++) {
     const iso = `${y}-${String(m).padStart(2,"0")}-${String(n).padStart(2,"0")}`;
+    state.nutritionByDate[iso] = fed[iso] || null;
+    state.mealsByDate[iso] = mealsBy[iso] || [];
+    state.hydrationByDate[iso] = Object.prototype.hasOwnProperty.call(hydBy, iso) ? hydBy[iso] : null;
     const ss = byDate[iso] || [];
     const done = ss.filter(s=>s.finished), open = ss.find(s=>!s.finished);
     const s0 = done[0] || open;
-    const cl = ["c", iso===today?"today":"", s0?(open&&!done.length?"open":"has"):""].filter(Boolean).join(" ");
+    const ate = foodLogged(fed[iso]) || (mealsBy[iso] || []).length > 0;
+    const sel = state.foodDate === iso && iso !== today;
+    const cl = ["c", iso===today?"today":"", sel?"sel":"", s0?(open&&!done.length?"open":"has"):"", ate?"ate":""].filter(Boolean).join(" ");
     const style = done.length ? `background:${DAYCOL[s0.workout_day]};border-color:${DAYCOL[s0.workout_day]}` : "";
     const pain = ss.some(s=>s.pain>=3) ? `<span class="dot"></span>` : "";
-    cells += `<div class="${cl}" style="${style}" ${s0?`data-sid="${s0.id}"`:""}>${pain}${n}${s0?`<span class="wd">W${s0.workout_day}</span>`:""}</div>`;
+    cells += `<div class="${cl}" style="${style}" data-date="${iso}" ${s0?`data-sid="${s0.id}"`:""}>${pain}${n}${s0?`<span class="wd">W${s0.workout_day}</span>`:""}</div>`;
   }
   const label = first.toLocaleDateString(undefined,{month:"long",year:"numeric"});
   const finished = d.days.filter(s=>s.finished);
   const bw = d.days.filter(s=>s.bodyweight).map(s=>s.bodyweight);
+  const fedDays = new Set([...Object.keys(fed).filter(k => foodLogged(fed[k])), ...Object.keys(mealsBy)]);
+  const fedCount = fedDays.size;
   $("cal").innerHTML = `<div class="hd2"><button data-nav="-1">‹</button><span class="m">${label}</span><button data-nav="1">›</button></div>
     <div class="dow"><div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div></div>
     <div class="grid2">${cells}</div>
-    <div class="legend"><span><i style="background:var(--rust)"></i>Bench, 1 and 4</span><span><i style="background:var(--glacier)"></i>Pull, 2 and 5</span><span><i style="background:var(--teton)"></i>Posterior, 3</span><span><i style="background:var(--slate)"></i>Unfinished</span><span><i style="background:var(--rust);border-radius:50%"></i>Pain 3+</span></div>
-    <div class="sum">${finished.length} session${finished.length===1?"":"s"} this month${bw.length?` · bodyweight ${bw[0]} to ${bw.at(-1)}`:""}${d.streak?.count?` · ${d.streak.count} in a row`:""}</div>`;
+    <div class="legend"><span><i style="background:var(--rust)"></i>Bench, 1 and 4</span><span><i style="background:var(--glacier)"></i>Pull, 2 and 5</span><span><i style="background:var(--teton)"></i>Posterior, 3</span><span><i style="background:var(--slate)"></i>Unfinished</span><span><i style="background:var(--rust);border-radius:50%"></i>Pain 3+</span><span><i style="background:var(--braies)"></i>Food logged</span></div>
+    <div class="sum">${finished.length} session${finished.length===1?"":"s"} this month${bw.length?` · bodyweight ${bw[0]} to ${bw.at(-1)}`:""}${d.streak?.count?` · ${d.streak.count} in a row`:""}${fedCount?` · food on ${fedCount} day${fedCount===1?"":"s"}`:""}</div>`;
   $("cal").querySelectorAll("[data-nav]").forEach(b => b.onclick = () => {
     const dt = new Date(y, m-1+Number(b.dataset.nav), 1);
     loadCal(`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}`);
   });
-  $("cal").querySelectorAll("[data-sid]").forEach(c => c.onclick = () => openSession(Number(c.dataset.sid)));
+  $("cal").querySelectorAll("[data-date]").forEach(c => c.onclick = () => {
+    if (c.dataset.sid) { openSession(Number(c.dataset.sid)); return; }
+    selectFoodDate(c.dataset.date);
+  });
 }
 
 async function openSession(sid) {
@@ -338,22 +413,295 @@ async function openSession(sid) {
     const rows = x.sets.map(t => `${t.set_kind!=="work"?`<b>${t.set_kind==="heavy"?"HVY":"MAX"}</b> `:""}${t.side?t.side+" ":""}${t.load!=null?t.load+"x":""}${t.reps??(t.seconds+"s")}${t.assist_load?` (assist ${t.assist_load})`:""}${t.rir!=null?` @${t.rir}`:""}${t.pain?` pain ${t.pain}`:""}`).join(" · ");
     const st = x.stats;
     const extra = [st.e1rm?`e1RM ${Math.round(st.e1rm*10)/10}`:"", st.avg_rir!=null?`avg RIR ${Math.round(st.avg_rir*10)/10}`:"", st.asymmetry!=null?`L/R gap ${st.asymmetry}%`:"", st.volume?`volume ${Math.round(st.volume)}`:""].filter(Boolean).join(" · ");
-    return `<div class="exblock"><div class="nm">${x.name}</div><div class="sets2">${rows}</div>${extra?`<div class="small" style="margin-top:3px">${extra}</div>`:""}</div>`;
+    return `<div class="exblock"><div class="nm">${esc(x.name)}</div>${x.swapped_from?`<div class="small">In place of ${esc(x.swapped_from)}</div>`:""}<div class="sets2">${rows}</div>${extra?`<div class="small" style="margin-top:3px">${extra}</div>`:""}</div>`;
   }).join("") || `<p class="lead">No sets logged in this session.</p>`;
+  renderDetailFood(String(s.session_date).slice(0, 10), d.nutrition || null, d.meals || [], d.hydration || null);
   show("sDetail"); say("Ready");
 }
-$("detBack").onclick = () => { show("sHome"); window.scrollTo(0,0); };
+$("detBack").onclick = () => { show("sHome"); window.scrollTo(0,0); loadCal().catch(()=>{}); renderFood(); };
+
+const foodPost = (body) => api("/train-food", { method:"POST", body: JSON.stringify(body) });
+function fmtFood(n) {
+  if (n == null || n === "") return "—";
+  const x = Math.round(Number(n) * 10) / 10;
+  const [w, f] = String(x).split(".");
+  return w.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (f ? "." + f : "");
+}
+function sumItems(items) {
+  const t = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+  for (const it of items || []) { t.calories += Number(it.calories) || 0; t.protein += Number(it.protein) || 0; t.carbs += Number(it.carbs) || 0; t.fat += Number(it.fat) || 0; }
+  for (const k of Object.keys(t)) t[k] = Math.round(t[k] * 10) / 10;
+  return t;
+}
+function dayFood(date) {
+  const meals = state.mealsByDate?.[date] || [];
+  if (meals.length) return { ...sumItems(meals.flatMap(m => (m.items && m.items.length) ? m.items : [m])), source: "meals" };
+  const manual = state.nutritionByDate?.[date];
+  if (foodLogged(manual)) return { calories: manual.calories, protein: manual.protein, carbs: manual.carbs, fat: manual.fat, source: "manual" };
+  return { calories: null, protein: null, carbs: null, fat: null, source: "none" };
+}
+function barHtml(label, current, target, unit, tone) {
+  const has = target != null && target !== "" && Number(target) > 0;
+  const cur = current == null || current === "" ? null : Number(current);
+  const right = has ? `${cur == null ? "—" : fmtFood(cur)} / ${fmtFood(target)}${unit ? " " + unit : ""}` : (cur == null ? "—" : `${fmtFood(cur)}${unit ? " " + unit : ""}`);
+  if (!has) return `<div class="meter"><div class="top"><span class="k">${label}</span><span class="num">${right}</span></div></div>`;
+  const pct = Math.max(0, Math.min(100, ((cur || 0) / Number(target)) * 100));
+  const over = cur != null && cur > Number(target);
+  const cls = over ? (tone === "good" ? "good" : "over") : "";
+  return `<div class="meter"><div class="top"><span class="k">${label}</span><span class="num">${right}</span></div><div class="track"><i class="${cls}" style="width:${pct}%"></i></div></div>`;
+}
+function chipHtml(label, value) {
+  if (!label) return "";
+  return `<div class="c2"><div class="k">${esc(label)}</div><div class="v">${esc(value)}</div></div>`;
+}
+function chipFor(kind, current, target) {
+  if (target == null || target === "" || Number(target) <= 0 || current == null || current === "") return null;
+  const diff = Math.round((Number(current) - Number(target)) * 10) / 10;
+  const abs = fmtFood(Math.abs(diff));
+  if (kind === "calories") return diff > 0 ? ["Calories over", "+" + abs] : diff < 0 ? ["Calories left", abs] : ["Calories", "On target"];
+  if (kind === "protein") return diff > 0 ? ["Protein above", "+" + abs + " g"] : diff < 0 ? ["Protein left", abs + " g"] : ["Protein", "On target"];
+  if (kind === "hydration") return diff > 0 ? ["Hydration over", abs + " oz"] : diff < 0 ? ["Hydration left", abs + " oz"] : ["Hydration", "On target"];
+  return null;
+}
+function dashHtmlFood(date) {
+  const p = state.profile || {};
+  const food = dayFood(date);
+  const ounces = state.hydrationByDate ? state.hydrationByDate[date] : null;
+  const chips = [chipFor("calories", food.calories, p.target_calories), chipFor("protein", food.protein, p.target_protein), chipFor("hydration", ounces, p.target_hydration_oz)].filter(Boolean);
+  const extra = [];
+  if (p.target_carbs != null && p.target_carbs !== "") extra.push(barHtml("Carbs", food.carbs, p.target_carbs, "g", "over"));
+  if (p.target_fat != null && p.target_fat !== "") extra.push(barHtml("Fat", food.fat, p.target_fat, "g", "over"));
+  return barHtml("Calories", food.calories, p.target_calories, "kcal", "over")
+    + barHtml("Protein", food.protein, p.target_protein, "g", "good")
+    + extra.join("")
+    + barHtml("Hydration", ounces, p.target_hydration_oz, "oz", "over")
+    + (chips.length ? `<div class="chips">${chips.map(c => chipHtml(c[0], c[1])).join("")}</div>` : "");
+}
+function mealTable(items, edit) {
+  const rows = (items || []).map((it, i) => edit
+    ? `<tr data-i="${i}"><td class="food"><input class="iname" value="${esc(it.name)}" aria-label="Food"><input class="iportion" value="${esc(it.portion || "")}" aria-label="Portion" placeholder="portion"></td>
+        <td><input class="n ical" type="number" min="0" step="1" value="${it.calories ?? ""}" aria-label="Calories"></td>
+        <td><input class="n ipro" type="number" min="0" step="0.1" value="${it.protein ?? ""}" aria-label="Protein"></td>
+        <td><input class="n icarb" type="number" min="0" step="0.1" value="${it.carbs ?? ""}" aria-label="Carbs"></td>
+        <td><input class="n ifat" type="number" min="0" step="0.1" value="${it.fat ?? ""}" aria-label="Fat"></td></tr>`
+    : `<tr><td class="food">${esc(it.name)}${it.portion ? ", " + esc(it.portion) : ""}</td><td>${fmtFood(it.calories)}</td><td>${fmtFood(it.protein)}g</td><td>${fmtFood(it.carbs)}g</td><td>${fmtFood(it.fat)}g</td></tr>`).join("");
+  const t = sumItems(items);
+  return `<table class="mtable"><thead><tr><th>Food</th><th>Calories</th><th>Protein</th><th>Carbs</th><th>Fat</th></tr></thead><tbody>${rows}
+    <tr class="tot"><td class="food">Total added</td><td class="totc">${fmtFood(t.calories)}</td><td class="totp">${fmtFood(t.protein)}g</td><td class="totb">${fmtFood(t.carbs)}g</td><td class="totf">${fmtFood(t.fat)}g</td></tr></tbody></table>`;
+}
+function readItems(root) {
+  return [...root.querySelectorAll("[data-i]")].map(row => ({
+    name: row.querySelector(".iname").value, portion: row.querySelector(".iportion").value,
+    calories: row.querySelector(".ical").value, protein: row.querySelector(".ipro").value,
+    carbs: row.querySelector(".icarb").value, fat: row.querySelector(".ifat").value,
+  }));
+}
+function knownDay(date) {
+  return !!state.nutritionByDate && Object.prototype.hasOwnProperty.call(state.nutritionByDate, date)
+    && !!state.mealsByDate && Object.prototype.hasOwnProperty.call(state.mealsByDate, date);
+}
+function storeDay(date, d) {
+  state.nutritionByDate[date] = d.nutrition || null;
+  state.mealsByDate[date] = d.meals || [];
+  state.hydrationByDate[date] = d.hydration ? d.hydration.ounces : null;
+}
+let foodSeq = 0;
+async function renderFood() {
+  const seq = ++foodSeq;
+  const date = state.foodDate || new Date().toISOString().slice(0, 10);
+  state.foodDate = date;
+  const card = $("foodCard");
+  if (!card) return;
+  if (!knownDay(date)) {
+    try {
+      const d = await api("/train-next?date=" + date);
+      if (seq !== foodSeq) return;
+      storeDay(date, d);
+    } catch (e) {
+      if (seq !== foodSeq) return;
+      card.innerHTML = `<div class="card"><div class="small">${esc(e.message)}</div></div>`;
+      return;
+    }
+  }
+  if (seq !== foodSeq) return;
+  card.innerHTML = foodPanel(date, "n", true);
+  wireFood(date, "n");
+}
+function selectFoodDate(iso) {
+  if (!iso) return;
+  state.foodDate = iso;
+  const today = new Date().toISOString().slice(0, 10);
+  document.querySelectorAll("#cal .c").forEach((c) => c.classList.toggle("sel", c.dataset.date === iso && iso !== today));
+  renderFood();
+}
+function renderDetailFood(date, manual, meals, hydration) {
+  state.detailDate = date;
+  state.nutritionByDate[date] = manual || null;
+  state.mealsByDate[date] = meals || [];
+  state.hydrationByDate[date] = hydration ? hydration.ounces : null;
+  $("dFood").innerHTML = foodPanel(date, "d", false);
+  wireFood(date, "d");
+}
+function foodPanel(date, p, withDate) {
+  const meals = state.mealsByDate[date] || [];
+  const manual = state.nutritionByDate[date];
+  const draft = state.mealDraft && state.mealDraft.date === date ? state.mealDraft : null;
+  const photo = state.mealPhoto ? `<img class="photo" alt="Meal photo" src="${state.mealPhoto.url}">` : "";
+  const list = meals.map(m => `<div class="meal" data-meal="${m.id}">${mealTable(m.items && m.items.length ? m.items : [{ name: "Meal", portion: "", calories: m.calories, protein: m.protein, carbs: m.carbs, fat: m.fat }], false)}${m.note ? `<p class="small">${esc(m.note)}</p>` : ""}<div class="rowbtns"><button type="button" class="btn sm meal-edit" data-id="${m.id}">Edit</button><button type="button" class="btn ghost sm meal-del" data-id="${m.id}">Remove</button></div></div>`).join("");
+  const draftBox = draft ? `<div class="meal" id="${p}Draft"><div class="mono" style="color:var(--glacier)">Estimate</div>${mealTable(draft.items, true)}<p class="small" id="${p}Note">${esc(draft.note || "")}</p><label class="f mono">Note</label><input id="${p}NoteIn" value="${esc(draft.note || "")}"><div class="rowbtns"><button type="button" class="btn sm" id="${p}AddLine">Add line</button></div><div class="rowbtns"><button type="button" class="btn" id="${p}Confirm">${draft.id ? "Save meal" : "Confirm"}</button><button type="button" class="btn ghost" id="${p}Discard">Discard</button></div></div>` : "";
+  const manualBox = meals.length ? `<p class="small">Meals are this day's total.${foodLogged(manual) ? " A typed total is still saved, and it shows again if every meal is removed." : ""}</p>` : `<div class="mono" style="margin-top:14px">Typed total</div><p class="small">Use this when you already know the day's numbers. It does not start a workout.</p>${macroInputs(p, manual)}<button class="btn" id="${p}SaveFood">Save food</button>`;
+  const oz = state.hydrationByDate[date];
+  return `<div class="card"><div class="mono" style="color:var(--braies)">Food</div><div class="nm">${withDate ? "The day, on the plate." : "That day's totals."}</div>
+    ${withDate ? `<label class="f mono">Date</label><input id="foodDate" type="date" value="${date}">` : `<p class="small">${esc(date)}. Saved on its own, finished workout or not.</p>`}
+    ${dashHtmlFood(date)}
+    <label class="f mono">Water, ounces</label><div class="rowbtns"><input class="n" id="${p}Oz" type="number" min="0" step="1" inputmode="decimal" value="${oz == null ? "" : oz}" style="max-width:120px"><button type="button" class="btn sm" id="${p}SaveOz">Save water</button></div>
+    ${list ? `<h2 class="serif" style="font-size:18px">Meals</h2>${list}` : ""}
+    <h2 class="serif" style="font-size:18px">${draft ? "Adjust it, then confirm." : "Add a meal"}</h2>
+    ${draftBox}
+    ${draft ? "" : `<label class="f mono">What was it</label><textarea id="${p}Text" rows="3" placeholder="Two servings, no salsa" style="width:100%;padding:12px;border:1px solid var(--line);font:inherit;font-size:16px"></textarea>
+      <div class="rowbtns"><button type="button" class="btn sm" id="${p}CamBtn">Camera</button><button type="button" class="btn sm ghost" id="${p}FileBtn">Photo</button>${state.mealPhoto ? `<button type="button" class="btn sm ghost" id="${p}ClearPhoto">Clear photo</button>` : ""}</div>
+      <input id="${p}Cam" type="file" accept="image/*" capture="environment" hidden><input id="${p}File" type="file" accept="image/*" hidden>
+      ${photo}
+      <button class="btn" id="${p}Estimate">Estimate</button>`}
+    ${manualBox}
+  </div>`;
+}
+function macroInputs(prefix, row) {
+  const v = (x) => (x == null || x === "" ? "" : x);
+  const field = (key, label, val) => `<div><div class="k">${label}</div><input class="n" id="${prefix}${key}" type="number" min="0" step="1" inputmode="decimal" value="${esc(v(val))}"></div>`;
+  return `<div class="foodgrid">${field("Cal","Calories",row?.calories)}${field("Pro","Protein",row?.protein)}${field("Carb","Carbs",row?.carbs)}${field("Fat","Fat",row?.fat)}</div>`;
+}
+function wireFood(date, p) {
+  if ($("foodDate")) $("foodDate").onchange = (e) => selectFoodDate(e.target.value);
+  const saveTyped = $(p + "SaveFood");
+  if (saveTyped) saveTyped.onclick = () => saveFoodFrom(p, date);
+  const ozBtn = $(p + "SaveOz");
+  if (ozBtn) ozBtn.onclick = () => saveHydration(p, date);
+  const est = $(p + "Estimate");
+  if (est) est.onclick = () => estimateMeal(p, date);
+  const cam = $(p + "CamBtn"); if (cam) cam.onclick = () => $(p + "Cam").click();
+  const file = $(p + "FileBtn"); if (file) file.onclick = () => $(p + "File").click();
+  for (const id of [p + "Cam", p + "File"]) {
+    const input = $(id); if (!input) continue;
+    input.onchange = () => { const f = input.files && input.files[0]; if (f) readPhoto(f); };
+  }
+  const clear = $(p + "ClearPhoto"); if (clear) clear.onclick = () => { state.mealPhoto = null; if (p === "n") renderFood(); else renderDetailFood(date, state.nutritionByDate[date], state.mealsByDate[date], { ounces: state.hydrationByDate[date] }); };
+  document.querySelectorAll("#" + (p === "n" ? "foodCard" : "dFood") + " .meal-edit").forEach(b => b.onclick = () => editMeal(date, Number(b.dataset.id), p));
+  document.querySelectorAll("#" + (p === "n" ? "foodCard" : "dFood") + " .meal-del").forEach(b => b.onclick = () => removeMeal(date, Number(b.dataset.id), p));
+  const draft = $(p + "Draft");
+  if (draft) {
+    draft.querySelectorAll("input").forEach(el => el.addEventListener("input", () => {
+      const t = sumItems(readItems(draft));
+      draft.querySelector(".totc").textContent = fmtFood(t.calories);
+      draft.querySelector(".totp").textContent = fmtFood(t.protein) + "g";
+      draft.querySelector(".totb").textContent = fmtFood(t.carbs) + "g";
+      draft.querySelector(".totf").textContent = fmtFood(t.fat) + "g";
+    }));
+    $(p + "AddLine").onclick = () => { state.mealDraft.items.push({ name: "", portion: "", calories: "", protein: "", carbs: "", fat: "" }); rerenderFood(date, p); };
+    $(p + "Confirm").onclick = () => confirmMeal(date, p);
+    $(p + "Discard").onclick = () => { state.mealDraft = null; rerenderFood(date, p); };
+  }
+}
+function rerenderFood(date, p) {
+  if (p === "n") renderFood();
+  else renderDetailFood(date, state.nutritionByDate[date], state.mealsByDate[date], state.hydrationByDate[date] == null ? null : { ounces: state.hydrationByDate[date] });
+}
+function readPhoto(file) {
+  if (!/^image\/(jpeg|png|gif|webp)$/.test(file.type)) { say("Use a JPEG, PNG, GIF, or WebP photo."); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const url = String(reader.result || "");
+    state.mealPhoto = { url, data: url.split(",")[1] || "", mediaType: file.type };
+    const onDetail = $("sDetail").classList.contains("on");
+    rerenderFood(onDetail ? state.detailDate : state.foodDate, onDetail ? "d" : "n");
+  };
+  reader.readAsDataURL(file);
+}
+async function estimateMeal(p, date) {
+  const text = $(p + "Text") ? $(p + "Text").value : "";
+  if (!text.trim() && !state.mealPhoto) { say("Add a photo, a description, or both."); return; }
+  say("Estimating");
+  try {
+    const d = await foodPost({ action: "estimate", text, image: state.mealPhoto ? state.mealPhoto.data : "", media_type: state.mealPhoto ? state.mealPhoto.mediaType : "" });
+    state.mealDraft = { date, id: null, items: d.meal.items, note: d.meal.note || "" };
+    say("Check it, then confirm");
+    rerenderFood(date, p);
+  } catch (e) { say(e.message); }
+}
+async function confirmMeal(date, p) {
+  const root = $(p + "Draft");
+  const items = readItems(root);
+  const note = $(p + "NoteIn") ? $(p + "NoteIn").value : (state.mealDraft?.note || "");
+  say("Saving meal");
+  try {
+    const body = { items, note, ...(state.mealDraft?.id ? { action: "update", id: state.mealDraft.id } : { action: "confirm", date }) };
+    const d = await foodPost(body);
+    const meals = (state.mealsByDate[date] || []).filter(m => m.id !== d.meal.id);
+    meals.push(d.meal);
+    meals.sort((a, b) => Number(a.id) - Number(b.id));
+    state.mealsByDate[date] = meals;
+    state.mealDraft = null;
+    say("Meal saved");
+    rerenderFood(date, p);
+    loadCal(calMonth).catch(()=>{});
+  } catch (e) { say(e.message); }
+}
+function editMeal(date, id, p) {
+  const meal = (state.mealsByDate[date] || []).find(m => Number(m.id) === id);
+  if (!meal) return;
+  state.mealDraft = { date, id: meal.id, items: (meal.items || []).map(it => ({ ...it })), note: meal.note || "" };
+  rerenderFood(date, p);
+}
+async function removeMeal(date, id, p) {
+  say("Removing meal");
+  try {
+    await foodPost({ action: "remove", id });
+    state.mealsByDate[date] = (state.mealsByDate[date] || []).filter(m => Number(m.id) !== id);
+    if (state.mealDraft && state.mealDraft.id === id) state.mealDraft = null;
+    say("Meal removed");
+    rerenderFood(date, p);
+    loadCal(calMonth).catch(()=>{});
+  } catch (e) { say(e.message); }
+}
+async function saveHydration(p, date) {
+  say("Saving water");
+  try {
+    const d = await foodPost({ action: "hydration", date, ounces: $(p + "Oz").value });
+    state.hydrationByDate[date] = d.hydration ? d.hydration.ounces : null;
+    say(d.hydration ? "Water saved" : "Water cleared");
+    rerenderFood(date, p);
+  } catch (e) { say(e.message); }
+}
+async function saveFoodFrom(prefix, date) {
+  const g = (k) => { const el = $(prefix + k); return el ? el.value : ""; };
+  say("Saving food");
+  try {
+    const d = await post({ action:"nutrition", date, calories: g("Cal"), protein: g("Pro"), carbs: g("Carb"), fat: g("Fat") });
+    state.nutritionByDate[date] = d.nutrition;
+    say(d.nutrition ? "Food saved" : "Food cleared");
+    rerenderFood(date, prefix);
+    if ($("sHome").classList.contains("on") || prefix === "d") loadCal(calMonth).catch(()=>{});
+  } catch (e) { say(e.message); }
+}
 
 async function loadHome() {
   say("Loading");
   const d = await api("/train-next?board=1");
   state.profile = d.profile; state.deload = d.deload; state.exercises = d.exercises;
+  state.nutritionByDate = state.nutritionByDate || {};
+  if (!state.foodDate) state.foodDate = new Date().toISOString().slice(0, 10);
+  if (d.nutrition_date) {
+    state.nutritionByDate[d.nutrition_date] = d.nutrition_today || null;
+    state.mealsByDate[d.nutrition_date] = d.meals_today || [];
+    state.hydrationByDate[d.nutrition_date] = d.hydration_today ? d.hydration_today.ounces : null;
+  }
   $("who").textContent = d.user.email; $("btnOut").style.display = "inline-block"; $("btnGoals").style.display = "inline-block";
   $("dash").innerHTML = dashHtml(d.dashboard);
   $("days").innerHTML = Object.keys(DAYS).map(k => `<div class="day" data-day="${k}"><div class="n serif">${k}</div><div class="l">${DAYS[k]}</div></div>`).join("");
   document.querySelectorAll(".day").forEach(el => el.onclick = () => openDay(Number(el.dataset.day)));
   $("deloadBanner").innerHTML = d.deload.recommended ? `<div class="banner"><span class="mono">Deload recommended</span><p>${d.deload.reasons.join(". ")}. For one week: primary lifts about 90 percent, working sets cut by a third, accessories cut in half, nothing to failure. Tick "deload" when you start a session to apply it. Your call.</p></div>` : "";
   $("board").innerHTML = d.cards.map(cardHtml).join("") || `<div class="small">No goals set yet. Tap Goals.</div>`;
+  renderFood();
   loadCal().catch(()=>{ $("cal").innerHTML = `<div class="small">Calendar unavailable.</div>`; });
   if (d.last_bodyweight) $("bw").value = d.last_bodyweight;
   if (d.open_session && !state.leftSession) { await openDay(d.open_session.workout_day); return; }
@@ -364,7 +712,7 @@ async function loadHome() {
 async function openDay(day) {
   say("Loading day " + day);
   const d = await api("/train-next?day=" + day);
-  state = { ...state, day, session: d.open_session, exercises: d.exercises, suggestions: d.suggestions, prehab: d.prehab, readiness: d.readiness, deload: d.deload, logged: d.logged || [], leftSession: false };
+  state = { ...state, day, session: d.open_session, exercises: d.exercises, suggestions: d.suggestions, prehab: d.prehab, readiness: d.readiness, deload: d.deload, logged: d.logged || [], leftSession: false, swapOpen: null };
   $("wDayLabel").textContent = `Workout ${day} · ${DAYNAME[day]}`; $("wTitle").textContent = DAYS[day];
   $("deloadOpt").innerHTML = d.deload.recommended ? `<label style="display:flex;gap:10px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" id="deloadChk" style="width:22px;height:22px;margin:0">Apply the recommended deload today</label>` : "";
   renderWork(); show("sWork"); say("Ready");
@@ -382,7 +730,7 @@ function renderWork() {
     ${p.items.map((it,i)=>`<label class="it"><input type="checkbox" class="pre" data-i="${i}" ${s.prehab_done?"checked":""}>${it}</label>`).join("")}
     ${p.joints.map(j=>`<div class="joint"><div class="k">${j} before</div>${scaleHtml("before:"+j, s.pain_before?.[j])}</div>`).join("")}</div>` : "";
   // exercises
-  $("exList").innerHTML = state.exercises.map(ex => exHtml(ex, state.suggestions.find(x=>x.exercise_id===ex.id)||{}, started)).join("");
+  $("exList").innerHTML = state.exercises.map(ex => exHtml(ex, state.suggestions.find(x => x.planned_exercise_id === ex.id) || state.suggestions.find(x => x.exercise_id === ex.id && !x.swapped) || {}, started)).join("");
   $("afterBox").innerHTML = started && p ? `<div class="prehab"><span class="mono" style="color:var(--glacier);font-weight:700">AFTER</span>${p.joints.map(j=>`<div class="joint"><div class="k">${j} after</div>${scaleHtml("after:"+j, s.pain_after?.[j])}</div>`).join("")}</div>` : "";
   $("finishBtn").style.display = started ? "block" : "none";
   // Prefill everything already saved for this session, plus anything still queued on the phone.
@@ -392,26 +740,38 @@ function renderWork() {
     if (!row) continue;
     const put = (c,v) => { const el = row.querySelector("."+c); if (el && v!=null && v!=="") el.value = v; };
     put("load", L.load); put("reps", L.reps); put("secs", L.seconds); put("rir", L.rir); put("pain", L.pain ?? 0); put("assist", L.assist_load);
-    row.classList.add("saved");
+    if ((L.reps != null && L.reps !== "") || (L.seconds != null && L.seconds !== "")) row.classList.add("saved");
   }
   wire();
 }
 function exHtml(ex, sg, started) {
-  const uni = ex.unilateral, carry = ex.kind==="carry", bw = ex.kind==="bodyweight", pull = /pull-up/i.test(ex.name);
-  const rx = bw ? `${sg.sets} x ${fmt(sg.reps)} reps` : carry ? `${fmt(sg.load)} lb x ${fmt(sg.seconds)} sec, ${sg.sets} sets` : `${fmt(sg.load)} x ${fmt(sg.reps)}, ${sg.sets} sets`;
+  const name = sg.swapped && sg.name ? sg.name : ex.name;
+  const kind = sg.swapped && sg.kind ? sg.kind : ex.kind;
+  const uni = sg.swapped ? !!sg.unilateral : !!ex.unilateral;
+  const logId = sg.exercise_id || ex.id;
+  const carry = kind==="carry", bw = kind==="bodyweight", pull = /pull-?up/i.test(name) && bw;
+  const rx = bw ? `${sg.sets} x ${fmt(sg.reps)} reps` : carry ? (sg.swapped && sg.load==null ? `open load x ${fmt(sg.seconds)} sec, ${sg.sets} sets` : `${fmt(sg.load)} lb x ${fmt(sg.seconds)} sec, ${sg.sets} sets`) : (sg.swapped && sg.load==null ? `open load x ${fmt(sg.reps)}, ${sg.sets} sets` : `${fmt(sg.load)} x ${fmt(sg.reps)}, ${sg.sets} sets`);
   const L = sg.last;
   const last = L ? `${L.load!=null?L.load+" x ":""}${L.reps?.length?L.reps.join("/"):L.secs?.filter(x=>x!=null).join("/")+"s"}${L.avg_rir!=null?` · RIR ${Math.round(L.avg_rir*10)/10}`:""} · pain ${L.max_pain}${L.heavy?` · heavy ${L.heavy.load}x${L.heavy.reps}`:""}${L.asymmetry!=null?` · L/R gap ${L.asymmetry}%`:""}` : "No history";
   const light = sg.light ? `<span class="tag lt-${sg.light}">${sg.status==="pain_hold"?"PAIN HOLD":sg.status}</span>` : "";
-  const heavyRow = sg.heavy ? `<div class="set heavy" data-ex="${ex.id}" data-set="1" data-kind="heavy"><div class="k">HVY</div><input class="n load" type="number" step="2.5" value="${fmt(sg.heavy.load)}" ${started?"":"disabled"}><input class="n reps" type="number" placeholder="${sg.heavy.reps}" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
-  const benchRow = bw && sg.benchmark_due ? `<div class="todaynote">Benchmark due: one max clean set, stop when form breaks.</div><div class="set heavy" data-ex="${ex.id}" data-set="1" data-kind="benchmark"><div class="k">MAX</div><div></div><input class="n reps" type="number" placeholder="max" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
+  const heavyRow = sg.heavy ? `<div class="set heavy" data-ex="${logId}" data-set="1" data-kind="heavy"><div class="k">HVY</div><input class="n load" type="number" step="2.5" value="${fmt(sg.heavy.load)}" ${started?"":"disabled"}><input class="n reps" type="number" placeholder="${sg.heavy.reps}" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
+  const benchRow = bw && sg.benchmark_due ? `<div class="todaynote">Benchmark due: one max clean set, stop when form breaks.</div><div class="set heavy" data-ex="${logId}" data-set="1" data-kind="benchmark"><div class="k">MAX</div><div></div><input class="n reps" type="number" placeholder="max" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
   const rows = [];
+  const loadPh = sg.swapped && sg.load==null ? ` placeholder="load"` : "";
   for (let n=1; n<=sg.sets; n++) for (const side of (uni ? ["L","R"] : [null])) {
-    rows.push(`<div class="set" data-ex="${ex.id}" data-set="${n}" data-kind="work" ${side?`data-side="${side}"`:""}><div class="k">${n}${side?side:""}</div>
-      ${bw ? (pull ? `<input class="n assist" type="number" placeholder="assist" ${started?"":"disabled"}>` : `<div></div>`) : `<input class="n load" type="number" step="0.5" value="${fmt(sg.load)}" ${started?"":"disabled"}>`}
+    rows.push(`<div class="set" data-ex="${logId}" data-set="${n}" data-kind="work" ${side?`data-side="${side}"`:""}><div class="k">${n}${side?side:""}</div>
+      ${bw ? (pull ? `<input class="n assist" type="number" placeholder="assist" ${started?"":"disabled"}>` : `<div></div>`) : `<input class="n load" type="number" step="0.5" value="${fmt(sg.load)}"${loadPh} ${started?"":"disabled"}>`}
       ${carry ? `<input class="n secs" type="number" placeholder="${fmt(sg.seconds)}" ${started?"":"disabled"}>` : `<input class="n reps" type="number" placeholder="${fmt(sg.reps)}" ${started?"":"disabled"}>`}
       <input class="n rir" type="number" placeholder="RIR" min="0" max="5" ${started?"":"disabled"}>${painSel(started)}</div>`);
   }
-  return `<div class="ex"><div class="top"><div class="nm">${ex.name}</div>${light}</div>
+  const acts = started ? `<div class="exacts">${sg.swapped?`<button type="button" class="swapb swapundo" data-planned="${ex.id}">Undo</button>`:""}<button type="button" class="swapb swapopen" data-planned="${ex.id}">Change</button></div>` : "";
+  const panel = state.swapOpen === ex.id ? `<div class="swapbox"><div class="mono" style="color:var(--glacier)">${sg.options?.length ? "Same pattern" : "No swap"}</div>
+    ${(sg.options||[]).map(o => `<button type="button" class="opt swapopt" data-planned="${ex.id}" data-name="${esc(o.name)}">${esc(o.name)}<small>${esc(o.note)}</small></button>`).join("")}
+    ${sg.options?.length ? "" : `<p class="small">${esc(sg.swap_note || "No close substitute for this exercise.")}</p>`}
+    <p class="small">This session only. The plan stays ${esc(ex.name)}, and that is what comes back next time.</p>
+    <button type="button" class="btn ghost swapcancel">Cancel</button></div>` : "";
+  return `<div class="ex"><div class="top"><div><div class="nm">${esc(name)}</div>${sg.swapped?`<div class="swapfrom">In place of ${esc(sg.swap_from || ex.name)}</div>`:""}</div><div>${light}${acts}</div></div>
+    ${panel}
     <div class="lt"><div><div class="k">Last</div><div class="v">${last}</div></div><div><div class="k">Today</div><div class="v today">${rx}</div>${sg.heavy?`<div class="v">then ${sg.heavy.load} x ${sg.heavy.reps}</div>`:""}</div></div>
     ${sg.today?`<div class="todaynote">${sg.today}</div>`:""}
     <button class="whyb" type="button">WHY?</button><div class="why">${sg.why||""}${ex.note?` ${ex.note}`:""}${sg.heavy?` ${sg.heavy.note}`:""}${uni?" Weak side goes first. The strong side never exceeds the weak side's reps.":""}</div>
@@ -437,6 +797,47 @@ function wire() {
     state.session[key] = { ...(state.session[key]||{}), [joint]: Number(b.dataset.v) };
     await post({ action:"prehab", session_id: state.session.id, [key]: state.session[key] }); say("Saved");
   });
+  document.querySelectorAll(".swapopen").forEach(b => b.onclick = () => {
+    captureSets();
+    const id = Number(b.dataset.planned);
+    state.swapOpen = state.swapOpen === id ? null : id;
+    renderWork();
+  });
+  document.querySelectorAll(".swapcancel").forEach(b => b.onclick = () => { captureSets(); state.swapOpen = null; renderWork(); });
+  document.querySelectorAll(".swapundo").forEach(b => b.onclick = () => chooseSwap(Number(b.dataset.planned), null));
+  document.querySelectorAll(".swapopt").forEach(b => b.onclick = () => chooseSwap(Number(b.dataset.planned), b.dataset.name));
+}
+function captureSets() {
+  const key = (L) => [L.exercise_id, L.set_number, L.side || "", L.set_kind || "work"].join(":");
+  const byKey = new Map();
+  for (const L of state.logged || []) byKey.set(key(L), L);
+  document.querySelectorAll("#exList .set").forEach(row => {
+    const g = (c) => { const el = row.querySelector("."+c); return el ? el.value : ""; };
+    if (!row.classList.contains("saved") && row.dataset.dirty !== "1" && g("reps") === "" && g("secs") === "") return;
+    const num = (v) => v === "" ? null : Number(v);
+    const L = { exercise_id: Number(row.dataset.ex), set_number: Number(row.dataset.set), side: row.dataset.side || null, set_kind: row.dataset.kind || "work",
+      load: num(g("load")), reps: g("reps") === "" ? null : Number(g("reps")), seconds: g("secs") === "" ? null : Number(g("secs")),
+      rir: g("rir") === "" ? null : Number(g("rir")), pain: g("pain") === "" ? 0 : Number(g("pain")), assist_load: g("assist") === "" ? null : Number(g("assist")) };
+    byKey.set(key(L), L);
+  });
+  state.logged = [...byKey.values()];
+}
+async function chooseSwap(plannedId, name) {
+  captureSets();
+  document.querySelectorAll(".set[data-dirty]").forEach(row => { clearTimeout(row._t); saveSet(row); });
+  say(name ? "Swapping" : "Restoring the plan");
+  try {
+    const d = await post({ action:"swap", session_id: state.session.id, planned_exercise_id: plannedId, replacement_name: name });
+    let hit = false;
+    state.suggestions = state.suggestions.map(s => {
+      if (s.planned_exercise_id === plannedId || (!s.planned_exercise_id && s.exercise_id === plannedId)) { hit = true; return d.suggestion; }
+      return s;
+    });
+    if (!hit) state.suggestions.push(d.suggestion);
+    state.swapOpen = null;
+    renderWork();
+    say(name ? "Swapped for this session" : "Back to the planned exercise");
+  } catch (e) { say(e.message); }
 }
 async function saveSet(row) {
   if (!state.session) return;
@@ -484,6 +885,7 @@ $("btnGoals").onclick = async () => {
   say("Loading goals");
   const p = state.profile || {};
   document.querySelector(".p-start_bodyweight").value = fmt(p.start_bodyweight); document.querySelector(".p-goal_bodyweight").value = fmt(p.goal_bodyweight); document.querySelector(".p-goal_date").value = fmt(p.goal_date);
+  for (const k of ["target_calories","target_protein","target_carbs","target_fat","target_hydration_oz"]) { const el = document.querySelector(".p-"+k); if (el) el.value = fmt(p[k]); }
   $("goalList").innerHTML = state.exercises.map(ex => `<div class="ex" data-id="${ex.id}"><div class="nm">${ex.name}</div><div class="small">Workout ${ex.workout_day} · ${ex.kind}${ex.unilateral?" · per side":""} · ${ex.sets} x ${ex.rep_low}${ex.rep_high!==ex.rep_low?"-"+ex.rep_high:""}</div>
     <div class="goal-edit">
       <div><div class="mono" style="font-size:9px">Start load</div><input class="n g-start_load" type="number" step="0.5" value="${fmt(ex.start_load)}"></div>
@@ -498,10 +900,20 @@ $("btnGoals").onclick = async () => {
   });
   show("sGoals"); say("Ready");
 };
-$("saveProfile").onclick = async () => { const v = (k) => document.querySelector(".p-"+k).value; say("Saving"); await post({ action:"profile", start_bodyweight:v("start_bodyweight"), goal_bodyweight:v("goal_bodyweight"), goal_date:v("goal_date") }); say("Saved"); };
+$("saveProfile").onclick = async () => {
+  const v = (k) => document.querySelector(".p-"+k).value;
+  say("Saving");
+  try {
+    await post({ action:"profile", start_bodyweight:v("start_bodyweight"), goal_bodyweight:v("goal_bodyweight"), goal_date:v("goal_date"), target_calories:v("target_calories"), target_protein:v("target_protein"), target_carbs:v("target_carbs"), target_fat:v("target_fat"), target_hydration_oz:v("target_hydration_oz") });
+    const numOr = (k) => v(k) === "" ? null : Number(v(k));
+    state.profile = { ...(state.profile||{}), start_bodyweight: v("start_bodyweight") || null, goal_bodyweight: v("goal_bodyweight") || null, goal_date: v("goal_date") || null, target_calories: numOr("target_calories"), target_protein: numOr("target_protein"), target_carbs: numOr("target_carbs"), target_fat: numOr("target_fat"), target_hydration_oz: numOr("target_hydration_oz") };
+    say("Saved");
+  } catch (e) { say(e.message); }
+};
 $("goalsBack").onclick = loadHome;
 
 if (token) loadHome().then(flushQueue).catch(()=>signOut());
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("/train/sw.js");
 </script>
 </body>
 </html>
