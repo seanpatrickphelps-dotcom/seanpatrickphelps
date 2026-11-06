@@ -1,7 +1,7 @@
 // GET /api/train-next?day=1   -> today's prescription for that day, prehab, readiness-adjusted, plus deload check
 // GET /api/train-next?board=1 -> dashboard and trend scoreboard for every exercise with a goal
 // Header: Authorization: Bearer <access_token>
-import { json, db, requireUser, ensureSeeded, suggest, applyToday, scoreboard, deloadCheck, historyByExercise, readiness, sessionStats, PREHAB } from "../lib/train.js";
+import { json, db, requireUser, ensureSeeded, scoreboard, deloadCheck, historyByExercise, readiness, sessionStats, PREHAB, buildSlotSuggestion, migrationError, targetsOf } from "../lib/train.js";
 
 // Consecutive planned sessions finished without missing two in a row (Rule 07: never miss twice).
 function streakOf(sessions) {
@@ -21,6 +21,17 @@ export default async function handler(req, res) {
     const user = await requireUser(req);
     await ensureSeeded(user.id);
     const uid = user.id;
+
+    if (req.query.date) {
+      const date = String(req.query.date);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return json(res, 400, { error: "Date must be YYYY-MM-DD." });
+      const profile = (await db(`profiles?user_id=eq.${uid}&select=*`))[0] || null;
+      let nutrition = null;
+      try { nutrition = (await db(`nutrition_logs?user_id=eq.${uid}&log_date=eq.${date}&select=log_date,calories,protein,carbs,fat`))[0] || null; }
+      catch (e) { const msg = migrationError(e); if (!msg) throw e; }
+      return json(res, 200, { date, nutrition, targets: targetsOf(profile) });
+    }
+
     const day = Number(req.query.day || 0);
     const board = req.query.board === "1";
     const today = new Date().toISOString().slice(0, 10);
@@ -31,11 +42,11 @@ export default async function handler(req, res) {
     const sessions = await db(`sessions?user_id=eq.${uid}&select=*&order=session_date.desc,id.desc&limit=30`);
     const profile = (await db(`profiles?user_id=eq.${uid}&select=*`))[0] || null;
     const lastBw = sessions.find((s) => s.bodyweight)?.bodyweight ?? profile?.start_bodyweight ?? null;
-    const byName = (n) => all.find((e) => e.name === n);
+    const byName = (n) => all.find((e) => e.name === n && !e.is_library);
     const strengthBench = hist[byName("Barbell Bench Press")?.id] || [];
 
-    // Deload: primaries plus readiness history
-    const primaries = all.filter((e) => e.kind === "primary").map((ex) => ({ ex, hist: hist[ex.id] || [] }));
+    // Deload: primaries plus readiness history. Library substitutes are not program lifts.
+    const primaries = all.filter((e) => e.kind === "primary" && !e.is_library).map((ex) => ({ ex, hist: hist[ex.id] || [] }));
     const deload = deloadCheck(primaries, sessions.filter((s) => s.finished));
 
     // Dashboard
@@ -50,9 +61,12 @@ export default async function handler(req, res) {
     };
 
     if (board) {
-      const cards = all.filter((e) => e.goal_load || e.goal_reps).map((ex) => scoreboard(ex, hist[ex.id] || [], lastBw));
+      const cards = all.filter((e) => (e.goal_load || e.goal_reps) && !e.is_library).map((ex) => scoreboard(ex, hist[ex.id] || [], lastBw));
       const openAny = sessions.find((s) => !s.finished) || null;
-      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all, open_session: openAny, streak: streakOf(sessions) });
+      let nutrition_today = null;
+      try { nutrition_today = (await db(`nutrition_logs?user_id=eq.${uid}&log_date=eq.${today}&select=log_date,calories,protein,carbs,fat`))[0] || null; }
+      catch (e) { const msg = migrationError(e); if (!msg) throw e; }
+      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all.filter((e) => !e.is_library), open_session: openAny, streak: streakOf(sessions), nutrition_today, nutrition_date: today });
     }
 
     // Calendar: every session in a month, one line each.
@@ -70,7 +84,10 @@ export default async function handler(req, res) {
           c.sets++; c.pain = Math.max(c.pain, Number(x.pain || 0)); c.volume += Number(x.load || 0) * Number(x.reps || 0);
         }
       }
-      return json(res, 200, { month: `${y}-${String(m).padStart(2, "0")}`, days: rows.map((r) => ({ ...r, ...(counts[r.id] || { sets: 0, pain: 0, volume: 0 }) })), streak: streakOf(sessions) });
+      let nutrition = [];
+      try { nutrition = await db(`nutrition_logs?user_id=eq.${uid}&log_date=gte.${from}&log_date=lt.${to}&select=log_date,calories,protein,carbs,fat&order=log_date`); }
+      catch (e) { const msg = migrationError(e); if (!msg) throw e; }
+      return json(res, 200, { month: `${y}-${String(m).padStart(2, "0")}`, days: rows.map((r) => ({ ...r, ...(counts[r.id] || { sets: 0, pain: 0, volume: 0 }) })), nutrition, streak: streakOf(sessions) });
     }
 
     // One past session, with every set grouped by exercise.
@@ -79,20 +96,50 @@ export default async function handler(req, res) {
       const sess = (await db(`sessions?id=eq.${sid}&user_id=eq.${uid}&select=*`))[0];
       if (!sess) return json(res, 404, { error: "Session not found." });
       const ss = await db(`sets?user_id=eq.${uid}&session_id=eq.${sid}&select=*&order=exercise_id,set_number`);
-      const exs = all.filter((e) => e.workout_day === sess.workout_day);
-      const detail = exs.map((ex) => {
+      const exs = all.filter((e) => e.workout_day === sess.workout_day && !e.is_library);
+      let swaps = [];
+      try { swaps = await db(`session_swaps?user_id=eq.${uid}&session_id=eq.${sid}&select=planned_exercise_id,replacement_exercise_id`); }
+      catch (e) { const msg = migrationError(e); if (!msg) throw e; }
+      const swapFrom = {};
+      for (const sw of swaps) {
+        const planned = all.find((e) => e.id === sw.planned_exercise_id);
+        if (planned) swapFrom[sw.replacement_exercise_id] = planned.name;
+      }
+      const shown = new Set();
+      const detail = [];
+      const pushBlock = (ex, mine, from) => {
+        shown.add(ex.id);
+        const block = { name: ex.name, kind: ex.kind, unilateral: ex.unilateral, sets: mine.map(({ set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load }) => ({ set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load })), stats: sessionStats(ex, mine) };
+        if (from) block.swapped_from = from;
+        detail.push(block);
+      };
+      for (const ex of exs) {
         const mine = ss.filter((x) => x.exercise_id === ex.id);
-        return mine.length ? { name: ex.name, kind: ex.kind, unilateral: ex.unilateral, sets: mine.map(({ set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load }) => ({ set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load })), stats: sessionStats(ex, mine) } : null;
-      }).filter(Boolean);
-      return json(res, 200, { session: sess, detail });
+        if (mine.length) pushBlock(ex, mine, swapFrom[ex.id]);
+      }
+      for (const ex of all) {
+        if (shown.has(ex.id)) continue;
+        const mine = ss.filter((x) => x.exercise_id === ex.id);
+        if (mine.length) pushBlock(ex, mine, swapFrom[ex.id]);
+      }
+      let nutrition = null;
+      try { nutrition = (await db(`nutrition_logs?user_id=eq.${uid}&log_date=eq.${sess.session_date}&select=log_date,calories,protein,carbs,fat`))[0] || null; }
+      catch (e) { const msg = migrationError(e); if (!msg) throw e; }
+      return json(res, 200, { session: sess, detail, nutrition });
     }
 
-    const exercises = all.filter((e) => e.workout_day === day);
+    const exercises = all.filter((e) => e.workout_day === day && !e.is_library);
     const open = sessions.find((s) => s.workout_day === day && !s.finished) || null;
     const ready = open ? readiness(open.sleep, open.energy, open.soreness) : null;
+    let swaps = [];
+    if (open) {
+      try { swaps = await db(`session_swaps?user_id=eq.${uid}&session_id=eq.${open.id}&select=planned_exercise_id,replacement_exercise_id`); }
+      catch (e) { const msg = migrationError(e); if (!msg) throw e; }
+    }
     const suggestions = exercises.map((ex) => {
-      const s = suggest(ex, (hist[ex.id] || []).slice(0, 3), { strengthBench });
-      return open ? applyToday(s, ex, ready.level, open.deload) : s;
+      const sw = swaps.find((s) => s.planned_exercise_id === ex.id);
+      const repl = sw ? all.find((e) => e.id === sw.replacement_exercise_id) : null;
+      return buildSlotSuggestion(ex, (hist[ex.id] || []).slice(0, 3), { strengthBench }, open ? { level: ready.level, deload: open.deload } : null, repl || null, repl ? (hist[repl.id] || []).slice(0, 3) : []);
     });
     const logged = open ? sets.filter((s) => s.session_id === open.id).map(({ exercise_id, set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load }) => ({ exercise_id, set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load })) : [];
     return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, deload, prehab: PREHAB[day] || null, open_session: open, readiness: ready, exercises, suggestions, logged });
