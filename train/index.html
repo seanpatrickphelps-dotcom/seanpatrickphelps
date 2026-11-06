@@ -14,43 +14,47 @@
 <style>
 :root{--night:#17211F;--snow:#EFEEE7;--glacier:#3E97BC;--braies:#1B948C;--teton:#4E7B53;--rust:#BC5E38;--slate:#5C636B;--line:#CFCFC7;--amber:#C9962B}
 *{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
 body{margin:0;background:var(--snow);color:var(--night);font-family:'Hanken Grotesk',sans-serif;font-size:16px;-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid var(--glacier);outline-offset:2px}
 .serif{font-family:'Fraunces',serif;font-variation-settings:'opsz' 144,'wght' 600,'SOFT' 100}
-.mono{font-family:'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;font-size:11px}
+.mono{font-family:'Space Mono',monospace;letter-spacing:.12em;text-transform:uppercase;font-size:10px}
 .pill{display:inline-block;background:var(--rust);color:var(--snow);font-family:'Space Mono';font-size:10px;letter-spacing:.16em;padding:4px 8px 3px}
-header{background:var(--night);color:var(--snow);padding:18px 20px 16px;display:flex;align-items:center;justify-content:space-between}
-header .t{font-size:22px;line-height:1}
-header .sub{color:#9BA2A6;margin-top:4px}
-header button{background:none;border:1px solid #55605C;color:var(--snow);padding:6px 10px;font-family:'Space Mono';font-size:10px;letter-spacing:.14em}
-main{max-width:760px;margin:0 auto;padding:20px 16px 80px}
+header{background:var(--night);color:var(--snow);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
+header .t{font-size:18px;line-height:1}
+header .sub{color:#9BA2A6;margin-top:2px;display:flex;gap:8px;align-items:baseline;min-width:0}
+header .sub #who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46vw}
+header button{background:none;border:1px solid #55605C;color:var(--snow);padding:0 10px;min-height:44px;min-width:44px;font-family:'Space Mono';font-size:10px;letter-spacing:.12em}
+.headacts{display:flex;gap:6px}
+main{max-width:760px;margin:0 auto;padding:10px 14px calc(72px + env(safe-area-inset-bottom))}
 .screen{display:none}.screen.on{display:block}
-h1{font-size:30px;margin:0 0 6px;line-height:1.05}
-h2{font-size:20px;margin:22px 0 8px}
-p.lead{color:var(--slate);margin:0 0 16px;line-height:1.5}
-label.f{display:block;margin:12px 0 4px}
-input,select{width:100%;padding:12px;border:1px solid var(--line);background:#fff;font:inherit;font-size:16px}
-input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;font-size:15px}
-.btn{display:inline-block;width:100%;padding:14px;border:0;background:var(--night);color:var(--snow);font-family:'Space Mono';font-size:12px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;margin-top:14px}
+h1{font-size:22px;margin:0 0 4px;line-height:1.1}
+h2{font-size:16px;margin:12px 0 4px}
+p.lead{color:var(--slate);margin:0 0 10px;line-height:1.4;font-size:15px}
+label.f{display:block;margin:8px 0 2px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);background:#fff;font:inherit;font-size:16px}
+input.n,select.n{font-family:'Space Mono';text-align:center;padding:8px 4px;font-size:16px;min-height:44px}
+.btn{display:inline-flex;align-items:center;justify-content:center;width:100%;min-height:44px;padding:10px 12px;border:0;background:var(--night);color:var(--snow);font-family:'Space Mono';font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;margin-top:8px}
 .btn.rust{background:var(--rust)}.btn.ghost{background:none;border:1px solid var(--night);color:var(--night)}
-.btn.sm{width:auto;padding:8px 12px;font-size:10px;margin:0}
+.btn.sm{width:auto;padding:0 12px;font-size:10px;margin:0;min-height:44px}
 .btn:disabled{opacity:.5}
 .err{color:var(--rust);margin-top:10px;min-height:20px}
-.dash{background:var(--night);color:var(--snow);padding:14px 16px;margin:0 -16px 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.dash .k{font-family:'Space Mono';font-size:8.5px;letter-spacing:.14em;color:#9BA2A6;text-transform:uppercase}
-.dash .v{font-family:'Fraunces';font-size:20px;line-height:1.1;margin-top:3px}
+.dash{background:var(--night);color:var(--snow);padding:10px 12px;margin:0 0 8px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dash .k{font-family:'Space Mono';font-size:8px;letter-spacing:.1em;color:#9BA2A6;text-transform:uppercase}
+.dash .v{font-family:'Fraunces';font-size:16px;line-height:1.1;margin-top:2px}
 .dash .v small{font-size:12px;color:#9BA2A6;font-family:'Hanken Grotesk'}
 .dash .wk{grid-column:1/-1;font-family:'Space Mono';font-size:10px;letter-spacing:.16em;color:var(--glacier);border-bottom:1px solid #33403C;padding-bottom:8px}
-.days{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
-.day{border:1px solid var(--night);padding:12px 6px;text-align:center;cursor:pointer;background:#fff}
-.day .n{font-family:'Fraunces';font-size:34px;line-height:1}
-.day .l{font-family:'Space Mono';font-size:8px;letter-spacing:.1em;text-transform:uppercase;margin-top:6px;color:var(--slate)}
+.days{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.day{border:1px solid var(--night);padding:6px 2px;min-height:64px;text-align:center;cursor:pointer;background:#fff}
+.day .n{font-family:'Fraunces';font-size:22px;line-height:1}
+.day .l{font-family:'Space Mono';font-size:7px;letter-spacing:.04em;text-transform:uppercase;margin-top:4px;color:var(--slate)}
 .banner{border-left:4px solid var(--rust);background:#fff;padding:12px 14px;margin-top:14px}
 .banner .mono{color:var(--rust);font-weight:700}
 .banner p{margin:6px 0 0;font-size:14px;line-height:1.45;color:var(--slate)}
-.card{background:#fff;border:1px solid var(--line);padding:14px;margin-top:10px}
+.card{background:transparent;border:0;border-bottom:1px solid var(--line);padding:4px 0 10px;margin:0}
 .card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .card .nm{font-family:'Fraunces';font-variation-settings:'opsz' 32,'wght' 600,'SOFT' 100;font-size:17px}
-.card .big{font-family:'Fraunces';font-size:30px;line-height:1;margin-top:6px}
+.card .big,.wt .big{font-family:'Fraunces';font-size:28px;line-height:1;margin-top:2px}
 .card .big small{font-size:13px;color:var(--slate);font-family:'Hanken Grotesk'}
 .card .row2{display:flex;gap:18px;margin-top:8px;flex-wrap:wrap}
 .card .kv{font-size:12px;color:var(--slate)}.card .kv b{display:block;color:var(--night);font-family:'Space Mono';font-size:12px;letter-spacing:.04em}
@@ -63,19 +67,19 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
 .lt-green{background:var(--teton);color:#fff}.lt-yellow{background:var(--amber);color:#fff}.lt-red{background:var(--rust);color:#fff}
 .ready{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:8px}
 .ready .k{font-family:'Space Mono';font-size:9px;letter-spacing:.12em;color:var(--slate);text-transform:uppercase;margin-bottom:4px}
-.prehab{background:#fff;border:1px solid var(--line);padding:14px;margin-top:14px}
+.prehab{background:#fff;border:1px solid var(--line);padding:8px 10px;margin-top:8px}
 .prehab .it{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:15px}
 .prehab .it:first-of-type{border-top:0}
 .prehab input[type=checkbox]{width:22px;height:22px;margin:0}
 .scale{display:flex;gap:4px;margin-top:6px}
-.scale button{flex:1;padding:8px 0;border:1px solid var(--line);background:#fff;font-family:'Space Mono';font-size:12px;cursor:pointer}
+.scale button{flex:1;min-height:44px;padding:8px 0;border:1px solid var(--line);background:#fff;font-family:'Space Mono';font-size:14px;cursor:pointer}
 .scale button.on{background:var(--night);color:var(--snow);border-color:var(--night)}
 .joint{margin-top:10px}.joint .k{font-family:'Space Mono';font-size:9px;letter-spacing:.12em;color:var(--slate);text-transform:uppercase}
-.ex{border-top:2px solid var(--night);padding:14px 0 6px;margin-top:8px}
+.ex{border-top:1px solid var(--night);padding:8px 0 4px;margin-top:6px}
 .ex .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
 .foodgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .foodgrid .k{font-family:'Space Mono';font-size:9px;letter-spacing:.12em;color:var(--slate);text-transform:uppercase;margin-bottom:4px}
-.meter{margin-top:12px}
+.meter{margin-top:8px}
 .meter .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .meter .k{font-family:'Space Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase}
 .meter .num{font-family:'Space Mono';font-size:12px}
@@ -87,7 +91,7 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
 .chips .c2{flex:1;background:var(--snow);border:1px solid var(--line);padding:8px 8px 6px;min-width:0}
 .chips .k{font-family:'Space Mono';font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate)}
 .chips .v{font-family:'Fraunces';font-size:18px;line-height:1.1;margin-top:3px}
-.mtable{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+.mtable{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;table-layout:fixed}
 .mtable th{font-family:'Space Mono';font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);text-align:right;font-weight:400;padding:0 2px 4px}
 .mtable th:first-child,.mtable td.food{text-align:left}
 .mtable td{padding:7px 2px;border-top:1px solid var(--line);vertical-align:top;text-align:right;font-family:'Space Mono';font-size:12px}
@@ -153,19 +157,33 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
 .det .exblock .nm{font-family:'Fraunces';font-variation-settings:'opsz' 32,'wght' 600,'SOFT' 100;font-size:16px}
 .det .exblock .sets2{font-family:'Space Mono';font-size:12px;color:var(--slate);margin-top:4px;line-height:1.5}
 .det .exblock .sets2 b{color:var(--night)}
-.status{position:fixed;bottom:0;left:0;right:0;background:var(--night);color:#9BA2A6;font-family:'Space Mono';font-size:10px;letter-spacing:.12em;padding:8px 16px;text-transform:uppercase}
+.status{position:static;background:transparent;color:#9BA2A6;font-family:'Space Mono';font-size:10px;letter-spacing:.08em;padding:0;text-transform:uppercase}
+.pane{display:none}.pane.on{display:block}
+#appNav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;background:var(--night);border-top:1px solid #33403C;padding:2px 4px calc(2px + env(safe-area-inset-bottom))}
+#appNav[hidden]{display:none}
+#appNav button{flex:1;min-height:48px;background:none;border:0;color:#9BA2A6;font-family:'Space Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+#appNav button.on{color:var(--snow);box-shadow:inset 0 -2px 0 var(--glacier)}
+body.typing #appNav{visibility:hidden}
+body.typing main{padding-bottom:16px}
+.rowline{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;flex-wrap:wrap}
+.rowline input[type=date]{width:auto;min-height:44px;padding:6px 8px}
+.more{margin-top:8px}
+.more summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-family:'Space Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--slate)}
+.weighline{display:flex;gap:8px;align-items:center}
+.weighline input{max-width:120px}
+.composer{display:flex;flex-direction:column;gap:8px;margin-top:8px}
 </style>
 </head>
 <body>
 <header>
-  <div><span class="pill">Phase II</span><div class="t serif" style="margin-top:8px">The Training Log.</div><div class="sub mono" id="who"></div></div>
-  <div><button id="btnGoals" style="display:none">Goals</button> <button id="btnOut" style="display:none">Sign out</button></div>
+  <div style="min-width:0"><div class="t serif">Train.</div><div class="sub mono"><span id="who"></span><span class="status" id="status">Ready</span></div></div>
+  <div class="headacts"><button id="btnGoals" style="display:none">Goals</button><button id="btnOut" style="display:none">Out</button></div>
 </header>
 <main>
 
 <section id="sAuth" class="screen on">
-  <h1 class="serif">Log the lift.<br>Earn the next one.</h1>
-  <p class="lead">Completing the prescription with reps in reserve, symmetry, and no pain earns progression. Poor recovery earns restraint. Pain earns modification. Sign in, or make an account and the Phase II plan is yours to run.</p>
+  <h1 class="serif">Log the set.</h1>
+  <p class="lead">Finish it clean. That is what earns the next load.</p>
   <label class="f mono">Email</label><input id="email" type="email" autocomplete="email">
   <label class="f mono">Password</label><input id="pass" type="password" autocomplete="current-password">
   <button class="btn" id="login">Sign in</button>
@@ -174,17 +192,22 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
 </section>
 
 <section id="sHome" class="screen">
-  <div id="todayCard"></div>
-  <div class="dash" id="dash"></div>
-  <h1 class="serif">Pick the day.</h1>
-  <div class="days" id="days"></div>
-  <div id="deloadBanner"></div>
-  <div id="foodCard"></div>
-  <h2 class="serif">The month.</h2>
-  <div class="cal" id="cal"></div>
-  <h2 class="serif">The scoreboard.</h2>
-  <p class="lead">Trend on the last four exposures, the next milestone, and what you have actually lifted versus what the math estimates.</p>
-  <div id="board"></div>
+  <div class="pane on" id="paneToday">
+    <div id="todayCard"></div>
+    <div id="foodCard"></div>
+  </div>
+  <div class="pane" id="paneTrain">
+    <div class="dash" id="dash"></div>
+    <div class="days" id="days"></div>
+    <div id="deloadBanner"></div>
+  </div>
+  <div class="pane" id="paneMonth">
+    <div class="cal" id="cal"></div>
+  </div>
+  <div class="pane" id="paneBoard">
+    <p class="lead">Last four exposures, the next milestone, and the weight you actually lifted.</p>
+    <div id="board"></div>
+  </div>
 </section>
 
 <section id="sWork" class="screen">
@@ -249,7 +272,12 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
 </section>
 
 </main>
-<div class="status" id="status">Ready</div>
+<nav id="appNav" hidden aria-label="Sections">
+  <button type="button" data-pane="Today" class="on" aria-current="page">Today</button>
+  <button type="button" data-pane="Train" aria-current="false">Train</button>
+  <button type="button" data-pane="Month" aria-current="false">Month</button>
+  <button type="button" data-pane="Board" aria-current="false">Board</button>
+</nav>
 
 <script>
 const API = "/api";
@@ -261,7 +289,26 @@ let state = {};
 let refreshing = null;
 const QKEY = "train_queue";
 const $ = (id) => document.getElementById(id);
-const show = (id) => { document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on")); $(id).classList.add("on"); window.scrollTo(0,0); };
+const show = (id) => {
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
+  $(id).classList.add("on");
+  const nav = $("appNav");
+  if (nav) nav.hidden = id === "sAuth";
+  window.scrollTo(0,0);
+};
+function showPane(name) {
+  if (!$("sHome").classList.contains("on")) state.leftSession = true;
+  document.querySelectorAll("#sHome .pane").forEach(p => p.classList.toggle("on", p.id === "pane" + name));
+  document.querySelectorAll("#appNav button").forEach(b => {
+    const on = b.dataset.pane === name;
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-current", on ? "page" : "false");
+  });
+  show("sHome");
+}
+document.querySelectorAll("#appNav button").forEach(b => b.onclick = () => showPane(b.dataset.pane));
+document.addEventListener("focusin", (e) => { if (e.target.matches("input, textarea, select")) document.body.classList.add("typing"); });
+document.addEventListener("focusout", () => { setTimeout(() => { const a = document.activeElement; if (!a || !a.matches || !a.matches("input, textarea, select")) document.body.classList.remove("typing"); }, 80); });
 const say = (t) => { $("status").textContent = t; };
 const fmt = (v) => v==null ? "" : v;
 const cls = (s) => (s||"").replace(/\s/g,"");
@@ -526,10 +573,9 @@ function renderToday() {
   const bar = prog.ready ? `<div class="track" style="margin-top:8px"><i style="width:${prog.pct}%"></i></div><p class="small" style="margin:8px 0 0">${weightCopy(prog)}</p>` : `<p class="small">${weightCopy(prog)}</p>`;
   const big = prog.ready ? `<div class="big">${fmtFood(prog.current)} <small>lb</small></div><div class="small">${fmtFood(prog.start)} start · ${fmtFood(prog.goal)} goal</div>` : "";
   const hint = latest ? "" : (p.start_bodyweight != null && p.start_bodyweight !== "" ? `<p class="small">No weigh-in yet. Current weight is the start weight until you save one.</p>` : "");
-  el.innerHTML = `<div class="card"><div class="mono" style="color:var(--glacier)">Weight</div><div class="nm">The scale.</div>${big}${bar}${hint}
-    <label class="f mono">Today's weigh-in · ${esc(date)}</label>
-    <div class="rowbtns"><input class="n" id="weighLb" type="number" min="0" max="1000" step="0.1" inputmode="decimal" value="${todayLb == null ? "" : todayLb}" style="max-width:140px" aria-label="Today's weight in pounds"><button type="button" class="btn sm" id="saveWeigh">Save weight</button></div>
-    <div style="margin-top:14px">${dashHtmlFood(date, "calprotein")}</div></div>`;
+  el.innerHTML = `<div class="wt"><div class="rowline"><div><div class="mono" style="color:var(--glacier)">Weight · ${esc(date)}</div>${big}</div>
+    <div class="weighline"><input class="n" id="weighLb" type="number" min="0" max="1000" step="0.1" inputmode="decimal" value="${todayLb == null ? "" : todayLb}" aria-label="Today's weight in pounds"><button type="button" class="btn sm rust" id="saveWeigh">Save</button></div></div>
+    ${bar}${hint}${dashHtmlFood(date, "calprotein")}</div>`;
   $("saveWeigh").onclick = saveWeigh;
 }
 async function saveWeigh() {
@@ -616,21 +662,20 @@ function foodPanel(date, p, withDate) {
   const photo = state.mealPhoto ? `<img class="photo" alt="Meal photo" src="${state.mealPhoto.url}">` : "";
   const list = meals.map(m => `<div class="meal" data-meal="${m.id}">${mealTable(m.items && m.items.length ? m.items : [{ name: "Meal", portion: "", calories: m.calories, protein: m.protein, carbs: m.carbs, fat: m.fat }], false)}${m.note ? `<p class="small">${esc(m.note)}</p>` : ""}<div class="rowbtns"><button type="button" class="btn sm meal-edit" data-id="${m.id}">Edit</button><button type="button" class="btn ghost sm meal-del" data-id="${m.id}">Remove</button></div></div>`).join("");
   const draftBox = draft ? `<div class="meal" id="${p}Draft"><div class="mono" style="color:var(--glacier)">Estimate</div>${mealTable(draft.items, true)}<p class="small" id="${p}Note">${esc(draft.note || "")}</p><label class="f mono">Note</label><input id="${p}NoteIn" value="${esc(draft.note || "")}"><div class="rowbtns"><button type="button" class="btn sm" id="${p}AddLine">Add line</button></div><div class="rowbtns"><button type="button" class="btn" id="${p}Confirm">${draft.id ? "Save meal" : "Confirm"}</button><button type="button" class="btn ghost" id="${p}Discard">Discard</button></div></div>` : "";
-  const manualBox = meals.length ? `<p class="small">Meals are this day's total.${foodLogged(manual) ? " A typed total is still saved, and it shows again if every meal is removed." : ""}</p>` : `<div class="mono" style="margin-top:14px">Typed total</div><p class="small">Use this when you already know the day's numbers. It does not start a workout.</p>${macroInputs(p, manual)}<button class="btn" id="${p}SaveFood">Save food</button>`;
+  const manualInner = meals.length ? `<p class="small">Meals are this day's total.${foodLogged(manual) ? " A typed total is still saved. Remove every meal and it shows again." : ""}</p>` : `${macroInputs(p, manual)}<button class="btn" id="${p}SaveFood">Save total</button>`;
   const oz = state.hydrationByDate[date];
-  return `<div class="card"><div class="mono" style="color:var(--braies)">Food</div><div class="nm">${withDate ? "The day, on the plate." : "That day's totals."}</div>
-    ${withDate ? `<label class="f mono">Date</label><input id="foodDate" type="date" value="${date}">` : `<p class="small">${esc(date)}. Saved on its own, finished workout or not.</p>`}
-    ${(withDate && date === chicagoToday()) ? dashHtmlFood(date, "hydration") : dashHtmlFood(date)}
-    <label class="f mono">Water, ounces</label><div class="rowbtns"><input class="n" id="${p}Oz" type="number" min="0" step="1" inputmode="decimal" value="${oz == null ? "" : oz}" style="max-width:120px"><button type="button" class="btn sm" id="${p}SaveOz">Save water</button></div>
-    ${list ? `<h2 class="serif" style="font-size:18px">Meals</h2>${list}` : ""}
-    <h2 class="serif" style="font-size:18px">${draft ? "Adjust it, then confirm." : "Add a meal"}</h2>
+  const bars = (withDate && date === chicagoToday()) ? dashHtmlFood(date, "hydration") : dashHtmlFood(date);
+  return `<div class="sheet"><div class="rowline"><span class="mono" style="color:var(--braies)">Food</span>${withDate ? `<input id="foodDate" type="date" value="${date}" aria-label="Food date">` : `<span class="small">${esc(date)}</span>`}</div>
+    ${bars}
+    <div class="rowbtns"><input class="n" id="${p}Oz" type="number" min="0" step="1" inputmode="decimal" value="${oz == null ? "" : oz}" aria-label="Water ounces" placeholder="oz"><button type="button" class="btn sm" id="${p}SaveOz">Save oz</button></div>
+    ${list}
+    ${draft ? `<div class="mono" style="color:var(--glacier);margin-top:8px">Check the estimate</div>` : `<div class="mono" style="margin-top:8px">Add a meal</div>`}
     ${draftBox}
-    ${draft ? "" : `<label class="f mono">What was it</label><textarea id="${p}Text" rows="3" placeholder="Two servings, no salsa" style="width:100%;padding:12px;border:1px solid var(--line);font:inherit;font-size:16px"></textarea>
-      <div class="rowbtns"><button type="button" class="btn sm" id="${p}CamBtn">Camera</button><button type="button" class="btn sm ghost" id="${p}FileBtn">Photo</button>${state.mealPhoto ? `<button type="button" class="btn sm ghost" id="${p}ClearPhoto">Clear photo</button>` : ""}</div>
+    ${draft ? "" : `<div class="composer"><textarea id="${p}Text" rows="2" placeholder="Two servings, no salsa" aria-label="Meal description"></textarea>
+      <div class="rowbtns"><button type="button" class="btn sm" id="${p}CamBtn">Camera</button><button type="button" class="btn sm ghost" id="${p}FileBtn">Photo</button><button type="button" class="btn sm rust" id="${p}Estimate">Estimate</button>${state.mealPhoto ? `<button type="button" class="btn sm ghost" id="${p}ClearPhoto">Clear</button>` : ""}</div>
       <input id="${p}Cam" type="file" accept="image/*" capture="environment" hidden><input id="${p}File" type="file" accept="image/*" hidden>
-      ${photo}
-      <button class="btn" id="${p}Estimate">Estimate</button>`}
-    ${manualBox}
+      ${photo}</div>`}
+    <details class="more"><summary>Typed total</summary>${manualInner}</details>
   </div>`;
 }
 function macroInputs(prefix, row) {
