@@ -174,6 +174,7 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
 </section>
 
 <section id="sHome" class="screen">
+  <div id="todayCard"></div>
   <div class="dash" id="dash"></div>
   <h1 class="serif">Pick the day.</h1>
   <div class="days" id="days"></div>
@@ -228,7 +229,7 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
 
 <section id="sGoals" class="screen">
   <h1 class="serif">Set the numbers.</h1>
-  <div class="card"><div class="nm">Body</div><div class="goal-edit" style="grid-template-columns:1fr 1fr 1fr">
+  <div class="card"><div class="nm">Body</div><p class="small">Start and goal weight drive the bar at the top. The daily weigh-in is saved there, one per day.</p><div class="goal-edit" style="grid-template-columns:1fr 1fr 1fr">
     <div><div class="mono" style="font-size:9px">Start weight</div><input class="n p-start_bodyweight" type="number" step="0.1"></div>
     <div><div class="mono" style="font-size:9px">Goal weight</div><input class="n p-goal_bodyweight" type="number" step="0.1"></div>
     <div><div class="mono" style="font-size:9px">Goal date</div><input class="p-goal_date" type="date"></div></div>
@@ -363,7 +364,7 @@ async function loadCal(month) {
   for (const n of d.nutrition || []) fed[n.log_date] = n;
   for (const m of d.meals || []) (mealsBy[m.log_date] ||= []).push(m);
   for (const h of d.hydration || []) hydBy[h.log_date] = h.ounces;
-  const today = new Date().toISOString().slice(0,10);
+  const today = chicagoToday();
   let cells = "";
   for (let i=0;i<lead;i++) cells += `<div class="c empty"></div>`;
   for (let n=1;n<=days;n++) {
@@ -463,19 +464,85 @@ function chipFor(kind, current, target) {
   if (kind === "hydration") return diff > 0 ? ["Hydration over", abs + " oz"] : diff < 0 ? ["Hydration left", abs + " oz"] : ["Hydration", "On target"];
   return null;
 }
-function dashHtmlFood(date) {
+function dashHtmlFood(date, part) {
   const p = state.profile || {};
   const food = dayFood(date);
   const ounces = state.hydrationByDate ? state.hydrationByDate[date] : null;
-  const chips = [chipFor("calories", food.calories, p.target_calories), chipFor("protein", food.protein, p.target_protein), chipFor("hydration", ounces, p.target_hydration_oz)].filter(Boolean);
-  const extra = [];
-  if (p.target_carbs != null && p.target_carbs !== "") extra.push(barHtml("Carbs", food.carbs, p.target_carbs, "g", "over"));
-  if (p.target_fat != null && p.target_fat !== "") extra.push(barHtml("Fat", food.fat, p.target_fat, "g", "over"));
-  return barHtml("Calories", food.calories, p.target_calories, "kcal", "over")
-    + barHtml("Protein", food.protein, p.target_protein, "g", "good")
-    + extra.join("")
-    + barHtml("Hydration", ounces, p.target_hydration_oz, "oz", "over")
-    + (chips.length ? `<div class="chips">${chips.map(c => chipHtml(c[0], c[1])).join("")}</div>` : "");
+  const want = part || "all";
+  const chips = [];
+  let html = "";
+  if (want === "all" || want === "calprotein") {
+    html += barHtml("Calories", food.calories, p.target_calories, "kcal", "over") + barHtml("Protein", food.protein, p.target_protein, "g", "good");
+    if (p.target_carbs != null && p.target_carbs !== "") html += barHtml("Carbs", food.carbs, p.target_carbs, "g", "over");
+    if (p.target_fat != null && p.target_fat !== "") html += barHtml("Fat", food.fat, p.target_fat, "g", "over");
+    const cal = chipFor("calories", food.calories, p.target_calories);
+    const pro = chipFor("protein", food.protein, p.target_protein);
+    if (cal) chips.push(cal);
+    if (pro) chips.push(pro);
+  }
+  if (want === "all" || want === "hydration") {
+    html += barHtml("Hydration", ounces, p.target_hydration_oz, "oz", "over");
+    const water = chipFor("hydration", ounces, p.target_hydration_oz);
+    if (water) chips.push(water);
+  }
+  return html + (chips.length ? `<div class="chips">${chips.map(c => chipHtml(c[0], c[1])).join("")}</div>` : "");
+}
+function chicagoToday() {
+  const parts = new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
+  const get = (t) => parts.find((p) => p.type === t).value;
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}
+function weightProgressView(start, current, goal) {
+  if (start == null || start === "" || current == null || current === "" || goal == null || goal === "") return { ready: false };
+  const s = Number(start), c = Number(current), g = Number(goal);
+  if (![s, c, g].every(Number.isFinite)) return { ready: false };
+  const lost = Math.round((s - c) * 10) / 10;
+  const remaining = Math.round((c - g) * 10) / 10;
+  const span = s - g;
+  let pct = 0;
+  if (span > 0) pct = Math.max(0, Math.min(100, (lost / span) * 100));
+  else if (span < 0) pct = Math.max(0, Math.min(100, ((c - s) / (g - s)) * 100));
+  else pct = c === g ? 100 : 0;
+  return { ready: true, start: s, current: c, goal: g, lost, remaining, pct };
+}
+function weightCopy(prog) {
+  if (!prog.ready) return "Set a start weight and a goal under Goals. Nothing here is assumed.";
+  const lost = prog.lost, rem = prog.remaining;
+  if (lost > 0 && rem > 0) return `${fmtFood(lost)} lb lost · ${fmtFood(rem)} lb to go`;
+  if (lost > 0 && rem === 0) return `${fmtFood(lost)} lb lost · goal reached`;
+  if (lost > 0 && rem < 0) return `${fmtFood(lost)} lb lost · ${fmtFood(Math.abs(rem))} lb under the goal`;
+  if (lost === 0) return `0 lb lost · ${fmtFood(Math.max(rem, 0))} lb to go`;
+  return `${fmtFood(Math.abs(lost))} lb above the start · ${fmtFood(rem)} lb to go`;
+}
+function renderToday() {
+  const el = $("todayCard");
+  if (!el) return;
+  const date = chicagoToday();
+  const p = state.profile || {};
+  const latest = state.latestWeighIn;
+  const current = latest?.pounds ?? (p.start_bodyweight != null && p.start_bodyweight !== "" ? p.start_bodyweight : null);
+  const prog = weightProgressView(p.start_bodyweight, current, p.goal_bodyweight);
+  const todayLb = state.weighByDate && Object.prototype.hasOwnProperty.call(state.weighByDate, date) ? state.weighByDate[date] : (latest && latest.log_date === date ? latest.pounds : null);
+  const bar = prog.ready ? `<div class="track" style="margin-top:8px"><i style="width:${prog.pct}%"></i></div><p class="small" style="margin:8px 0 0">${weightCopy(prog)}</p>` : `<p class="small">${weightCopy(prog)}</p>`;
+  const big = prog.ready ? `<div class="big">${fmtFood(prog.current)} <small>lb</small></div><div class="small">${fmtFood(prog.start)} start · ${fmtFood(prog.goal)} goal</div>` : "";
+  const hint = latest ? "" : (p.start_bodyweight != null && p.start_bodyweight !== "" ? `<p class="small">No weigh-in yet. Current weight is the start weight until you save one.</p>` : "");
+  el.innerHTML = `<div class="card"><div class="mono" style="color:var(--glacier)">Weight</div><div class="nm">The scale.</div>${big}${bar}${hint}
+    <label class="f mono">Today's weigh-in · ${esc(date)}</label>
+    <div class="rowbtns"><input class="n" id="weighLb" type="number" min="0" max="1000" step="0.1" inputmode="decimal" value="${todayLb == null ? "" : todayLb}" style="max-width:140px" aria-label="Today's weight in pounds"><button type="button" class="btn sm" id="saveWeigh">Save weight</button></div>
+    <div style="margin-top:14px">${dashHtmlFood(date, "calprotein")}</div></div>`;
+  $("saveWeigh").onclick = saveWeigh;
+}
+async function saveWeigh() {
+  const date = chicagoToday();
+  say("Saving weight");
+  try {
+    const d = await foodPost({ action: "weigh", date, pounds: $("weighLb").value });
+    state.latestWeighIn = d.latest || null;
+    state.weighByDate = state.weighByDate || {};
+    state.weighByDate[date] = d.weigh_in ? d.weigh_in.pounds : null;
+    say(d.weigh_in ? "Weight saved" : "Weight cleared");
+    renderToday();
+  } catch (e) { say(e.message); }
 }
 function mealTable(items, edit) {
   const rows = (items || []).map((it, i) => edit
@@ -508,7 +575,7 @@ function storeDay(date, d) {
 let foodSeq = 0;
 async function renderFood() {
   const seq = ++foodSeq;
-  const date = state.foodDate || new Date().toISOString().slice(0, 10);
+  const date = state.foodDate || chicagoToday();
   state.foodDate = date;
   const card = $("foodCard");
   if (!card) return;
@@ -530,7 +597,7 @@ async function renderFood() {
 function selectFoodDate(iso) {
   if (!iso) return;
   state.foodDate = iso;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = chicagoToday();
   document.querySelectorAll("#cal .c").forEach((c) => c.classList.toggle("sel", c.dataset.date === iso && iso !== today));
   renderFood();
 }
@@ -553,7 +620,7 @@ function foodPanel(date, p, withDate) {
   const oz = state.hydrationByDate[date];
   return `<div class="card"><div class="mono" style="color:var(--braies)">Food</div><div class="nm">${withDate ? "The day, on the plate." : "That day's totals."}</div>
     ${withDate ? `<label class="f mono">Date</label><input id="foodDate" type="date" value="${date}">` : `<p class="small">${esc(date)}. Saved on its own, finished workout or not.</p>`}
-    ${dashHtmlFood(date)}
+    ${(withDate && date === chicagoToday()) ? dashHtmlFood(date, "hydration") : dashHtmlFood(date)}
     <label class="f mono">Water, ounces</label><div class="rowbtns"><input class="n" id="${p}Oz" type="number" min="0" step="1" inputmode="decimal" value="${oz == null ? "" : oz}" style="max-width:120px"><button type="button" class="btn sm" id="${p}SaveOz">Save water</button></div>
     ${list ? `<h2 class="serif" style="font-size:18px">Meals</h2>${list}` : ""}
     <h2 class="serif" style="font-size:18px">${draft ? "Adjust it, then confirm." : "Add a meal"}</h2>
@@ -643,6 +710,7 @@ async function confirmMeal(date, p) {
     state.mealDraft = null;
     say("Meal saved");
     rerenderFood(date, p);
+    if (date === chicagoToday()) renderToday();
     loadCal(calMonth).catch(()=>{});
   } catch (e) { say(e.message); }
 }
@@ -660,6 +728,7 @@ async function removeMeal(date, id, p) {
     if (state.mealDraft && state.mealDraft.id === id) state.mealDraft = null;
     say("Meal removed");
     rerenderFood(date, p);
+    if (date === chicagoToday()) renderToday();
     loadCal(calMonth).catch(()=>{});
   } catch (e) { say(e.message); }
 }
@@ -670,6 +739,7 @@ async function saveHydration(p, date) {
     state.hydrationByDate[date] = d.hydration ? d.hydration.ounces : null;
     say(d.hydration ? "Water saved" : "Water cleared");
     rerenderFood(date, p);
+    if (date === chicagoToday()) renderToday();
   } catch (e) { say(e.message); }
 }
 async function saveFoodFrom(prefix, date) {
@@ -680,6 +750,7 @@ async function saveFoodFrom(prefix, date) {
     state.nutritionByDate[date] = d.nutrition;
     say(d.nutrition ? "Food saved" : "Food cleared");
     rerenderFood(date, prefix);
+    if (date === chicagoToday()) renderToday();
     if ($("sHome").classList.contains("on") || prefix === "d") loadCal(calMonth).catch(()=>{});
   } catch (e) { say(e.message); }
 }
@@ -689,12 +760,16 @@ async function loadHome() {
   const d = await api("/train-next?board=1");
   state.profile = d.profile; state.deload = d.deload; state.exercises = d.exercises;
   state.nutritionByDate = state.nutritionByDate || {};
-  if (!state.foodDate) state.foodDate = new Date().toISOString().slice(0, 10);
+  if (!state.foodDate) state.foodDate = chicagoToday();
+  state.latestWeighIn = d.latest_weigh_in || null;
+  state.weighByDate = state.weighByDate || {};
   if (d.nutrition_date) {
     state.nutritionByDate[d.nutrition_date] = d.nutrition_today || null;
     state.mealsByDate[d.nutrition_date] = d.meals_today || [];
     state.hydrationByDate[d.nutrition_date] = d.hydration_today ? d.hydration_today.ounces : null;
+    state.weighByDate[d.nutrition_date] = d.weigh_in_today ? d.weigh_in_today.pounds : null;
   }
+  renderToday();
   $("who").textContent = d.user.email; $("btnOut").style.display = "inline-block"; $("btnGoals").style.display = "inline-block";
   $("dash").innerHTML = dashHtml(d.dashboard);
   $("days").innerHTML = Object.keys(DAYS).map(k => `<div class="day" data-day="${k}"><div class="n serif">${k}</div><div class="l">${DAYS[k]}</div></div>`).join("");

@@ -5,6 +5,7 @@ import {
   cleanMacro, hasFood, replacementKind, normalizeName, schemaMissing,
   mealTotals, normalizeMealEstimate, effectiveDayFood, foodBar, foodChip,
   presentSessionFood, requestMealEstimate, foodActionWrites, FOOD_KEY_MESSAGE,
+  chicagoDate, weightProgress, seanWeightDefaults, profilePatchForSean, shouldSeedWeighIn, targetsOf,
 } from "../lib/train.js";
 
 const planned = {
@@ -222,6 +223,55 @@ test("a past session keeps its sets when food is attached", () => {
   assert.equal(withMeals.detail[0].sets[0].load, 185);
   assert.equal(withMeals.food.source, "meals");
   assert.equal(withMeals.food.calories, 100);
+});
+
+test("weight progress at the start, the goal, above the start, and under the goal", () => {
+  const start = weightProgress({ start: 245.6, current: 245.6, goal: 210 });
+  assert.equal(start.lost, 0);
+  assert.equal(start.remaining, 35.6);
+  assert.equal(start.pct, 0);
+  assert.equal(start.reached, false);
+  const goal = weightProgress({ start: 245.6, current: 210, goal: 210 });
+  assert.equal(goal.lost, 35.6);
+  assert.equal(goal.remaining, 0);
+  assert.equal(goal.pct, 100);
+  assert.equal(goal.reached, true);
+  const above = weightProgress({ start: 245.6, current: 250, goal: 210 });
+  assert.equal(above.lost, -4.4);
+  assert.equal(above.remaining, 40);
+  assert.equal(above.pct, 0);
+  const under = weightProgress({ start: 245.6, current: 205, goal: 210 });
+  assert.equal(under.lost, 40.6);
+  assert.equal(under.remaining, -5);
+  assert.equal(under.pct, 100);
+  assert.equal(under.reached, true);
+  assert.equal(weightProgress({ start: null, current: 245.6, goal: 210 }).ready, false);
+});
+
+test("Chicago dates and Sean's defaults stay off every other account", () => {
+  assert.equal(chicagoDate(new Date("2026-11-07T04:30:00Z")), "2026-11-06");
+  assert.equal(chicagoDate(new Date("2026-11-06T15:00:00Z")), "2026-11-06");
+  assert.equal(chicagoDate(new Date("2026-11-06T05:30:00Z")), "2026-11-05");
+  assert.equal(seanWeightDefaults("friend@example.com"), null);
+  assert.equal(profilePatchForSean("friend@example.com", {}), null);
+  assert.equal(shouldSeedWeighIn("friend@example.com", 0), false);
+  const sean = profilePatchForSean("SeanPatrickPhelps@gmail.com", {});
+  assert.equal(sean.start_bodyweight, 245.6);
+  assert.equal(sean.goal_bodyweight, 210);
+  assert.equal(sean.target_calories, 2000);
+  assert.equal(sean.target_protein, 200);
+  const kept = profilePatchForSean("seanpatrickphelps@gmail.com", { start_bodyweight: 230, goal_bodyweight: 200, target_calories: 2200, target_protein: 180 });
+  assert.equal(kept, null);
+  const partial = profilePatchForSean("seanpatrickphelps@gmail.com", { start_bodyweight: 245.6, goal_bodyweight: 210 });
+  assert.equal(partial.target_calories, 2000);
+  assert.equal(partial.start_bodyweight, undefined);
+  assert.equal(shouldSeedWeighIn("seanpatrickphelps@gmail.com", 0), true);
+  assert.equal(shouldSeedWeighIn("seanpatrickphelps@gmail.com", 1), false);
+  assert.equal(targetsOf({}).calories, null);
+  assert.equal(targetsOf({ target_calories: 2000, target_protein: 200 }).protein, 200);
+  assert.equal(foodActionWrites("weigh"), true);
+  assert.equal(foodBar(1000, 2000).pct, 50);
+  assert.equal(effectiveDayFood([{ items: [{ calories: 500, protein: 40, carbs: 30, fat: 10 }] }], null).calories, 500);
 });
 
 test("food helpers treat zero as logged and reject junk", () => {

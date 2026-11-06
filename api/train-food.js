@@ -5,7 +5,7 @@
 //   { action:"remove", id }                        -> { ok }
 //   { action:"hydration", date, ounces }           -> { hydration }
 // The Anthropic key stays on the server. Estimate does not write a row.
-import { json, db, requireUser, ensureSeeded, cleanMacro, mealsMigrationError, normalizeMealItems, mealTotals, requestMealEstimate } from "../lib/train.js";
+import { json, db, requireUser, ensureSeeded, cleanMacro, mealsMigrationError, weighMigrationError, normalizeMealItems, mealTotals, requestMealEstimate } from "../lib/train.js";
 
 const KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -62,6 +62,24 @@ export default async function handler(req, res) {
         return json(res, 200, { ok: true });
       } catch (e) {
         const msg = mealsMigrationError(e);
+        if (msg) return json(res, 400, { error: msg });
+        throw e;
+      }
+    }
+
+    if (b.action === "weigh") {
+      const date = validDate(b.date);
+      if (!date) return json(res, 400, { error: "Date must be YYYY-MM-DD." });
+      const pounds = b.pounds === "" || b.pounds == null ? null : cleanMacro(b.pounds);
+      if (pounds != null && pounds > 1000) return json(res, 400, { error: "Enter a weight up to 1000 lb." });
+      try {
+        if (pounds == null) await db(`weigh_ins?user_id=eq.${uid}&log_date=eq.${date}`, { method: "DELETE", prefer: "return=minimal" });
+        else await db("weigh_ins?on_conflict=user_id,log_date", { method: "POST", body: { user_id: uid, log_date: date, pounds, updated_at: new Date().toISOString() }, prefer: "resolution=merge-duplicates,return=minimal" });
+        const latest = (await db(`weigh_ins?user_id=eq.${uid}&select=log_date,pounds&order=log_date.desc&limit=1`))[0] || null;
+        const weigh_in = (await db(`weigh_ins?user_id=eq.${uid}&log_date=eq.${date}&select=log_date,pounds`))[0] || null;
+        return json(res, 200, { weigh_in, latest });
+      } catch (e) {
+        const msg = weighMigrationError(e);
         if (msg) return json(res, 400, { error: msg });
         throw e;
       }
