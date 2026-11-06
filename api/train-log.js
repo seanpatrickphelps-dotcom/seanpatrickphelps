@@ -89,7 +89,7 @@ export default async function handler(req, res) {
     }
 
     if (b.action === "profile") {
-      const targetKeys = ["target_calories", "target_protein", "target_carbs", "target_fat"];
+      const targetKeys = ["target_calories", "target_protein", "target_carbs", "target_fat", "target_hydration_oz"];
       let targets = null;
       if (targetKeys.some((k) => b[k] !== undefined)) {
         targets = {};

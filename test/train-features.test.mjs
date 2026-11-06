@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import {
   substitutionOptions, prescribeSwap, buildSlotSuggestion, suggest, applyToday,
   cleanMacro, hasFood, replacementKind, normalizeName, schemaMissing,
+  mealTotals, normalizeMealEstimate, effectiveDayFood, foodBar, foodChip,
+  presentSessionFood, requestMealEstimate, foodActionWrites, FOOD_KEY_MESSAGE,
 } from "../lib/train.js";
 
 const planned = {
@@ -138,6 +140,88 @@ test("replacement kind stays loadable when the plan is bodyweight", () => {
   const option = substitutionOptions("Pull-Up").options.find((o) => o.name === "Lat Pulldown");
   assert.equal(replacementKind(option, pull), "double");
   assert.equal(replacementKind({ kind: "bodyweight" }, planned), "bodyweight");
+});
+
+test("meal lines roll up, and a typed total remains until meals exist", () => {
+  const items = [
+    { name: "Popcorn", portion: "1 pack", calories: 100, protein: 2, carbs: 18, fat: 3 },
+    { name: "Blue corn tortilla chips", portion: "2 servings", calories: 280, protein: 4, carbs: 36, fat: 14 },
+  ];
+  const totals = mealTotals(items);
+  assert.deepEqual(totals, { calories: 380, protein: 6, carbs: 54, fat: 17 });
+  const manual = { calories: 1800, protein: 100, carbs: 150, fat: 40 };
+  assert.equal(effectiveDayFood([], manual).source, "manual");
+  assert.equal(effectiveDayFood([], manual).calories, 1800);
+  const meals = [{ items }];
+  const rolled = effectiveDayFood(meals, manual);
+  assert.equal(rolled.source, "meals");
+  assert.equal(rolled.calories, 380);
+  assert.equal(rolled.fat, 17);
+  assert.equal(manual.calories, 1800);
+  assert.equal(effectiveDayFood([], manual).source, "manual");
+  const parsed = normalizeMealEstimate('Sure. {"items":[{"name":"Popcorn","portion":"1 pack","calories":100,"protein":2,"carbs":18,"fat":3}],"note":"Assumed one pack."}');
+  assert.equal(parsed.totals.calories, 100);
+  assert.match(parsed.note, /one pack/);
+});
+
+test("an estimate is not a save, and a missing key never calls the model", async () => {
+  assert.equal(foodActionWrites("estimate"), false);
+  assert.equal(foodActionWrites("confirm"), true);
+  let called = false;
+  const missing = await requestMealEstimate({ apiKey: "", text: "eggs", fetchImpl: () => { called = true; } });
+  assert.equal(called, false);
+  assert.equal(missing.ok, false);
+  assert.equal(missing.error, FOOD_KEY_MESSAGE);
+  const draft = await requestMealEstimate({
+    apiKey: "test-key",
+    text: "popcorn and chips, two servings, no salsa",
+    fetchImpl: async (url, opts) => {
+      called = true;
+      assert.equal(opts.headers["x-api-key"], "test-key");
+      assert.equal(String(opts.body).includes("test-key"), false);
+      const body = JSON.parse(opts.body);
+      assert.equal(body.model, "claude-sonnet-4-6");
+      assert.ok(body.messages[0].content.some((c) => c.type === "text" && /no salsa/.test(c.text)));
+      return { ok: true, text: async () => JSON.stringify({ content: [{ type: "text", text: '{"items":[{"name":"Popcorn","portion":"1 pack","calories":100,"protein":2,"carbs":18,"fat":3},{"name":"Blue corn tortilla chips","portion":"2 servings","calories":280,"protein":4,"carbs":36,"fat":14}],"note":"Tortilla chips assumed at 140 calories per 1 oz serving, without salsa."}' }] }) };
+    },
+  });
+  assert.equal(called, true);
+  assert.equal(draft.ok, true);
+  assert.equal(draft.meal.totals.calories, 380);
+  assert.equal(draft.meal.totals.protein, 6);
+  assert.equal(Object.hasOwn(draft, "apiKey"), false);
+});
+
+test("bars and chips use the profile target, and a blank target draws no bar", () => {
+  assert.equal(foodBar(2250, null).show, false);
+  assert.equal(foodBar(2250, "").show, false);
+  const cal = foodChip("calories", 2250, 2000);
+  assert.equal(cal.label, "Calories over");
+  assert.equal(cal.value, "+250");
+  const pro = foodChip("protein", 213.5, 209);
+  assert.equal(pro.label, "Protein above");
+  assert.equal(pro.value, "+4.5 g");
+  const water = foodChip("hydration", 115.5, 128);
+  assert.equal(water.label, "Hydration left");
+  assert.equal(water.value, "12.5 oz");
+  assert.equal(foodChip("calories", null, 2000), null);
+});
+
+test("a past session keeps its sets when food is attached", () => {
+  const session = { id: 11, workout_day: 1, finished: true, detail: [{ name: "Barbell Bench Press", sets: [{ load: 185, reps: 6 }] }, { name: "Pull-Up", sets: [{ reps: 8 }] }] };
+  const before = JSON.stringify(session);
+  const view = presentSessionFood(session, [], { calories: 2400, protein: 180, carbs: 220, fat: 70 });
+  assert.equal(view.id, 11);
+  assert.equal(view.workout_day, 1);
+  assert.equal(view.finished, true);
+  assert.equal(view.detail[0].sets[0].load, 185);
+  assert.equal(view.detail[1].name, "Pull-Up");
+  assert.equal(view.food.source, "manual");
+  assert.equal(JSON.stringify(session), before);
+  const withMeals = presentSessionFood(session, [{ items: [{ name: "Popcorn", portion: "1 pack", calories: 100, protein: 2, carbs: 18, fat: 3 }] }], { calories: 2400, protein: 180, carbs: 220, fat: 70 });
+  assert.equal(withMeals.detail[0].sets[0].load, 185);
+  assert.equal(withMeals.food.source, "meals");
+  assert.equal(withMeals.food.calories, 100);
 });
 
 test("food helpers treat zero as logged and reject junk", () => {

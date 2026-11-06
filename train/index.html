@@ -75,6 +75,32 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
 .ex .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
 .foodgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .foodgrid .k{font-family:'Space Mono';font-size:9px;letter-spacing:.12em;color:var(--slate);text-transform:uppercase;margin-bottom:4px}
+.meter{margin-top:12px}
+.meter .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.meter .k{font-family:'Space Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.meter .num{font-family:'Space Mono';font-size:12px}
+.track{height:8px;background:#e3e2da;margin-top:5px}
+.track i{display:block;height:100%;background:var(--glacier)}
+.track i.over{background:var(--rust)}
+.track i.good{background:var(--teton)}
+.chips{display:flex;gap:8px;margin-top:12px}
+.chips .c2{flex:1;background:var(--snow);border:1px solid var(--line);padding:8px 8px 6px;min-width:0}
+.chips .k{font-family:'Space Mono';font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate)}
+.chips .v{font-family:'Fraunces';font-size:18px;line-height:1.1;margin-top:3px}
+.mtable{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+.mtable th{font-family:'Space Mono';font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);text-align:right;font-weight:400;padding:0 2px 4px}
+.mtable th:first-child,.mtable td.food{text-align:left}
+.mtable td{padding:7px 2px;border-top:1px solid var(--line);vertical-align:top;text-align:right;font-family:'Space Mono';font-size:12px}
+.mtable td.food{font-family:'Hanken Grotesk';font-size:14px;text-align:left;padding-right:8px}
+.mtable tr.tot td{border-top:2px solid var(--night);font-weight:700;color:var(--night)}
+.mtable input{padding:6px 4px;font-size:14px;text-align:right}
+.mtable input.iname,.mtable input.iportion{text-align:left;font-family:'Hanken Grotesk';display:block;width:100%}
+.mtable input.iportion{margin-top:4px}
+.rowbtns input.n{flex:1;margin:0}
+.meal{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.photo{max-width:100%;max-height:140px;display:block;margin-top:8px;object-fit:cover}
+.rowbtns{display:flex;gap:8px;margin-top:8px}
+.rowbtns .btn{margin-top:0}
 .ex .nm{font-family:'Fraunces';font-variation-settings:'opsz' 32,'wght' 600,'SOFT' 100;font-size:19px;line-height:1.15}
 .lt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
 .lt .k{font-family:'Space Mono';font-size:9px;letter-spacing:.14em;color:var(--slate);text-transform:uppercase}
@@ -213,6 +239,7 @@ input.n,select.n{font-family:'Space Mono';text-align:center;padding:10px 4px;fon
       <div><div class="mono" style="font-size:9px">Protein</div><input class="n p-target_protein" type="number" min="0" step="1" inputmode="numeric"></div>
       <div><div class="mono" style="font-size:9px">Carbs</div><input class="n p-target_carbs" type="number" min="0" step="1" inputmode="numeric"></div>
       <div><div class="mono" style="font-size:9px">Fat</div><input class="n p-target_fat" type="number" min="0" step="1" inputmode="numeric"></div>
+      <div><div class="mono" style="font-size:9px">Water oz</div><input class="n p-target_hydration_oz" type="number" min="0" step="1" inputmode="numeric"></div>
     </div>
     <button class="btn sm" id="saveProfile" style="margin-top:8px">Save</button></div>
   <p class="lead" style="margin-top:16px">Per exercise: starting load is where the trend begins, the goal is where it ends, the date is when. Increment is the smallest jump the app will ever suggest.</p>
@@ -240,6 +267,10 @@ const cls = (s) => (s||"").replace(/\s/g,"");
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 const foodLogged = (row) => !!row && ["calories","protein","carbs","fat"].some((k) => row[k] != null && row[k] !== "");
 state.nutritionByDate = {};
+state.mealsByDate = {};
+state.hydrationByDate = {};
+state.mealDraft = null;
+state.mealPhoto = null;
 
 function saveTokens(d) { token = d.access_token; refreshTok = d.refresh_token || refreshTok; localStorage.setItem("train_token", token); if (refreshTok) localStorage.setItem("train_refresh", refreshTok); }
 function tokenExpiresIn() { try { return JSON.parse(atob(token.split(".")[1])).exp * 1000 - Date.now(); } catch { return 0; } }
@@ -324,18 +355,26 @@ async function loadCal(month) {
   const first = new Date(y, m-1, 1), days = new Date(y, m, 0).getDate(), lead = first.getDay();
   const byDate = {}; for (const s of d.days) (byDate[s.session_date] ||= []).push(s);
   const fed = {};
+  const mealsBy = {};
+  const hydBy = {};
   state.nutritionByDate = state.nutritionByDate || {};
+  state.mealsByDate = state.mealsByDate || {};
+  state.hydrationByDate = state.hydrationByDate || {};
   for (const n of d.nutrition || []) fed[n.log_date] = n;
+  for (const m of d.meals || []) (mealsBy[m.log_date] ||= []).push(m);
+  for (const h of d.hydration || []) hydBy[h.log_date] = h.ounces;
   const today = new Date().toISOString().slice(0,10);
   let cells = "";
   for (let i=0;i<lead;i++) cells += `<div class="c empty"></div>`;
   for (let n=1;n<=days;n++) {
     const iso = `${y}-${String(m).padStart(2,"0")}-${String(n).padStart(2,"0")}`;
     state.nutritionByDate[iso] = fed[iso] || null;
+    state.mealsByDate[iso] = mealsBy[iso] || [];
+    state.hydrationByDate[iso] = Object.prototype.hasOwnProperty.call(hydBy, iso) ? hydBy[iso] : null;
     const ss = byDate[iso] || [];
     const done = ss.filter(s=>s.finished), open = ss.find(s=>!s.finished);
     const s0 = done[0] || open;
-    const ate = foodLogged(fed[iso]);
+    const ate = foodLogged(fed[iso]) || (mealsBy[iso] || []).length > 0;
     const sel = state.foodDate === iso && iso !== today;
     const cl = ["c", iso===today?"today":"", sel?"sel":"", s0?(open&&!done.length?"open":"has"):"", ate?"ate":""].filter(Boolean).join(" ");
     const style = done.length ? `background:${DAYCOL[s0.workout_day]};border-color:${DAYCOL[s0.workout_day]}` : "";
@@ -345,7 +384,8 @@ async function loadCal(month) {
   const label = first.toLocaleDateString(undefined,{month:"long",year:"numeric"});
   const finished = d.days.filter(s=>s.finished);
   const bw = d.days.filter(s=>s.bodyweight).map(s=>s.bodyweight);
-  const fedCount = Object.values(fed).filter(foodLogged).length;
+  const fedDays = new Set([...Object.keys(fed).filter(k => foodLogged(fed[k])), ...Object.keys(mealsBy)]);
+  const fedCount = fedDays.size;
   $("cal").innerHTML = `<div class="hd2"><button data-nav="-1">‹</button><span class="m">${label}</span><button data-nav="1">›</button></div>
     <div class="dow"><div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div></div>
     <div class="grid2">${cells}</div>
@@ -375,26 +415,96 @@ async function openSession(sid) {
     const extra = [st.e1rm?`e1RM ${Math.round(st.e1rm*10)/10}`:"", st.avg_rir!=null?`avg RIR ${Math.round(st.avg_rir*10)/10}`:"", st.asymmetry!=null?`L/R gap ${st.asymmetry}%`:"", st.volume?`volume ${Math.round(st.volume)}`:""].filter(Boolean).join(" · ");
     return `<div class="exblock"><div class="nm">${esc(x.name)}</div>${x.swapped_from?`<div class="small">In place of ${esc(x.swapped_from)}</div>`:""}<div class="sets2">${rows}</div>${extra?`<div class="small" style="margin-top:3px">${extra}</div>`:""}</div>`;
   }).join("") || `<p class="lead">No sets logged in this session.</p>`;
-  renderDetailFood(String(s.session_date).slice(0, 10), d.nutrition || null);
+  renderDetailFood(String(s.session_date).slice(0, 10), d.nutrition || null, d.meals || [], d.hydration || null);
   show("sDetail"); say("Ready");
 }
 $("detBack").onclick = () => { show("sHome"); window.scrollTo(0,0); loadCal().catch(()=>{}); renderFood(); };
 
-function targetLine() {
+const foodPost = (body) => api("/train-food", { method:"POST", body: JSON.stringify(body) });
+function fmtFood(n) {
+  if (n == null || n === "") return "—";
+  const x = Math.round(Number(n) * 10) / 10;
+  const [w, f] = String(x).split(".");
+  return w.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (f ? "." + f : "");
+}
+function sumItems(items) {
+  const t = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+  for (const it of items || []) { t.calories += Number(it.calories) || 0; t.protein += Number(it.protein) || 0; t.carbs += Number(it.carbs) || 0; t.fat += Number(it.fat) || 0; }
+  for (const k of Object.keys(t)) t[k] = Math.round(t[k] * 10) / 10;
+  return t;
+}
+function dayFood(date) {
+  const meals = state.mealsByDate?.[date] || [];
+  if (meals.length) return { ...sumItems(meals.flatMap(m => (m.items && m.items.length) ? m.items : [m])), source: "meals" };
+  const manual = state.nutritionByDate?.[date];
+  if (foodLogged(manual)) return { calories: manual.calories, protein: manual.protein, carbs: manual.carbs, fat: manual.fat, source: "manual" };
+  return { calories: null, protein: null, carbs: null, fat: null, source: "none" };
+}
+function barHtml(label, current, target, unit, tone) {
+  const has = target != null && target !== "" && Number(target) > 0;
+  const cur = current == null || current === "" ? null : Number(current);
+  const right = has ? `${cur == null ? "—" : fmtFood(cur)} / ${fmtFood(target)}${unit ? " " + unit : ""}` : (cur == null ? "—" : `${fmtFood(cur)}${unit ? " " + unit : ""}`);
+  if (!has) return `<div class="meter"><div class="top"><span class="k">${label}</span><span class="num">${right}</span></div></div>`;
+  const pct = Math.max(0, Math.min(100, ((cur || 0) / Number(target)) * 100));
+  const over = cur != null && cur > Number(target);
+  const cls = over ? (tone === "good" ? "good" : "over") : "";
+  return `<div class="meter"><div class="top"><span class="k">${label}</span><span class="num">${right}</span></div><div class="track"><i class="${cls}" style="width:${pct}%"></i></div></div>`;
+}
+function chipHtml(label, value) {
+  if (!label) return "";
+  return `<div class="c2"><div class="k">${esc(label)}</div><div class="v">${esc(value)}</div></div>`;
+}
+function chipFor(kind, current, target) {
+  if (target == null || target === "" || Number(target) <= 0 || current == null || current === "") return null;
+  const diff = Math.round((Number(current) - Number(target)) * 10) / 10;
+  const abs = fmtFood(Math.abs(diff));
+  if (kind === "calories") return diff > 0 ? ["Calories over", "+" + abs] : diff < 0 ? ["Calories left", abs] : ["Calories", "On target"];
+  if (kind === "protein") return diff > 0 ? ["Protein above", "+" + abs + " g"] : diff < 0 ? ["Protein left", abs + " g"] : ["Protein", "On target"];
+  if (kind === "hydration") return diff > 0 ? ["Hydration over", abs + " oz"] : diff < 0 ? ["Hydration left", abs + " oz"] : ["Hydration", "On target"];
+  return null;
+}
+function dashHtmlFood(date) {
   const p = state.profile || {};
-  const bits = [];
-  if (p.target_calories != null && p.target_calories !== "") bits.push(`${p.target_calories} cal`);
-  if (p.target_protein != null && p.target_protein !== "") bits.push(`${p.target_protein} protein`);
-  if (p.target_carbs != null && p.target_carbs !== "") bits.push(`${p.target_carbs} carbs`);
-  if (p.target_fat != null && p.target_fat !== "") bits.push(`${p.target_fat} fat`);
-  return bits.length ? `Targets ${bits.join(" · ")}` : "No daily targets. Optional, under Goals.";
+  const food = dayFood(date);
+  const ounces = state.hydrationByDate ? state.hydrationByDate[date] : null;
+  const chips = [chipFor("calories", food.calories, p.target_calories), chipFor("protein", food.protein, p.target_protein), chipFor("hydration", ounces, p.target_hydration_oz)].filter(Boolean);
+  const extra = [];
+  if (p.target_carbs != null && p.target_carbs !== "") extra.push(barHtml("Carbs", food.carbs, p.target_carbs, "g", "over"));
+  if (p.target_fat != null && p.target_fat !== "") extra.push(barHtml("Fat", food.fat, p.target_fat, "g", "over"));
+  return barHtml("Calories", food.calories, p.target_calories, "kcal", "over")
+    + barHtml("Protein", food.protein, p.target_protein, "g", "good")
+    + extra.join("")
+    + barHtml("Hydration", ounces, p.target_hydration_oz, "oz", "over")
+    + (chips.length ? `<div class="chips">${chips.map(c => chipHtml(c[0], c[1])).join("")}</div>` : "");
 }
-function macroInputs(prefix, row) {
-  const v = (x) => (x == null || x === "" ? "" : x);
-  const field = (key, label, val) => `<div><div class="k">${label}</div><input class="n" id="${prefix}${key}" type="number" min="0" step="1" inputmode="decimal" value="${esc(v(val))}"></div>`;
-  return `<div class="foodgrid">${field("Cal","Calories",row?.calories)}${field("Pro","Protein",row?.protein)}${field("Carb","Carbs",row?.carbs)}${field("Fat","Fat",row?.fat)}</div>`;
+function mealTable(items, edit) {
+  const rows = (items || []).map((it, i) => edit
+    ? `<tr data-i="${i}"><td class="food"><input class="iname" value="${esc(it.name)}" aria-label="Food"><input class="iportion" value="${esc(it.portion || "")}" aria-label="Portion" placeholder="portion"></td>
+        <td><input class="n ical" type="number" min="0" step="1" value="${it.calories ?? ""}" aria-label="Calories"></td>
+        <td><input class="n ipro" type="number" min="0" step="0.1" value="${it.protein ?? ""}" aria-label="Protein"></td>
+        <td><input class="n icarb" type="number" min="0" step="0.1" value="${it.carbs ?? ""}" aria-label="Carbs"></td>
+        <td><input class="n ifat" type="number" min="0" step="0.1" value="${it.fat ?? ""}" aria-label="Fat"></td></tr>`
+    : `<tr><td class="food">${esc(it.name)}${it.portion ? ", " + esc(it.portion) : ""}</td><td>${fmtFood(it.calories)}</td><td>${fmtFood(it.protein)}g</td><td>${fmtFood(it.carbs)}g</td><td>${fmtFood(it.fat)}g</td></tr>`).join("");
+  const t = sumItems(items);
+  return `<table class="mtable"><thead><tr><th>Food</th><th>Calories</th><th>Protein</th><th>Carbs</th><th>Fat</th></tr></thead><tbody>${rows}
+    <tr class="tot"><td class="food">Total added</td><td class="totc">${fmtFood(t.calories)}</td><td class="totp">${fmtFood(t.protein)}g</td><td class="totb">${fmtFood(t.carbs)}g</td><td class="totf">${fmtFood(t.fat)}g</td></tr></tbody></table>`;
 }
-function knownFood(date) { return !!state.nutritionByDate && Object.prototype.hasOwnProperty.call(state.nutritionByDate, date); }
+function readItems(root) {
+  return [...root.querySelectorAll("[data-i]")].map(row => ({
+    name: row.querySelector(".iname").value, portion: row.querySelector(".iportion").value,
+    calories: row.querySelector(".ical").value, protein: row.querySelector(".ipro").value,
+    carbs: row.querySelector(".icarb").value, fat: row.querySelector(".ifat").value,
+  }));
+}
+function knownDay(date) {
+  return !!state.nutritionByDate && Object.prototype.hasOwnProperty.call(state.nutritionByDate, date)
+    && !!state.mealsByDate && Object.prototype.hasOwnProperty.call(state.mealsByDate, date);
+}
+function storeDay(date, d) {
+  state.nutritionByDate[date] = d.nutrition || null;
+  state.mealsByDate[date] = d.meals || [];
+  state.hydrationByDate[date] = d.hydration ? d.hydration.ounces : null;
+}
 let foodSeq = 0;
 async function renderFood() {
   const seq = ++foodSeq;
@@ -402,11 +512,11 @@ async function renderFood() {
   state.foodDate = date;
   const card = $("foodCard");
   if (!card) return;
-  if (!knownFood(date)) {
+  if (!knownDay(date)) {
     try {
       const d = await api("/train-next?date=" + date);
       if (seq !== foodSeq) return;
-      state.nutritionByDate[date] = d.nutrition || null;
+      storeDay(date, d);
     } catch (e) {
       if (seq !== foodSeq) return;
       card.innerHTML = `<div class="card"><div class="small">${esc(e.message)}</div></div>`;
@@ -414,10 +524,8 @@ async function renderFood() {
     }
   }
   if (seq !== foodSeq) return;
-  const row = state.nutritionByDate[date];
-  card.innerHTML = `<div class="card"><div class="mono" style="color:var(--braies)">Food</div><div class="nm">The day, on the plate.</div><p class="small">Calories and macros for any date, including a rest day. Saving this does not start a workout.</p><label class="f mono">Date</label><input id="foodDate" type="date" value="${date}">${macroInputs("n", row)}<div class="small" style="margin-top:8px">${esc(targetLine())}</div><button class="btn" id="saveFood">Save food</button></div>`;
-  $("foodDate").onchange = (e) => selectFoodDate(e.target.value);
-  $("saveFood").onclick = () => saveFoodFrom("n", $("foodDate").value);
+  card.innerHTML = foodPanel(date, "n", true);
+  wireFood(date, "n");
 }
 function selectFoodDate(iso) {
   if (!iso) return;
@@ -426,11 +534,143 @@ function selectFoodDate(iso) {
   document.querySelectorAll("#cal .c").forEach((c) => c.classList.toggle("sel", c.dataset.date === iso && iso !== today));
   renderFood();
 }
-function renderDetailFood(date, row) {
-  state.nutritionByDate = state.nutritionByDate || {};
-  state.nutritionByDate[date] = row || null;
-  $("dFood").innerHTML = `<div class="card"><div class="mono" style="color:var(--braies)">Food</div><div class="nm">That day's totals.</div><p class="small">${esc(date)}. Saved on its own, finished workout or not.</p>${macroInputs("d", row)}<div class="small" style="margin-top:8px">${esc(targetLine())}</div><button class="btn" id="dSaveFood">Save food</button></div>`;
-  $("dSaveFood").onclick = () => saveFoodFrom("d", date);
+function renderDetailFood(date, manual, meals, hydration) {
+  state.detailDate = date;
+  state.nutritionByDate[date] = manual || null;
+  state.mealsByDate[date] = meals || [];
+  state.hydrationByDate[date] = hydration ? hydration.ounces : null;
+  $("dFood").innerHTML = foodPanel(date, "d", false);
+  wireFood(date, "d");
+}
+function foodPanel(date, p, withDate) {
+  const meals = state.mealsByDate[date] || [];
+  const manual = state.nutritionByDate[date];
+  const draft = state.mealDraft && state.mealDraft.date === date ? state.mealDraft : null;
+  const photo = state.mealPhoto ? `<img class="photo" alt="Meal photo" src="${state.mealPhoto.url}">` : "";
+  const list = meals.map(m => `<div class="meal" data-meal="${m.id}">${mealTable(m.items && m.items.length ? m.items : [{ name: "Meal", portion: "", calories: m.calories, protein: m.protein, carbs: m.carbs, fat: m.fat }], false)}${m.note ? `<p class="small">${esc(m.note)}</p>` : ""}<div class="rowbtns"><button type="button" class="btn sm meal-edit" data-id="${m.id}">Edit</button><button type="button" class="btn ghost sm meal-del" data-id="${m.id}">Remove</button></div></div>`).join("");
+  const draftBox = draft ? `<div class="meal" id="${p}Draft"><div class="mono" style="color:var(--glacier)">Estimate</div>${mealTable(draft.items, true)}<p class="small" id="${p}Note">${esc(draft.note || "")}</p><label class="f mono">Note</label><input id="${p}NoteIn" value="${esc(draft.note || "")}"><div class="rowbtns"><button type="button" class="btn sm" id="${p}AddLine">Add line</button></div><div class="rowbtns"><button type="button" class="btn" id="${p}Confirm">${draft.id ? "Save meal" : "Confirm"}</button><button type="button" class="btn ghost" id="${p}Discard">Discard</button></div></div>` : "";
+  const manualBox = meals.length ? `<p class="small">Meals are this day's total.${foodLogged(manual) ? " A typed total is still saved, and it shows again if every meal is removed." : ""}</p>` : `<div class="mono" style="margin-top:14px">Typed total</div><p class="small">Use this when you already know the day's numbers. It does not start a workout.</p>${macroInputs(p, manual)}<button class="btn" id="${p}SaveFood">Save food</button>`;
+  const oz = state.hydrationByDate[date];
+  return `<div class="card"><div class="mono" style="color:var(--braies)">Food</div><div class="nm">${withDate ? "The day, on the plate." : "That day's totals."}</div>
+    ${withDate ? `<label class="f mono">Date</label><input id="foodDate" type="date" value="${date}">` : `<p class="small">${esc(date)}. Saved on its own, finished workout or not.</p>`}
+    ${dashHtmlFood(date)}
+    <label class="f mono">Water, ounces</label><div class="rowbtns"><input class="n" id="${p}Oz" type="number" min="0" step="1" inputmode="decimal" value="${oz == null ? "" : oz}" style="max-width:120px"><button type="button" class="btn sm" id="${p}SaveOz">Save water</button></div>
+    ${list ? `<h2 class="serif" style="font-size:18px">Meals</h2>${list}` : ""}
+    <h2 class="serif" style="font-size:18px">${draft ? "Adjust it, then confirm." : "Add a meal"}</h2>
+    ${draftBox}
+    ${draft ? "" : `<label class="f mono">What was it</label><textarea id="${p}Text" rows="3" placeholder="Two servings, no salsa" style="width:100%;padding:12px;border:1px solid var(--line);font:inherit;font-size:16px"></textarea>
+      <div class="rowbtns"><button type="button" class="btn sm" id="${p}CamBtn">Camera</button><button type="button" class="btn sm ghost" id="${p}FileBtn">Photo</button>${state.mealPhoto ? `<button type="button" class="btn sm ghost" id="${p}ClearPhoto">Clear photo</button>` : ""}</div>
+      <input id="${p}Cam" type="file" accept="image/*" capture="environment" hidden><input id="${p}File" type="file" accept="image/*" hidden>
+      ${photo}
+      <button class="btn" id="${p}Estimate">Estimate</button>`}
+    ${manualBox}
+  </div>`;
+}
+function macroInputs(prefix, row) {
+  const v = (x) => (x == null || x === "" ? "" : x);
+  const field = (key, label, val) => `<div><div class="k">${label}</div><input class="n" id="${prefix}${key}" type="number" min="0" step="1" inputmode="decimal" value="${esc(v(val))}"></div>`;
+  return `<div class="foodgrid">${field("Cal","Calories",row?.calories)}${field("Pro","Protein",row?.protein)}${field("Carb","Carbs",row?.carbs)}${field("Fat","Fat",row?.fat)}</div>`;
+}
+function wireFood(date, p) {
+  if ($("foodDate")) $("foodDate").onchange = (e) => selectFoodDate(e.target.value);
+  const saveTyped = $(p + "SaveFood");
+  if (saveTyped) saveTyped.onclick = () => saveFoodFrom(p, date);
+  const ozBtn = $(p + "SaveOz");
+  if (ozBtn) ozBtn.onclick = () => saveHydration(p, date);
+  const est = $(p + "Estimate");
+  if (est) est.onclick = () => estimateMeal(p, date);
+  const cam = $(p + "CamBtn"); if (cam) cam.onclick = () => $(p + "Cam").click();
+  const file = $(p + "FileBtn"); if (file) file.onclick = () => $(p + "File").click();
+  for (const id of [p + "Cam", p + "File"]) {
+    const input = $(id); if (!input) continue;
+    input.onchange = () => { const f = input.files && input.files[0]; if (f) readPhoto(f); };
+  }
+  const clear = $(p + "ClearPhoto"); if (clear) clear.onclick = () => { state.mealPhoto = null; if (p === "n") renderFood(); else renderDetailFood(date, state.nutritionByDate[date], state.mealsByDate[date], { ounces: state.hydrationByDate[date] }); };
+  document.querySelectorAll("#" + (p === "n" ? "foodCard" : "dFood") + " .meal-edit").forEach(b => b.onclick = () => editMeal(date, Number(b.dataset.id), p));
+  document.querySelectorAll("#" + (p === "n" ? "foodCard" : "dFood") + " .meal-del").forEach(b => b.onclick = () => removeMeal(date, Number(b.dataset.id), p));
+  const draft = $(p + "Draft");
+  if (draft) {
+    draft.querySelectorAll("input").forEach(el => el.addEventListener("input", () => {
+      const t = sumItems(readItems(draft));
+      draft.querySelector(".totc").textContent = fmtFood(t.calories);
+      draft.querySelector(".totp").textContent = fmtFood(t.protein) + "g";
+      draft.querySelector(".totb").textContent = fmtFood(t.carbs) + "g";
+      draft.querySelector(".totf").textContent = fmtFood(t.fat) + "g";
+    }));
+    $(p + "AddLine").onclick = () => { state.mealDraft.items.push({ name: "", portion: "", calories: "", protein: "", carbs: "", fat: "" }); rerenderFood(date, p); };
+    $(p + "Confirm").onclick = () => confirmMeal(date, p);
+    $(p + "Discard").onclick = () => { state.mealDraft = null; rerenderFood(date, p); };
+  }
+}
+function rerenderFood(date, p) {
+  if (p === "n") renderFood();
+  else renderDetailFood(date, state.nutritionByDate[date], state.mealsByDate[date], state.hydrationByDate[date] == null ? null : { ounces: state.hydrationByDate[date] });
+}
+function readPhoto(file) {
+  if (!/^image\/(jpeg|png|gif|webp)$/.test(file.type)) { say("Use a JPEG, PNG, GIF, or WebP photo."); return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const url = String(reader.result || "");
+    state.mealPhoto = { url, data: url.split(",")[1] || "", mediaType: file.type };
+    const onDetail = $("sDetail").classList.contains("on");
+    rerenderFood(onDetail ? state.detailDate : state.foodDate, onDetail ? "d" : "n");
+  };
+  reader.readAsDataURL(file);
+}
+async function estimateMeal(p, date) {
+  const text = $(p + "Text") ? $(p + "Text").value : "";
+  if (!text.trim() && !state.mealPhoto) { say("Add a photo, a description, or both."); return; }
+  say("Estimating");
+  try {
+    const d = await foodPost({ action: "estimate", text, image: state.mealPhoto ? state.mealPhoto.data : "", media_type: state.mealPhoto ? state.mealPhoto.mediaType : "" });
+    state.mealDraft = { date, id: null, items: d.meal.items, note: d.meal.note || "" };
+    say("Check it, then confirm");
+    rerenderFood(date, p);
+  } catch (e) { say(e.message); }
+}
+async function confirmMeal(date, p) {
+  const root = $(p + "Draft");
+  const items = readItems(root);
+  const note = $(p + "NoteIn") ? $(p + "NoteIn").value : (state.mealDraft?.note || "");
+  say("Saving meal");
+  try {
+    const body = { items, note, ...(state.mealDraft?.id ? { action: "update", id: state.mealDraft.id } : { action: "confirm", date }) };
+    const d = await foodPost(body);
+    const meals = (state.mealsByDate[date] || []).filter(m => m.id !== d.meal.id);
+    meals.push(d.meal);
+    meals.sort((a, b) => Number(a.id) - Number(b.id));
+    state.mealsByDate[date] = meals;
+    state.mealDraft = null;
+    say("Meal saved");
+    rerenderFood(date, p);
+    loadCal(calMonth).catch(()=>{});
+  } catch (e) { say(e.message); }
+}
+function editMeal(date, id, p) {
+  const meal = (state.mealsByDate[date] || []).find(m => Number(m.id) === id);
+  if (!meal) return;
+  state.mealDraft = { date, id: meal.id, items: (meal.items || []).map(it => ({ ...it })), note: meal.note || "" };
+  rerenderFood(date, p);
+}
+async function removeMeal(date, id, p) {
+  say("Removing meal");
+  try {
+    await foodPost({ action: "remove", id });
+    state.mealsByDate[date] = (state.mealsByDate[date] || []).filter(m => Number(m.id) !== id);
+    if (state.mealDraft && state.mealDraft.id === id) state.mealDraft = null;
+    say("Meal removed");
+    rerenderFood(date, p);
+    loadCal(calMonth).catch(()=>{});
+  } catch (e) { say(e.message); }
+}
+async function saveHydration(p, date) {
+  say("Saving water");
+  try {
+    const d = await foodPost({ action: "hydration", date, ounces: $(p + "Oz").value });
+    state.hydrationByDate[date] = d.hydration ? d.hydration.ounces : null;
+    say(d.hydration ? "Water saved" : "Water cleared");
+    rerenderFood(date, p);
+  } catch (e) { say(e.message); }
 }
 async function saveFoodFrom(prefix, date) {
   const g = (k) => { const el = $(prefix + k); return el ? el.value : ""; };
@@ -439,8 +679,7 @@ async function saveFoodFrom(prefix, date) {
     const d = await post({ action:"nutrition", date, calories: g("Cal"), protein: g("Pro"), carbs: g("Carb"), fat: g("Fat") });
     state.nutritionByDate[date] = d.nutrition;
     say(d.nutrition ? "Food saved" : "Food cleared");
-    if (prefix === "d") renderDetailFood(date, d.nutrition);
-    else renderFood();
+    rerenderFood(date, prefix);
     if ($("sHome").classList.contains("on") || prefix === "d") loadCal(calMonth).catch(()=>{});
   } catch (e) { say(e.message); }
 }
@@ -451,7 +690,11 @@ async function loadHome() {
   state.profile = d.profile; state.deload = d.deload; state.exercises = d.exercises;
   state.nutritionByDate = state.nutritionByDate || {};
   if (!state.foodDate) state.foodDate = new Date().toISOString().slice(0, 10);
-  if (d.nutrition_date) state.nutritionByDate[d.nutrition_date] = d.nutrition_today || null;
+  if (d.nutrition_date) {
+    state.nutritionByDate[d.nutrition_date] = d.nutrition_today || null;
+    state.mealsByDate[d.nutrition_date] = d.meals_today || [];
+    state.hydrationByDate[d.nutrition_date] = d.hydration_today ? d.hydration_today.ounces : null;
+  }
   $("who").textContent = d.user.email; $("btnOut").style.display = "inline-block"; $("btnGoals").style.display = "inline-block";
   $("dash").innerHTML = dashHtml(d.dashboard);
   $("days").innerHTML = Object.keys(DAYS).map(k => `<div class="day" data-day="${k}"><div class="n serif">${k}</div><div class="l">${DAYS[k]}</div></div>`).join("");
@@ -642,7 +885,7 @@ $("btnGoals").onclick = async () => {
   say("Loading goals");
   const p = state.profile || {};
   document.querySelector(".p-start_bodyweight").value = fmt(p.start_bodyweight); document.querySelector(".p-goal_bodyweight").value = fmt(p.goal_bodyweight); document.querySelector(".p-goal_date").value = fmt(p.goal_date);
-  for (const k of ["target_calories","target_protein","target_carbs","target_fat"]) { const el = document.querySelector(".p-"+k); if (el) el.value = fmt(p[k]); }
+  for (const k of ["target_calories","target_protein","target_carbs","target_fat","target_hydration_oz"]) { const el = document.querySelector(".p-"+k); if (el) el.value = fmt(p[k]); }
   $("goalList").innerHTML = state.exercises.map(ex => `<div class="ex" data-id="${ex.id}"><div class="nm">${ex.name}</div><div class="small">Workout ${ex.workout_day} · ${ex.kind}${ex.unilateral?" · per side":""} · ${ex.sets} x ${ex.rep_low}${ex.rep_high!==ex.rep_low?"-"+ex.rep_high:""}</div>
     <div class="goal-edit">
       <div><div class="mono" style="font-size:9px">Start load</div><input class="n g-start_load" type="number" step="0.5" value="${fmt(ex.start_load)}"></div>
@@ -661,8 +904,9 @@ $("saveProfile").onclick = async () => {
   const v = (k) => document.querySelector(".p-"+k).value;
   say("Saving");
   try {
-    await post({ action:"profile", start_bodyweight:v("start_bodyweight"), goal_bodyweight:v("goal_bodyweight"), goal_date:v("goal_date"), target_calories:v("target_calories"), target_protein:v("target_protein"), target_carbs:v("target_carbs"), target_fat:v("target_fat") });
-    state.profile = { ...(state.profile||{}), start_bodyweight: v("start_bodyweight") || null, goal_bodyweight: v("goal_bodyweight") || null, goal_date: v("goal_date") || null, target_calories: v("target_calories") === "" ? null : Number(v("target_calories")), target_protein: v("target_protein") === "" ? null : Number(v("target_protein")), target_carbs: v("target_carbs") === "" ? null : Number(v("target_carbs")), target_fat: v("target_fat") === "" ? null : Number(v("target_fat")) };
+    await post({ action:"profile", start_bodyweight:v("start_bodyweight"), goal_bodyweight:v("goal_bodyweight"), goal_date:v("goal_date"), target_calories:v("target_calories"), target_protein:v("target_protein"), target_carbs:v("target_carbs"), target_fat:v("target_fat"), target_hydration_oz:v("target_hydration_oz") });
+    const numOr = (k) => v(k) === "" ? null : Number(v(k));
+    state.profile = { ...(state.profile||{}), start_bodyweight: v("start_bodyweight") || null, goal_bodyweight: v("goal_bodyweight") || null, goal_date: v("goal_date") || null, target_calories: numOr("target_calories"), target_protein: numOr("target_protein"), target_carbs: numOr("target_carbs"), target_fat: numOr("target_fat"), target_hydration_oz: numOr("target_hydration_oz") };
     say("Saved");
   } catch (e) { say(e.message); }
 };

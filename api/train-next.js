@@ -1,7 +1,7 @@
 // GET /api/train-next?day=1   -> today's prescription for that day, prehab, readiness-adjusted, plus deload check
 // GET /api/train-next?board=1 -> dashboard and trend scoreboard for every exercise with a goal
 // Header: Authorization: Bearer <access_token>
-import { json, db, requireUser, ensureSeeded, scoreboard, deloadCheck, historyByExercise, readiness, sessionStats, PREHAB, buildSlotSuggestion, migrationError, targetsOf } from "../lib/train.js";
+import { json, db, requireUser, ensureSeeded, scoreboard, deloadCheck, historyByExercise, readiness, sessionStats, PREHAB, buildSlotSuggestion, migrationError, targetsOf, schemaMissing } from "../lib/train.js";
 
 // Consecutive planned sessions finished without missing two in a row (Rule 07: never miss twice).
 function streakOf(sessions) {
@@ -26,10 +26,10 @@ export default async function handler(req, res) {
       const date = String(req.query.date);
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return json(res, 400, { error: "Date must be YYYY-MM-DD." });
       const profile = (await db(`profiles?user_id=eq.${uid}&select=*`))[0] || null;
-      let nutrition = null;
-      try { nutrition = (await db(`nutrition_logs?user_id=eq.${uid}&log_date=eq.${date}&select=log_date,calories,protein,carbs,fat`))[0] || null; }
-      catch (e) { const msg = migrationError(e); if (!msg) throw e; }
-      return json(res, 200, { date, nutrition, targets: targetsOf(profile) });
+      const nutrition = (await optionalFood(`nutrition_logs?user_id=eq.${uid}&log_date=eq.${date}&select=log_date,calories,protein,carbs,fat`))?.[0] || null;
+      const meals = await optionalFood(`nutrition_meals?user_id=eq.${uid}&log_date=eq.${date}&select=id,log_date,items,calories,protein,carbs,fat,note&order=id`) || [];
+      const hydration = (await optionalFood(`hydration_logs?user_id=eq.${uid}&log_date=eq.${date}&select=log_date,ounces`))?.[0] || null;
+      return json(res, 200, { date, nutrition, meals, hydration, targets: targetsOf(profile) });
     }
 
     const day = Number(req.query.day || 0);
@@ -63,10 +63,10 @@ export default async function handler(req, res) {
     if (board) {
       const cards = all.filter((e) => (e.goal_load || e.goal_reps) && !e.is_library).map((ex) => scoreboard(ex, hist[ex.id] || [], lastBw));
       const openAny = sessions.find((s) => !s.finished) || null;
-      let nutrition_today = null;
-      try { nutrition_today = (await db(`nutrition_logs?user_id=eq.${uid}&log_date=eq.${today}&select=log_date,calories,protein,carbs,fat`))[0] || null; }
-      catch (e) { const msg = migrationError(e); if (!msg) throw e; }
-      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all.filter((e) => !e.is_library), open_session: openAny, streak: streakOf(sessions), nutrition_today, nutrition_date: today });
+      const nutrition_today = (await optionalFood(`nutrition_logs?user_id=eq.${uid}&log_date=eq.${today}&select=log_date,calories,protein,carbs,fat`))?.[0] || null;
+      const meals_today = await optionalFood(`nutrition_meals?user_id=eq.${uid}&log_date=eq.${today}&select=id,log_date,items,calories,protein,carbs,fat,note&order=id`) || [];
+      const hydration_today = (await optionalFood(`hydration_logs?user_id=eq.${uid}&log_date=eq.${today}&select=log_date,ounces`))?.[0] || null;
+      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all.filter((e) => !e.is_library), open_session: openAny, streak: streakOf(sessions), nutrition_today, meals_today, hydration_today, nutrition_date: today });
     }
 
     // Calendar: every session in a month, one line each.
@@ -84,10 +84,10 @@ export default async function handler(req, res) {
           c.sets++; c.pain = Math.max(c.pain, Number(x.pain || 0)); c.volume += Number(x.load || 0) * Number(x.reps || 0);
         }
       }
-      let nutrition = [];
-      try { nutrition = await db(`nutrition_logs?user_id=eq.${uid}&log_date=gte.${from}&log_date=lt.${to}&select=log_date,calories,protein,carbs,fat&order=log_date`); }
-      catch (e) { const msg = migrationError(e); if (!msg) throw e; }
-      return json(res, 200, { month: `${y}-${String(m).padStart(2, "0")}`, days: rows.map((r) => ({ ...r, ...(counts[r.id] || { sets: 0, pain: 0, volume: 0 }) })), nutrition, streak: streakOf(sessions) });
+      const nutrition = await optionalFood(`nutrition_logs?user_id=eq.${uid}&log_date=gte.${from}&log_date=lt.${to}&select=log_date,calories,protein,carbs,fat&order=log_date`) || [];
+      const meals = await optionalFood(`nutrition_meals?user_id=eq.${uid}&log_date=gte.${from}&log_date=lt.${to}&select=id,log_date,items,calories,protein,carbs,fat,note&order=log_date,id`) || [];
+      const hydration = await optionalFood(`hydration_logs?user_id=eq.${uid}&log_date=gte.${from}&log_date=lt.${to}&select=log_date,ounces&order=log_date`) || [];
+      return json(res, 200, { month: `${y}-${String(m).padStart(2, "0")}`, days: rows.map((r) => ({ ...r, ...(counts[r.id] || { sets: 0, pain: 0, volume: 0 }) })), nutrition, meals, hydration, streak: streakOf(sessions) });
     }
 
     // One past session, with every set grouped by exercise.
@@ -122,10 +122,11 @@ export default async function handler(req, res) {
         const mine = ss.filter((x) => x.exercise_id === ex.id);
         if (mine.length) pushBlock(ex, mine, swapFrom[ex.id]);
       }
-      let nutrition = null;
-      try { nutrition = (await db(`nutrition_logs?user_id=eq.${uid}&log_date=eq.${sess.session_date}&select=log_date,calories,protein,carbs,fat`))[0] || null; }
-      catch (e) { const msg = migrationError(e); if (!msg) throw e; }
-      return json(res, 200, { session: sess, detail, nutrition });
+      const day = String(sess.session_date).slice(0, 10);
+      const nutrition = (await optionalFood(`nutrition_logs?user_id=eq.${uid}&log_date=eq.${day}&select=log_date,calories,protein,carbs,fat`))?.[0] || null;
+      const meals = await optionalFood(`nutrition_meals?user_id=eq.${uid}&log_date=eq.${day}&select=id,log_date,items,calories,protein,carbs,fat,note&order=id`) || [];
+      const hydration = (await optionalFood(`hydration_logs?user_id=eq.${uid}&log_date=eq.${day}&select=log_date,ounces`))?.[0] || null;
+      return json(res, 200, { session: sess, detail, nutrition, meals, hydration });
     }
 
     const exercises = all.filter((e) => e.workout_day === day && !e.is_library);
@@ -146,4 +147,9 @@ export default async function handler(req, res) {
   } catch (e) {
     return json(res, e.status || 500, { error: e.message });
   }
+}
+
+async function optionalFood(path) {
+  try { return await db(path); }
+  catch (e) { if (schemaMissing(e) || migrationError(e)) return null; throw e; }
 }
