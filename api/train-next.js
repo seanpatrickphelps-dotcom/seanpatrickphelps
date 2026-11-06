@@ -1,7 +1,7 @@
 // GET /api/train-next?day=1   -> today's prescription for that day, prehab, readiness-adjusted, plus deload check
 // GET /api/train-next?board=1 -> dashboard and trend scoreboard for every exercise with a goal
 // Header: Authorization: Bearer <access_token>
-import { json, db, requireUser, ensureSeeded, scoreboard, deloadCheck, historyByExercise, readiness, sessionStats, PREHAB, buildSlotSuggestion, migrationError, targetsOf, schemaMissing } from "../lib/train.js";
+import { json, db, requireUser, ensureSeeded, scoreboard, deloadCheck, historyByExercise, readiness, sessionStats, PREHAB, buildSlotSuggestion, migrationError, targetsOf, schemaMissing, chicagoDate, weightProgress, profilePatchForSean, shouldSeedWeighIn, seanWeightDefaults } from "../lib/train.js";
 
 // Consecutive planned sessions finished without missing two in a row (Rule 07: never miss twice).
 function streakOf(sessions) {
@@ -34,13 +34,13 @@ export default async function handler(req, res) {
 
     const day = Number(req.query.day || 0);
     const board = req.query.board === "1";
-    const today = new Date().toISOString().slice(0, 10);
+    const today = chicagoDate();
 
     const all = await db(`exercises?user_id=eq.${uid}&select=*&order=workout_day,sort_order`);
     const sets = await db(`sets?user_id=eq.${uid}&select=*,sessions(session_date,finished)&order=logged_at.desc&limit=1500`);
     const hist = historyByExercise(sets.filter((s) => s.sessions?.finished));
     const sessions = await db(`sessions?user_id=eq.${uid}&select=*&order=session_date.desc,id.desc&limit=30`);
-    const profile = (await db(`profiles?user_id=eq.${uid}&select=*`))[0] || null;
+    const profile = await ensureSeanWeight(uid, user.email, (await db(`profiles?user_id=eq.${uid}&select=*`))[0] || null);
     const lastBw = sessions.find((s) => s.bodyweight)?.bodyweight ?? profile?.start_bodyweight ?? null;
     const byName = (n) => all.find((e) => e.name === n && !e.is_library);
     const strengthBench = hist[byName("Barbell Bench Press")?.id] || [];
@@ -66,7 +66,10 @@ export default async function handler(req, res) {
       const nutrition_today = (await optionalFood(`nutrition_logs?user_id=eq.${uid}&log_date=eq.${today}&select=log_date,calories,protein,carbs,fat`))?.[0] || null;
       const meals_today = await optionalFood(`nutrition_meals?user_id=eq.${uid}&log_date=eq.${today}&select=id,log_date,items,calories,protein,carbs,fat,note&order=id`) || [];
       const hydration_today = (await optionalFood(`hydration_logs?user_id=eq.${uid}&log_date=eq.${today}&select=log_date,ounces`))?.[0] || null;
-      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all.filter((e) => !e.is_library), open_session: openAny, streak: streakOf(sessions), nutrition_today, meals_today, hydration_today, nutrition_date: today });
+      const weigh_in_today = (await optionalFood(`weigh_ins?user_id=eq.${uid}&log_date=eq.${today}&select=log_date,pounds`))?.[0] || null;
+      const latest_weigh_in = (await optionalFood(`weigh_ins?user_id=eq.${uid}&select=log_date,pounds&order=log_date.desc&limit=1`))?.[0] || null;
+      const weight = weightProgress({ start: profile?.start_bodyweight, current: latest_weigh_in?.pounds ?? profile?.start_bodyweight ?? null, goal: profile?.goal_bodyweight });
+      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all.filter((e) => !e.is_library), open_session: openAny, streak: streakOf(sessions), nutrition_today, meals_today, hydration_today, nutrition_date: today, weigh_in_today, latest_weigh_in, weight });
     }
 
     // Calendar: every session in a month, one line each.
@@ -147,6 +150,26 @@ export default async function handler(req, res) {
   } catch (e) {
     return json(res, e.status || 500, { error: e.message });
   }
+}
+
+async function ensureSeanWeight(uid, email, profile) {
+  const patch = profilePatchForSean(email, profile);
+  let next = profile || null;
+  if (patch) {
+    try {
+      await db("profiles?on_conflict=user_id", { method: "POST", body: { user_id: uid, ...patch }, prefer: "resolution=merge-duplicates,return=minimal" });
+      next = { ...(profile || {}), user_id: uid, ...patch };
+    } catch (e) { if (!schemaMissing(e)) throw e; }
+  }
+  if (!shouldSeedWeighIn(email, 0)) return next;
+  try {
+    const existing = await db(`weigh_ins?user_id=eq.${uid}&select=id&limit=1`);
+    if (!existing.length) {
+      const defaults = seanWeightDefaults(email);
+      await db("weigh_ins?on_conflict=user_id,log_date", { method: "POST", body: { user_id: uid, log_date: chicagoDate(), pounds: defaults.pounds }, prefer: "resolution=merge-duplicates,return=minimal" });
+    }
+  } catch (e) { if (!schemaMissing(e)) throw e; }
+  return next;
 }
 
 async function optionalFood(path) {
