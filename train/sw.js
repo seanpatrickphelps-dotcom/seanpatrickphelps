@@ -1,5 +1,5 @@
 // train-v4: network-first shell so a deploy replaces the cached Training Log.
-const VERSION = "train-v5";
+const VERSION = "train-v6";
 const SHELL = ["/train/index.html", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
