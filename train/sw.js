@@ -1,5 +1,5 @@
-// train-v7: full-screen instrument shell. Network-first so a deploy replaces the cached log.
-const VERSION = "train-v7";
+// train-v8: phone column stays full width and the daily rows no longer stretch apart.
+const VERSION = "train-v8";
 const SHELL = ["/train/index.html", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
