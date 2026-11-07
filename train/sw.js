@@ -1,6 +1,6 @@
-// train-v8: phone column stays full width and the daily rows no longer stretch apart.
-const VERSION = "train-v8";
-const SHELL = ["/train/index.html", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
+// train-v9: on-page size readout when the layout is wider than the phone.
+const VERSION = "train-v9";
+const SHELL = ["/train/index.html", "/train/layout-facts.js", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));

@@ -236,12 +236,38 @@ body.in #sWork.on,body.in #sDetail.on,body.in #sGoals.on,body.in #sDone.on{overf
 @media (min-width: 800px){
   body.in header,body.in main,body.in #appNav{width:100%;max-width:720px;margin-left:auto;margin-right:auto}
 }
+#scaleNote{display:none;margin:0;padding:12px 16px 16px;background:#24302c;color:var(--snow);font-family:'Hanken Grotesk',sans-serif}
+#scaleNote.force{display:block}
+#scaleNote p{margin:0 0 8px;font-size:16px;line-height:1.35}
+#scaleNote .nums{font-family:'Space Mono',monospace;font-size:13px;line-height:1.45}
+#scaleNote textarea{width:100%;min-height:140px;margin-top:8px;font-family:'Space Mono',monospace;font-size:12px;background:#17211F;color:var(--snow)}
+#scaleNote button{display:block;width:100%;min-height:48px;margin-top:8px;border:0;background:var(--night);color:var(--snow);font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:600}
+#scaleNote .ok{min-height:0;margin-top:6px;font-family:'Space Mono',monospace;font-size:12px}
+@media (max-device-width: 640px) and (min-width: 800px){
+  #scaleNote{display:block;background:var(--rust);padding:20px 16px 24px}
+  #scaleNote p{font-size:40px}
+  #scaleNote .nums{font-size:28px;color:var(--snow)}
+  #scaleNote textarea{min-height:240px;font-size:22px}
+  #scaleNote button{min-height:80px;font-size:32px;background:var(--night)}
+}
+#scaleNote.wide{display:block;background:var(--rust);padding:20px 16px 24px}
+#scaleNote.wide p{font-size:40px}
+#scaleNote.wide .nums{font-size:28px;color:var(--snow)}
+#scaleNote.wide textarea{min-height:240px;font-size:22px}
+#scaleNote.wide button{min-height:80px;font-size:32px;background:var(--night)}
 </style>
 </head>
 <body>
+<div id="scaleNote">
+  <p>This phone is shrinking the page.</p>
+  <p class="nums" id="scaleNums"></p>
+  <button type="button" id="copySize">Copy size</button>
+  <p class="ok" id="scaleCopied"></p>
+  <textarea id="scaleText" readonly aria-label="Layout measurements"></textarea>
+</div>
 <header>
   <div style="min-width:0"><div class="t serif">Train.</div><div class="sub mono"><span id="who"></span><span class="status" id="status">Ready</span></div></div>
-  <div class="headacts"><button id="btnGoals" style="display:none">Goals</button><button id="btnOut" style="display:none">Out</button></div>
+  <div class="headacts"><button type="button" id="btnSize">Size</button><button id="btnGoals" style="display:none">Goals</button><button id="btnOut" style="display:none">Out</button></div>
 </header>
 <main>
 
@@ -342,6 +368,7 @@ body.in #sWork.on,body.in #sDetail.on,body.in #sGoals.on,body.in #sDone.on{overf
   <div class="coverbody" id="foodCard"></div>
 </div>
 
+<script src="/train/layout-facts.js"></script>
 <script>
 const API = "/api";
 const DAYS = {1:"Bench Strength",2:"Heavy Pull",3:"Posterior Chain",4:"Bench Volume",5:"Athletic Pull"};
@@ -928,8 +955,8 @@ async function loadHome() {
   renderFood();
   loadCal().catch(()=>{ $("cal").innerHTML = `<div class="small">Calendar unavailable.</div>`; });
   if (d.last_bodyweight) $("bw").value = d.last_bodyweight;
-  if (d.open_session && !state.leftSession) { await openDay(d.open_session.workout_day); return; }
-  show("sHome"); say("Ready");
+  if (d.open_session && !state.leftSession) { await openDay(d.open_session.workout_day); refreshScaleNote(); return; }
+  show("sHome"); say("Ready"); refreshScaleNote();
 }
 
 // ---------- workout ----------
@@ -1136,6 +1163,53 @@ $("saveProfile").onclick = async () => {
 };
 $("goalsBack").onclick = loadHome;
 
+function readLayoutMeasure() {
+  const vv = window.visualViewport;
+  const btn = $("openLog");
+  const rect = btn ? btn.getBoundingClientRect() : null;
+  const main = document.querySelector("main");
+  const header = document.querySelector("header");
+  const nav = $("appNav");
+  return {
+    version: "train-v9",
+    viewport: (document.querySelector('meta[name="viewport"]') || {}).content || "",
+    innerWidth, innerHeight,
+    screenWidth: screen.width, screenHeight: screen.height,
+    vvWidth: vv ? Math.round(vv.width) : "",
+    vvHeight: vv ? Math.round(vv.height) : "",
+    vvScale: vv ? vv.scale : "",
+    dpr: devicePixelRatio,
+    deviceNarrow: matchMedia("(max-device-width: 640px)").matches,
+    layoutWide: matchMedia("(min-width: 800px)").matches,
+    standalone: matchMedia("(display-mode: standalone)").matches,
+    scrollWidth: document.documentElement.scrollWidth,
+    mainWidth: main ? Math.round(main.getBoundingClientRect().width) : "",
+    headerWidth: header ? Math.round(header.getBoundingClientRect().width) : "",
+    navWidth: nav ? Math.round(nav.getBoundingClientRect().width) : "",
+    bodyFont: getComputedStyle(document.body).fontSize,
+    openLog: rect ? { w: Math.round(rect.width), h: Math.round(rect.height) } : null,
+  };
+}
+function refreshScaleNote() {
+  const m = readLayoutMeasure();
+  const text = window.layoutFactsText ? layoutFactsText(m) : "";
+  const wide = window.layoutWiderThanScreen ? layoutWiderThanScreen(m) : false;
+  $("scaleNums").textContent = "window " + m.innerWidth + "   screen " + m.screenWidth + "   scale " + m.vvScale;
+  $("scaleText").value = text;
+  $("scaleNote").classList.toggle("wide", wide);
+}
+$("btnSize").onclick = () => { refreshScaleNote(); $("scaleNote").classList.add("force"); $("scaleText").focus(); };
+$("copySize").onclick = async () => {
+  refreshScaleNote();
+  const el = $("scaleText");
+  el.focus(); el.select();
+  let ok = false;
+  try { await navigator.clipboard.writeText(el.value); ok = true; } catch {}
+  if (!ok) { try { ok = document.execCommand("copy"); } catch {} }
+  $("scaleCopied").textContent = ok ? "Copied" : "The box is selected. Copy from there.";
+};
+refreshScaleNote();
+window.addEventListener("resize", refreshScaleNote);
 if (token) loadHome().then(flushQueue).catch(()=>signOut());
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("/train/sw.js");
 </script>
