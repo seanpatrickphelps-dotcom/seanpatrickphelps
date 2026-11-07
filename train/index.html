@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Training Log, Phase II</title>
 <link rel="manifest" href="/train/manifest.json">
 <meta name="theme-color" content="#17211F">
@@ -172,6 +172,69 @@ body.typing main{padding-bottom:16px}
 .weighline{display:flex;gap:8px;align-items:center}
 .weighline input{max-width:120px}
 .composer{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+body.in{background:var(--night);color:var(--snow);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+body.in header{flex:none;padding-top:max(8px, env(safe-area-inset-top))}
+body.in main{flex:1;min-height:0;overflow:hidden;max-width:520px;width:100%;margin:0 auto;padding:8px 16px 8px;display:flex;flex-direction:column}
+#todayCard{flex:1;min-height:0;display:flex;flex-direction:column}
+body.in .screen.on{flex:1;min-height:0}
+body.in #sHome.on{height:auto;display:flex;flex-direction:column;overflow:hidden}
+body.in .card .kv b,body.in .det .exblock .sets2 b{color:var(--snow)}
+body.in .miles span.next{background:var(--glacier);border-color:var(--glacier)}
+body.in .dash{border:1px solid #3c4c47}
+body.in .pane.on{flex:1;min-height:0;height:auto;overflow:auto}
+body.in #paneToday.on{display:flex;flex:1;flex-direction:column;overflow:hidden;height:auto;min-height:0}
+body.in p.lead,body.in .small,body.in .card .kv,body.in .lt .k,body.in .mtable th{color:#b7beb8}
+body.in input,body.in select,body.in textarea{background:#24302c;color:var(--snow);border-color:#3c4c47}
+body.in .btn,body.in .swapb,body.in .whyb,body.in .scale button,body.in .swapbox .opt{min-height:48px}
+body.in .btn{background:var(--glacier);color:var(--snow)}
+body.in .btn.rust{background:var(--rust)}
+body.in .btn.ghost,body.in .swapb,body.in header button{color:var(--snow);border-color:#5c6b66;background:transparent}
+body.in header button{min-height:48px;min-width:72px;font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:600;letter-spacing:0}
+body.in .day{background:transparent;color:var(--snow);border-color:#3c4c47;display:flex;align-items:center;gap:14px;text-align:left;min-height:64px;padding:0 16px}
+body.in #paneTrain .days{display:flex;flex-direction:column;gap:8px}
+body.in .day .l{font-size:16px;letter-spacing:.02em;margin:0;color:var(--snow);font-family:'Hanken Grotesk',sans-serif;text-transform:none}
+body.in .day .n{font-size:22px;width:28px}
+body.in .cal{background:transparent;border-color:#3c4c47;color:var(--snow)}
+body.in .cal .c{background:#24302c;color:#b7beb8;border-color:#3c4c47}
+body.in .cal .hd2 button{min-height:48px;min-width:48px;color:var(--snow);border-color:#5c6b66}
+body.in .prehab,body.in .banner,body.in .swapbox,body.in .chips .c2{background:#24302c;color:var(--snow);border-color:#3c4c47}
+body.in .scale button{background:#24302c;color:var(--snow);border-color:#3c4c47}
+body.in .mtable td.food,body.in .mtable tr.tot td,body.in .ex .nm,body.in .card .nm,body.in h1,body.in h2{color:var(--snow)}
+body.in .mtable tr.tot td{border-top-color:var(--snow)}
+body.in .track{background:#2c3834}
+.instrument{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.hero{flex:none}
+.hero .weighline{margin-top:8px}
+.hero .weighline input{flex:1;max-width:none;min-height:48px;text-align:left;padding-left:12px}
+.hero .weighline .btn{min-height:48px;min-width:88px;font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:600;letter-spacing:0;text-transform:none}
+.wt .big{font-family:'Fraunces',serif;font-size:clamp(40px,11vw,56px);line-height:.9;color:var(--snow)}
+.wt .big small{font-size:16px;margin-left:4px;color:#b7beb8;font-family:'Hanken Grotesk',sans-serif}
+.metrics{flex:1 1 auto;display:flex;flex-direction:column;justify-content:space-evenly;gap:6px}
+.metrics .meter{margin:0}
+.mst{font-family:'Hanken Grotesk',sans-serif;font-size:14px;color:#b7beb8;margin-top:2px}
+.acts{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.act{min-height:64px;border:1px solid #3c4c47;background:#24302c;color:var(--snow);font-family:'Hanken Grotesk',sans-serif;font-size:17px;font-weight:600;cursor:pointer}
+.act.go{background:var(--rust);border-color:var(--rust);color:var(--snow)}
+.cover{position:fixed;inset:0;z-index:70;background:var(--night);color:var(--snow);display:flex;flex-direction:column;padding:max(8px,env(safe-area-inset-top)) 16px max(12px,env(safe-area-inset-bottom))}
+.cover[hidden]{display:none}
+.coverbar{flex:none;display:flex;align-items:center;gap:12px;min-height:56px}
+.coverbar button{min-height:48px;min-width:88px;font-family:'Hanken Grotesk',sans-serif;font-size:17px;font-weight:600;background:transparent;color:var(--snow);border:1px solid #5c6b66;cursor:pointer}
+.cover .btn{font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:600;letter-spacing:0;text-transform:none;min-height:48px}
+.coverbody{flex:1;min-height:0;overflow:auto}
+.seg{display:flex;gap:8px;margin-bottom:10px}
+.seg button{flex:1;min-height:52px;border:1px solid #3c4c47;background:transparent;color:var(--snow);font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:600;cursor:pointer}
+.seg button.on{background:var(--glacier);border-color:var(--glacier)}
+body.in #appNav{position:static;flex:none;min-height:68px;padding:0 0 env(safe-area-inset-bottom);border-top:1px solid #2c3834}
+body.in #appNav button{min-height:68px;font-family:'Hanken Grotesk',sans-serif;font-size:17px;font-weight:600;letter-spacing:0;text-transform:none;color:#8b938f}
+body.in #appNav button.on{color:var(--snow);box-shadow:inset 0 3px 0 var(--glacier)}
+body.sheet-open #appNav{display:none}
+body.in #sWork.on,body.in #sDetail.on,body.in #sGoals.on,body.in #sDone.on{overflow:auto}
+.panelbar{display:flex;align-items:center;gap:12px;min-height:52px;margin-bottom:6px}
+.panelbar .btn{width:auto;min-width:88px;margin:0}
+.set.saved .k:after{content:none}
+@media (min-width: 800px){
+  body.in header,body.in main,body.in #appNav{width:100%;max-width:720px;margin-left:auto;margin-right:auto}
+}
 </style>
 </head>
 <body>
@@ -192,26 +255,24 @@ body.typing main{padding-bottom:16px}
 </section>
 
 <section id="sHome" class="screen">
-  <div class="pane on" id="paneToday">
-    <div id="todayCard"></div>
-    <div id="foodCard"></div>
-  </div>
+  <div class="pane on" id="paneToday"><div id="todayCard"></div></div>
   <div class="pane" id="paneTrain">
     <div class="dash" id="dash"></div>
     <div class="days" id="days"></div>
     <div id="deloadBanner"></div>
   </div>
-  <div class="pane" id="paneMonth">
-    <div class="cal" id="cal"></div>
-  </div>
-  <div class="pane" id="paneBoard">
-    <p class="lead">Last four exposures, the next milestone, and the weight you actually lifted.</p>
-    <div id="board"></div>
+  <div class="pane" id="paneHistory">
+    <div class="seg" role="tablist" aria-label="History">
+      <button type="button" id="segMonth" class="on" role="tab" aria-selected="true">Month</button>
+      <button type="button" id="segBoard" role="tab" aria-selected="false">Board</button>
+    </div>
+    <div id="histMonth"><div class="cal" id="cal"></div></div>
+    <div id="histBoard" hidden><div id="board"></div></div>
   </div>
 </section>
 
 <section id="sWork" class="screen">
-  <div class="mono" id="wDayLabel"></div>
+  <div class="panelbar"><button class="btn ghost" id="backBtn">Back</button><span class="mono" id="wDayLabel"></span></div>
   <h1 class="serif" id="wTitle"></h1>
   <div id="startBox">
     <p class="lead">Four inputs, then the day adjusts to how you actually showed up. The app recommends, you decide.</p>
@@ -229,7 +290,6 @@ body.typing main{padding-bottom:16px}
   <div id="exList"></div>
   <div id="afterBox"></div>
   <button class="btn rust" id="finishBtn" style="display:none">Finish and get the readout</button>
-  <button class="btn ghost" id="backBtn">Back</button>
 </section>
 
 <section id="sDone" class="screen">
@@ -242,15 +302,15 @@ body.typing main{padding-bottom:16px}
 </section>
 
 <section id="sDetail" class="screen det">
-  <div class="mono" id="dMeta"></div>
+  <div class="panelbar"><button class="btn ghost" id="detBack">Back</button><span class="mono" id="dMeta"></span></div>
   <h1 class="serif" id="dTitle"></h1>
   <div id="dReadout"></div>
   <div id="dBody"></div>
   <div id="dFood"></div>
-  <button class="btn ghost" id="detBack">Back</button>
 </section>
 
 <section id="sGoals" class="screen">
+  <div class="panelbar"><button class="btn ghost" id="goalsBack">Back</button></div>
   <h1 class="serif">Set the numbers.</h1>
   <div class="card"><div class="nm">Body</div><p class="small">Start and goal weight drive the bar at the top. The daily weigh-in is saved there, one per day.</p><div class="goal-edit" style="grid-template-columns:1fr 1fr 1fr">
     <div><div class="mono" style="font-size:9px">Start weight</div><input class="n p-start_bodyweight" type="number" step="0.1"></div>
@@ -268,16 +328,18 @@ body.typing main{padding-bottom:16px}
     <button class="btn sm" id="saveProfile" style="margin-top:8px">Save</button></div>
   <p class="lead" style="margin-top:16px">Per exercise: starting load is where the trend begins, the goal is where it ends, the date is when. Increment is the smallest jump the app will ever suggest.</p>
   <div id="goalList"></div>
-  <button class="btn ghost" id="goalsBack">Back</button>
 </section>
 
 </main>
 <nav id="appNav" hidden aria-label="Sections">
   <button type="button" data-pane="Today" class="on" aria-current="page">Today</button>
   <button type="button" data-pane="Train" aria-current="false">Train</button>
-  <button type="button" data-pane="Month" aria-current="false">Month</button>
-  <button type="button" data-pane="Board" aria-current="false">Board</button>
+  <button type="button" data-pane="History" aria-current="false">History</button>
 </nav>
+<div id="mealSheet" class="cover" hidden>
+  <div class="coverbar"><button type="button" id="closeMeal">Close</button><span class="mono">Log</span></div>
+  <div class="coverbody" id="foodCard"></div>
+</div>
 
 <script>
 const API = "/api";
@@ -290,13 +352,16 @@ let refreshing = null;
 const QKEY = "train_queue";
 const $ = (id) => document.getElementById(id);
 const show = (id) => {
+  if (id !== "sHome" && $("mealSheet") && !$("mealSheet").hidden) { $("mealSheet").hidden = true; document.body.classList.remove("sheet-open"); }
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
   $(id).classList.add("on");
   const nav = $("appNav");
   if (nav) nav.hidden = id === "sAuth";
+  document.body.classList.toggle("in", id !== "sAuth");
   window.scrollTo(0,0);
 };
 function showPane(name) {
+  if ($("mealSheet") && !$("mealSheet").hidden) closeMeal();
   if (!$("sHome").classList.contains("on")) state.leftSession = true;
   document.querySelectorAll("#sHome .pane").forEach(p => p.classList.toggle("on", p.id === "pane" + name));
   document.querySelectorAll("#appNav button").forEach(b => {
@@ -306,8 +371,34 @@ function showPane(name) {
   });
   show("sHome");
 }
+function openMeal() { $("mealSheet").hidden = false; document.body.classList.add("sheet-open"); $("closeMeal").focus(); }
+function closeMeal() { $("mealSheet").hidden = true; document.body.classList.remove("sheet-open"); const back = $("openLog"); if (back) back.focus(); }
 document.querySelectorAll("#appNav button").forEach(b => b.onclick = () => showPane(b.dataset.pane));
-document.addEventListener("focusin", (e) => { if (e.target.matches("input, textarea, select")) document.body.classList.add("typing"); });
+$("closeMeal").onclick = closeMeal;
+$("segMonth").onclick = () => showHist("month");
+$("segBoard").onclick = () => showHist("board");
+function showHist(which) {
+  $("histMonth").hidden = which !== "month";
+  $("histBoard").hidden = which !== "board";
+  $("segMonth").classList.toggle("on", which === "month");
+  $("segBoard").classList.toggle("on", which === "board");
+  $("segMonth").setAttribute("aria-selected", which === "month" ? "true" : "false");
+  $("segBoard").setAttribute("aria-selected", which === "board" ? "true" : "false");
+}
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (!$("mealSheet").hidden) { closeMeal(); return; }
+  if ($("sWork").classList.contains("on")) { $("backBtn").click(); return; }
+  else if ($("sDetail").classList.contains("on")) $("detBack").click();
+  else if ($("sGoals").classList.contains("on")) $("goalsBack").click();
+  else if ($("sDone").classList.contains("on")) $("homeBtn").click();
+});
+document.addEventListener("focusin", (e) => {
+  if (!e.target.matches("input, textarea, select")) return;
+  document.body.classList.add("typing");
+  const field = e.target;
+  setTimeout(() => { try { field.scrollIntoView({ block: "center", inline: "nearest" }); } catch (err) {} }, 120);
+});
 document.addEventListener("focusout", () => { setTimeout(() => { const a = document.activeElement; if (!a || !a.matches || !a.matches("input, textarea, select")) document.body.classList.remove("typing"); }, 80); });
 const say = (t) => { $("status").textContent = t; };
 const fmt = (v) => v==null ? "" : v;
@@ -491,12 +582,13 @@ function dayFood(date) {
 function barHtml(label, current, target, unit, tone) {
   const has = target != null && target !== "" && Number(target) > 0;
   const cur = current == null || current === "" ? null : Number(current);
-  const right = has ? `${cur == null ? "—" : fmtFood(cur)} / ${fmtFood(target)}${unit ? " " + unit : ""}` : (cur == null ? "—" : `${fmtFood(cur)}${unit ? " " + unit : ""}`);
-  if (!has) return `<div class="meter"><div class="top"><span class="k">${label}</span><span class="num">${right}</span></div></div>`;
+  const right = has ? `${cur == null ? "-" : fmtFood(cur)} / ${fmtFood(target)}${unit ? " " + unit : ""}` : (cur == null ? "-" : `${fmtFood(cur)}${unit ? " " + unit : ""}`);
+  const note = arguments[5] ? `<div class="mst">${esc(arguments[5])}</div>` : "";
+  if (!has) return `<div class="meter"><div class="top"><span class="k">${label}</span><span class="num">${right}</span></div>${note}</div>`;
   const pct = Math.max(0, Math.min(100, ((cur || 0) / Number(target)) * 100));
   const over = cur != null && cur > Number(target);
   const cls = over ? (tone === "good" ? "good" : "over") : "";
-  return `<div class="meter"><div class="top"><span class="k">${label}</span><span class="num">${right}</span></div><div class="track"><i class="${cls}" style="width:${pct}%"></i></div></div>`;
+  return `<div class="meter"><div class="top"><span class="k">${label}</span><span class="num">${right}</span></div>${note}<div class="track"><i class="${cls}" style="width:${pct}%"></i></div></div>`;
 }
 function chipHtml(label, value) {
   if (!label) return "";
@@ -511,27 +603,29 @@ function chipFor(kind, current, target) {
   if (kind === "hydration") return diff > 0 ? ["Hydration over", abs + " oz"] : diff < 0 ? ["Hydration left", abs + " oz"] : ["Hydration", "On target"];
   return null;
 }
-function dashHtmlFood(date, part) {
+function dashHtmlFood(date, part, compact) {
   const p = state.profile || {};
   const food = dayFood(date);
   const ounces = state.hydrationByDate ? state.hydrationByDate[date] : null;
   const want = part || "all";
   const chips = [];
   let html = "";
+  const line = (chip) => !chip ? "" : chip[0].includes("left") ? `${chip[1]} left` : chip[0].includes("above") ? `${chip[1]} above` : chip[0].includes("over") ? `${chip[1]} over` : chip[1];
   if (want === "all" || want === "calprotein") {
-    html += barHtml("Calories", food.calories, p.target_calories, "kcal", "over") + barHtml("Protein", food.protein, p.target_protein, "g", "good");
-    if (p.target_carbs != null && p.target_carbs !== "") html += barHtml("Carbs", food.carbs, p.target_carbs, "g", "over");
-    if (p.target_fat != null && p.target_fat !== "") html += barHtml("Fat", food.fat, p.target_fat, "g", "over");
     const cal = chipFor("calories", food.calories, p.target_calories);
     const pro = chipFor("protein", food.protein, p.target_protein);
+    html += barHtml("Calories", food.calories, p.target_calories, "kcal", "over", line(cal)) + barHtml("Protein", food.protein, p.target_protein, "g", "good", line(pro));
+    if (p.target_carbs != null && p.target_carbs !== "") html += barHtml("Carbs", food.carbs, p.target_carbs, "g", "over", line(chipFor("calories", food.carbs, p.target_carbs)));
+    if (p.target_fat != null && p.target_fat !== "") html += barHtml("Fat", food.fat, p.target_fat, "g", "over", line(chipFor("calories", food.fat, p.target_fat)));
     if (cal) chips.push(cal);
     if (pro) chips.push(pro);
   }
   if (want === "all" || want === "hydration") {
-    html += barHtml("Hydration", ounces, p.target_hydration_oz, "oz", "over");
     const water = chipFor("hydration", ounces, p.target_hydration_oz);
+    html += barHtml("Hydration", ounces, p.target_hydration_oz, "oz", "over", line(water));
     if (water) chips.push(water);
   }
+  if (compact) return html;
   return html + (chips.length ? `<div class="chips">${chips.map(c => chipHtml(c[0], c[1])).join("")}</div>` : "");
 }
 function chicagoToday() {
@@ -570,13 +664,17 @@ function renderToday() {
   const current = latest?.pounds ?? (p.start_bodyweight != null && p.start_bodyweight !== "" ? p.start_bodyweight : null);
   const prog = weightProgressView(p.start_bodyweight, current, p.goal_bodyweight);
   const todayLb = state.weighByDate && Object.prototype.hasOwnProperty.call(state.weighByDate, date) ? state.weighByDate[date] : (latest && latest.log_date === date ? latest.pounds : null);
-  const bar = prog.ready ? `<div class="track" style="margin-top:8px"><i style="width:${prog.pct}%"></i></div><p class="small" style="margin:8px 0 0">${weightCopy(prog)}</p>` : `<p class="small">${weightCopy(prog)}</p>`;
+  const bar = prog.ready ? `<div class="track" style="margin-top:8px"><i style="width:${prog.pct}%"></i></div><p class="small" style="margin:6px 0 0">${weightCopy(prog)}</p>` : `<p class="small">${weightCopy(prog)}</p>`;
   const big = prog.ready ? `<div class="big">${fmtFood(prog.current)} <small>lb</small></div><div class="small">${fmtFood(prog.start)} start · ${fmtFood(prog.goal)} goal</div>` : "";
   const hint = latest ? "" : (p.start_bodyweight != null && p.start_bodyweight !== "" ? `<p class="small">No weigh-in yet. Current weight is the start weight until you save one.</p>` : "");
-  el.innerHTML = `<div class="wt"><div class="rowline"><div><div class="mono" style="color:var(--glacier)">Weight · ${esc(date)}</div>${big}</div>
+  el.innerHTML = `<div class="instrument"><div class="hero wt"><div class="mono" style="color:var(--glacier)">Weight · ${esc(date)}</div>${big}
+    ${bar}${hint}
     <div class="weighline"><input class="n" id="weighLb" type="number" min="0" max="1000" step="0.1" inputmode="decimal" value="${todayLb == null ? "" : todayLb}" aria-label="Today's weight in pounds"><button type="button" class="btn sm rust" id="saveWeigh">Save</button></div></div>
-    ${bar}${hint}${dashHtmlFood(date, "calprotein")}</div>`;
+    <div class="metrics">${dashHtmlFood(date, "all", true)}</div>
+    <div class="acts"><button type="button" class="act go" id="openLog">Log meal</button><button type="button" class="act" id="openTrain">Train</button></div></div>`;
   $("saveWeigh").onclick = saveWeigh;
+  $("openLog").onclick = () => { openMeal(); renderFood(); };
+  $("openTrain").onclick = () => showPane("Train");
 }
 async function saveWeigh() {
   const date = chicagoToday();
@@ -664,17 +762,18 @@ function foodPanel(date, p, withDate) {
   const draftBox = draft ? `<div class="meal" id="${p}Draft"><div class="mono" style="color:var(--glacier)">Estimate</div>${mealTable(draft.items, true)}<p class="small" id="${p}Note">${esc(draft.note || "")}</p><label class="f mono">Note</label><input id="${p}NoteIn" value="${esc(draft.note || "")}"><div class="rowbtns"><button type="button" class="btn sm" id="${p}AddLine">Add line</button></div><div class="rowbtns"><button type="button" class="btn" id="${p}Confirm">${draft.id ? "Save meal" : "Confirm"}</button><button type="button" class="btn ghost" id="${p}Discard">Discard</button></div></div>` : "";
   const manualInner = meals.length ? `<p class="small">Meals are this day's total.${foodLogged(manual) ? " A typed total is still saved. Remove every meal and it shows again." : ""}</p>` : `${macroInputs(p, manual)}<button class="btn" id="${p}SaveFood">Save total</button>`;
   const oz = state.hydrationByDate[date];
-  const bars = (withDate && date === chicagoToday()) ? dashHtmlFood(date, "hydration") : dashHtmlFood(date);
-  return `<div class="sheet"><div class="rowline"><span class="mono" style="color:var(--braies)">Food</span>${withDate ? `<input id="foodDate" type="date" value="${date}" aria-label="Food date">` : `<span class="small">${esc(date)}</span>`}</div>
-    ${bars}
-    <div class="rowbtns"><input class="n" id="${p}Oz" type="number" min="0" step="1" inputmode="decimal" value="${oz == null ? "" : oz}" aria-label="Water ounces" placeholder="oz"><button type="button" class="btn sm" id="${p}SaveOz">Save oz</button></div>
-    ${list}
-    ${draft ? `<div class="mono" style="color:var(--glacier);margin-top:8px">Check the estimate</div>` : `<div class="mono" style="margin-top:8px">Add a meal</div>`}
-    ${draftBox}
-    ${draft ? "" : `<div class="composer"><textarea id="${p}Text" rows="2" placeholder="Two servings, no salsa" aria-label="Meal description"></textarea>
+  const bars = dashHtmlFood(date);
+  const composer = `<div class="composer"><textarea id="${p}Text" rows="2" placeholder="Two servings, no salsa" aria-label="Meal description"></textarea>
       <div class="rowbtns"><button type="button" class="btn sm" id="${p}CamBtn">Camera</button><button type="button" class="btn sm ghost" id="${p}FileBtn">Photo</button><button type="button" class="btn sm rust" id="${p}Estimate">Estimate</button>${state.mealPhoto ? `<button type="button" class="btn sm ghost" id="${p}ClearPhoto">Clear</button>` : ""}</div>
       <input id="${p}Cam" type="file" accept="image/*" capture="environment" hidden><input id="${p}File" type="file" accept="image/*" hidden>
-      ${photo}</div>`}
+      ${photo}</div>`;
+  return `<div class="sheet"><div class="rowline"><span class="mono" style="color:var(--braies)">Food</span>${withDate ? `<input id="foodDate" type="date" value="${date}" aria-label="Food date">` : `<span class="small">${esc(date)}</span>`}</div>
+    <div class="rowbtns"><input class="n" id="${p}Oz" type="number" min="0" step="1" inputmode="decimal" value="${oz == null ? "" : oz}" aria-label="Water ounces" placeholder="oz"><button type="button" class="btn sm" id="${p}SaveOz">Save water</button></div>
+    ${draft ? `<div class="mono" style="color:var(--glacier);margin-top:8px">Check the estimate</div>` : `<div class="mono" style="margin-top:8px">Add a meal</div>`}
+    ${draftBox}
+    ${draft ? "" : composer}
+    ${list}
+    ${bars}
     <details class="more"><summary>Typed total</summary>${manualInner}</details>
   </div>`;
 }
@@ -817,8 +916,12 @@ async function loadHome() {
   renderToday();
   $("who").textContent = d.user.email; $("btnOut").style.display = "inline-block"; $("btnGoals").style.display = "inline-block";
   $("dash").innerHTML = dashHtml(d.dashboard);
-  $("days").innerHTML = Object.keys(DAYS).map(k => `<div class="day" data-day="${k}"><div class="n serif">${k}</div><div class="l">${DAYS[k]}</div></div>`).join("");
-  document.querySelectorAll(".day").forEach(el => el.onclick = () => openDay(Number(el.dataset.day)));
+  $("days").innerHTML = Object.keys(DAYS).map(k => `<div class="day" role="button" tabindex="0" data-day="${k}"><div class="n serif">${k}</div><div class="l">${DAYS[k]}</div></div>`).join("");
+  document.querySelectorAll(".day").forEach(el => {
+    const go = () => openDay(Number(el.dataset.day));
+    el.onclick = go;
+    el.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } };
+  });
   $("deloadBanner").innerHTML = d.deload.recommended ? `<div class="banner"><span class="mono">Deload recommended</span><p>${d.deload.reasons.join(". ")}. For one week: primary lifts about 90 percent, working sets cut by a third, accessories cut in half, nothing to failure. Tick "deload" when you start a session to apply it. Your call.</p></div>` : "";
   $("board").innerHTML = d.cards.map(cardHtml).join("") || `<div class="small">No goals set yet. Tap Goals.</div>`;
   renderFood();
@@ -843,7 +946,7 @@ function scaleHtml(name, val) {
 function renderWork() {
   const s = state.session, started = !!s;
   $("startBox").style.display = started ? "none" : "block";
-  $("readyBox").innerHTML = started && state.readiness ? `<div class="banner" style="border-color:${({green:"var(--teton)",yellow:"var(--amber)",red:"var(--rust)"})[state.readiness.level]}"><span class="mono" style="color:var(--night)">Readiness ${state.readiness.score??""} · ${state.readiness.label}${s.deload?" · DELOAD":""}</span><p>${state.readiness.note}${s.bodyweight?` Bodyweight ${s.bodyweight}.`:""}</p></div>` : "";
+  $("readyBox").innerHTML = started && state.readiness ? `<div class="banner" style="border-color:${({green:"var(--teton)",yellow:"var(--amber)",red:"var(--rust)"})[state.readiness.level]}"><span class="mono">Readiness ${state.readiness.score??""} · ${state.readiness.label}${s.deload?" · DELOAD":""}</span><p>${state.readiness.note}${s.bodyweight?` Bodyweight ${s.bodyweight}.`:""}</p></div>` : "";
   // pre-hab
   const p = state.prehab;
   $("prehabBox").innerHTML = started && p ? `<div class="prehab"><span class="mono" style="color:var(--glacier);font-weight:700">${p.title}</span>
