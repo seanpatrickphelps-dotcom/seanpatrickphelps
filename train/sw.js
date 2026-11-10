@@ -1,6 +1,6 @@
-// train-v9: Universal Sans Display is the UI face once licensed files are in /train/fonts/.
-const VERSION = "train-v9";
-const SHELL = ["/train/index.html", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
+// train-v10: Geist Sans is self-hosted for the training log.
+const VERSION = "train-v10";
+const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
