@@ -273,12 +273,13 @@ body.in .day{border:0;border-radius:14px;background:#1A211F}
 .recomp .sub{margin:6px 0 0;color:#9BA2A6;font-size:15px;font-variant-numeric:tabular-nums}
 .recomp .line{margin:2px 0 0;color:#C9CFCB;font-size:16px;font-variant-numeric:tabular-nums}
 .band{margin-top:16px}
+.recomp .band{margin-top:28px}
 .band .k{margin:0 0 8px;color:#9BA2A6}
 .rings.goals{margin-top:0}
 .rings.goals .ring{gap:2px}
 .dial{position:relative;width:84px;height:84px;display:block}
 .dial svg{width:84px;height:84px}
-.dial .mid{position:absolute;inset:0;display:grid;place-items:center;font-size:16px;font-weight:560;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.dial .mid{position:absolute;inset:0;display:grid;place-items:center;font-size:15px;font-weight:560;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
 .ring .rg{font-size:12px;color:#9BA2A6;font-variant-numeric:tabular-nums}
 .rings.daily{margin-top:4px}
 .rings.daily svg{width:58px;height:58px}
@@ -310,8 +311,13 @@ body.in .day{border:0;border-radius:14px;background:#1A211F}
 #appNav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;letter-spacing:.08em}
 .ico{width:22px;height:22px;display:block}
 .cover{background:rgba(8,10,9,.62);justify-content:flex-end;padding:0}
-.coverbar,.coverbody{background:#161C1A}
-.coverbar{border-radius:22px 22px 0 0;padding:10px 16px 0}
+.coverbar,.coverbody,.sheethead{background:#161C1A}
+.coverbar,.sheethead{border-radius:22px 22px 0 0;padding:10px 16px 0}
+.sheethead{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;min-height:64px;padding:8px 16px 6px}
+.sheethead .mono{text-align:center}
+.sheethead .x{justify-self:start;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border:0;border-radius:999px;background:rgba(239,238,231,.08);color:var(--snow);display:grid;place-items:center;cursor:pointer}
+.sheethead .pill,body.in .sheethead .pill{width:auto;min-width:72px;min-height:44px;margin:0;padding:0 18px;border:0;border-radius:999px;justify-self:end;text-transform:none;letter-spacing:0;font-size:16px;font-weight:600}
+body.in .sheethead .x{border:0;border-radius:999px;background:rgba(239,238,231,.08)}
 .coverbody{max-height:min(70dvh,100%);padding:8px 16px max(16px,env(safe-area-inset-bottom))}
 .seg button.on{background:transparent;border-color:transparent;box-shadow:inset 0 -2px 0 var(--glacier);color:var(--snow)}
 #toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:80;background:#EFEEE7;color:#17211F;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:600}
@@ -885,7 +891,8 @@ function scansChartHtml(scans) {
   const line = (name, points, unit, color) => {
     const nums = points.map((p) => p.value).filter((v) => v != null && v !== "");
     if (!nums.length) return "";
-    const first = fmtFood(nums[0]), last = fmtFood(nums[nums.length - 1]);
+    const fmt = unit === "lb" ? fmtLb : fmtFood;
+    const first = fmt(nums[0]), last = fmt(nums[nums.length - 1]);
     const caption = nums.length > 1 ? `${first} to ${last} ${unit}` : `${last} ${unit}`;
     return `<div class="spark"><div><b>${name}</b><div class="sv">${caption}</div></div>${sparkline(points, color)}</div>`;
   };
@@ -1037,6 +1044,18 @@ function fmtFood(n) {
   const [w, f] = String(x).split(".");
   return w.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (f ? "." + f : "");
 }
+function fmtLb(n) {
+  if (n == null || n === "" || !Number.isFinite(Number(n))) return "-";
+  const x = Math.round(Number(n) * 10) / 10;
+  const [w, f] = x.toFixed(1).split(".");
+  return w.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + f;
+}
+function shortDate(iso) {
+  const m = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return String(iso || "");
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return months[Number(m[2]) - 1] + " " + Number(m[3]);
+}
 function sumItems(items) {
   const t = { calories: 0, protein: 0, carbs: 0, fat: 0 };
   for (const it of items || []) { t.calories += Number(it.calories) || 0; t.protein += Number(it.protein) || 0; t.carbs += Number(it.carbs) || 0; t.fat += Number(it.fat) || 0; }
@@ -1148,8 +1167,8 @@ function recompHero(phy) {
   const rings = phy.rings || {};
   const fatNow = fat.current != null ? fmtFood(fat.current) : "-";
   const fatSub = fat.ready ? `from ${fmtFood(fat.baseline)} toward ${fmtFood(fat.goal)}` : "";
-  const leanLine = lean.current != null ? `Lean ${fmtFood(lean.current)} lb toward ${fmtFood(lean.goal)}` : "";
-  const wtLine = weight.current != null ? `Weight ${fmtFood(weight.current)} lb toward ${fmtFood(weight.goal)}` : "";
+  const leanLine = lean.current != null ? `Lean ${fmtLb(lean.current)} lb toward ${fmtLb(lean.goal)}` : "";
+  const wtLine = weight.current != null ? `Weight ${fmtLb(weight.current)} lb toward ${fmtLb(weight.goal)}` : "";
   return `<div class="hero recomp"><div class="mono">Recomposition</div>
     <p class="overall">${fmtFood(phy.overall)}% toward the goal physique</p>
     <div class="fat" id="fatNow">${fatNow}<small>%</small></div>
@@ -1168,7 +1187,7 @@ function scanSheetHtml() {
   const seg = [["arm_left_muscle_lb","Arm L"],["arm_right_muscle_lb","Arm R"],["leg_left_muscle_lb","Leg L"],["leg_right_muscle_lb","Leg R"]];
   const more = [["fat_mass_lb","Fat mass"],["muscle_lb","Muscle"],["body_water_lb","Body water"],["protein_lb","Protein"],["minerals_lb","Minerals"],["bmr_kcal","BMR"],["bmi","BMI"],["body_score","Score"],["arm_left_fat_lb","Arm fat L"],["arm_right_fat_lb","Arm fat R"],["trunk_fat_lb","Trunk fat"],["leg_left_fat_lb","Leg fat L"],["leg_right_fat_lb","Leg fat R"]];
   return `<div id="scanSheet" class="cover" hidden>
-    <div class="coverbar"><button type="button" id="closeScan">Close</button><span class="mono">Add scan</span><button type="button" class="btn rust" id="saveScan">Save</button></div>
+    <div class="sheethead"><button type="button" class="x" id="closeScan" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button><span class="mono">Add scan</span><button type="button" class="btn rust pill" id="saveScan">Save</button></div>
     <div class="coverbody"><form class="scanform" id="scanForm">
       <div><label for="scanDate">Date</label><input id="scanDate" type="date" aria-label="Scan date"></div>
       <button type="button" class="btn ghost" id="scanUpload">Upload report</button>
@@ -1192,8 +1211,8 @@ function goalRingHtml(key, ring) {
   const pct = ready ? Math.max(0, Math.min(1, Number(ring.pct) / 100)) : 0;
   const C = 2 * Math.PI * 28;
   const dash = (pct * C).toFixed(1);
-  const cur = ring && ring.current != null ? fmtFood(ring.current) : "-";
-  const goal = ring && ring.goal != null ? fmtFood(ring.goal) : "";
+  const cur = ring && ring.current != null ? fmtLb(ring.current) : "-";
+  const goal = ring && ring.goal != null ? fmtLb(ring.goal) : "";
   const color = key === "arms" ? "#3E97BC" : key === "trunk" ? "#4E7B53" : "#1B948C";
   const label = (ring && ring.label) || key;
   return `<button type="button" class="ring goal" data-seg="${key}" aria-label="${esc(label)}, ${cur} pounds, goal ${goal}"><span class="dial"><svg viewBox="0 0 72 72" aria-hidden="true"><circle class="track" cx="36" cy="36" r="28"></circle><circle class="arc" cx="36" cy="36" r="28" style="stroke:${color};stroke-dasharray:${dash} ${C.toFixed(1)}"></circle></svg><span class="mid">${cur}</span></span><div class="rl">${esc(label)}</div><div class="rg">${goal ? "goal " + goal : ""}</div></button>`;
@@ -1230,7 +1249,7 @@ function renderToday() {
       <div class="coverbody">${hint}<div class="weighline"><input class="n" id="weighLb" type="number" min="0" max="1000" step="0.1" inputmode="decimal" value="${todayLb == null ? "" : todayLb}" aria-label="Today's weight in pounds"><button type="button" class="btn rust" id="saveWeigh">Save</button></div></div>
     </div>
     <div id="segSheet" class="cover" hidden>
-      <div class="coverbar"><button type="button" id="closeSeg">Close</button><span class="mono" id="segTitle">Muscle</span></div>
+      <div class="sheethead"><button type="button" class="x" id="closeSeg" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button><span class="mono" id="segTitle">Muscle</span><span></span></div>
       <div class="coverbody" id="segBody"></div>
     </div>
     ${state.scansReady ? scanSheetHtml() : ""}</div>`;
@@ -1272,10 +1291,10 @@ function openSeg(key) {
   if (!ring || !$("segSheet")) return;
   $("segTitle").textContent = ring.label || "Muscle";
   const sides = ring.left != null || ring.right != null
-    ? `<div class="segstats"><div><b>${fmtFood(ring.left)}</b><span>Left</span></div><div><b>${fmtFood(ring.right)}</b><span>Right</span></div><div><b>${fmtFood(ring.current)}</b><span>Average</span></div></div>`
-    : `<div class="segstats"><div><b>${fmtFood(ring.current)}</b><span>Now</span></div></div>`;
-  const from = ring.ready ? `<p class="sub">from ${fmtFood(ring.baseline)} toward ${fmtFood(ring.goal)}</p>` : "";
-  const trend = (ring.trend || []).map((p) => `<div><span>${esc(p.date)}</span><span>${fmtFood(p.value)} lb</span></div>`).join("");
+    ? `<div class="segstats"><div><b>${fmtLb(ring.left)}</b><span>Left</span></div><div><b>${fmtLb(ring.right)}</b><span>Right</span></div><div><b>${fmtLb(ring.current)}</b><span>Average</span></div></div>`
+    : `<div class="segstats"><div><b>${fmtLb(ring.current)}</b><span>Now</span></div></div>`;
+  const from = ring.ready ? `<p class="sub">from ${fmtLb(ring.baseline)} toward ${fmtLb(ring.goal)}</p>` : "";
+  const trend = (ring.trend || []).map((p) => `<div><span>${esc(shortDate(p.date))}</span><span>${fmtLb(p.value)} lb</span></div>`).join("");
   $("segBody").innerHTML = `${sides}${from}<div class="widechart">${sparkline(ring.trend, "#3E97BC")}</div><div class="trend">${trend}</div>`;
   $("segSheet").hidden = false;
   document.body.classList.add("sheet-open");

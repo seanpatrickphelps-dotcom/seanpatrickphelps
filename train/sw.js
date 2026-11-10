@@ -1,5 +1,5 @@
-// train-v16: recomposition hero, goal rings, and body scans.
-const VERSION = "train-v16";
+// train-v17: tenths on pounds, short scan dates, pill sheet headers.
+const VERSION = "train-v17";
 const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
