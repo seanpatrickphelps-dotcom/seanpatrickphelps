@@ -287,28 +287,30 @@ body.focus .set{display:block;background:transparent;border:0;margin:0 0 8px;pad
 body.focus .set:not(.checked):not(.active){display:none}
 body.focus .set>.k,body.focus .set>input,body.focus .set>select,body.focus .set>div:not(.glide){position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
 body.focus .set.saved .k:after{content:none}
-.glide .sum{display:none;width:100%;text-align:left;background:none;border:0;color:#9BA2A6;font:15px/1.3 var(--sans);font-variant-numeric:tabular-nums;padding:8px 4px}
-body.focus .set.checked .sum{display:block}
-.glide .card{display:none;background:linear-gradient(180deg,#1E2724,#141A18);border-radius:28px;padding:16px 14px 14px}
+.glide .sum{display:none;align-items:center;gap:8px;width:fit-content;max-width:100%;text-align:left;background:#1A211F;border:0;border-radius:999px;color:var(--snow);font:15px/1.2 var(--sans);font-variant-numeric:tabular-nums;padding:8px 14px}
+.glide .sum .tick{width:16px;height:16px;flex:none;color:#1B948C}
+body.focus .set.checked .sum{display:flex}
+.glide .card{display:none;background:linear-gradient(180deg,#24302c,#1A211F);border-radius:28px;padding:8px 12px 10px;opacity:1}
 body.focus .set.active .card{display:block;animation:glidein .35s ease}
-.glide .pair{display:flex;gap:12px}
-.glide .pair>div{flex:1;text-align:center}
-.glide .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6;margin:4px 0 6px}
-.glide .dial{display:flex;align-items:center;justify-content:center;gap:6px}
-.fig{min-width:72px;min-height:64px;background:none;border:0;color:var(--snow);font:560 52px/1 var(--sans);font-variant-numeric:tabular-nums;cursor:pointer}
+.glide .pair{display:flex;flex-direction:column;gap:4px}
+.glide .pair>div{text-align:center}
+.glide .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6;margin:2px 0 2px}
+.glide .dial{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center}
+.fig{width:100%;min-width:0;min-height:44px;background:none;border:0;color:var(--snow);font:560 40px/1 var(--sans);font-variant-numeric:tabular-nums;cursor:pointer}
 .step{width:48px;height:48px;border-radius:999px;border:0;background:#24302c;color:var(--snow);font:600 22px/1 var(--sans);cursor:pointer}
-.pills{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
+.pills{display:flex;gap:6px;justify-content:center;margin-bottom:4px}
 .pills button{min-width:36px;height:40px;padding:0 8px;border:0;border-radius:999px;background:#24302c;color:#C9CFCB;font:600 15px/1 var(--sans);cursor:pointer}
 .pills button.on{background:var(--snow);color:#17211F}
-.glide .complete{margin-top:8px}
+.glide .complete{margin-top:0}
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 .pad button{min-height:56px;border:0;border-radius:16px;background:#24302c;color:var(--snow);font:600 22px/1 var(--sans);cursor:pointer}
 #padRead{font:560 64px/1 var(--sans);font-variant-numeric:tabular-nums;text-align:center;margin:8px 0}
-@keyframes glidein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes glidein{from{transform:translateY(8px)}to{transform:none}}
+body.focus .whyb,body.focus .swapb,body.focus .panelbar .btn,body.focus .focusActs .btn.ghost{border:0;border-radius:999px;background:rgba(239,238,231,.08);color:#EFEEE7;box-shadow:none}
 @media (prefers-reduced-motion:reduce){body.focus .set.active .card{animation:none}}
 body.in .swapbox .opt{background:#24302c;color:var(--snow);border-color:#3A4642}
 body.in .pane.on{animation:rise .28s ease}
-@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes rise{from{transform:translateY(8px)}to{transform:none}}
 @media (prefers-reduced-motion:reduce){
   .ring .arc{transition:none}
   body.in .pane.on{animation:none}
@@ -613,11 +615,11 @@ function syncGlide(row) {
     const el = fieldEl(row, b.dataset.field);
     b.classList.toggle("on", !!el && String(el.value) === b.dataset.pill);
   });
-  const sum = row.querySelector(".sum");
+  const sum = row.querySelector(".sumt");
   if (sum) {
     const n = row.querySelector(".k") ? row.querySelector(".k").textContent : "";
-    const lv = load ? load.value : "";
-    const rv = reps ? reps.value : "";
+    const lv = load && load.value !== "" ? load.value : "";
+    const rv = reps && reps.value !== "" ? reps.value : "";
     const unit = fieldEl(row, "secs") ? "s" : "";
     const rr = rir && rir.value !== "" ? "  RIR " + rir.value : "";
     sum.textContent = `${n}   ${lv ? lv + " lb x " : ""}${rv}${unit}${rr}`;
@@ -629,7 +631,7 @@ function ensureGlide(row) {
   const repField = fieldEl(row, "secs") ? "secs" : "reps";
   const pills = (field) => [0,1,2,3,4,5].map(n => `<button type="button" data-pill="${n}" data-field="${field}">${n}</button>`).join("");
   const dial = (field, step, label) => `<div><div class="lbl">${label}</div><div class="dial"><button type="button" class="step" data-step="-${step}" data-field="${field}" aria-label="Decrease ${label}">-</button><button type="button" class="fig" data-fig="${field}">0</button><button type="button" class="step" data-step="${step}" data-field="${field}" aria-label="Increase ${label}">+</button></div></div>`;
-  row.insertAdjacentHTML("beforeend", `<div class="glide"><button type="button" class="sum"></button><div class="card"><div class="pair">${hasLoad ? dial("load", 5, "Weight") : ""}${dial(repField, 1, repField === "secs" ? "Seconds" : "Reps")}</div><div class="lbl">RIR</div><div class="pills">${pills("rir")}</div><div class="lbl">Pain</div><div class="pills">${pills("pain")}</div><button type="button" class="btn rust complete">Complete set</button></div></div>`);
+  row.insertAdjacentHTML("beforeend", `<div class="glide"><button type="button" class="sum"><svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sumt"></span></button><div class="card"><div class="pair">${hasLoad ? dial("load", 5, "Weight") : ""}${dial(repField, 1, repField === "secs" ? "Seconds" : "Reps")}</div><div class="lbl">RIR</div><div class="pills">${pills("rir")}</div><div class="lbl">Pain</div><div class="pills">${pills("pain")}</div><button type="button" class="btn rust complete">Complete set</button></div></div>`);
 }
 function layoutSets(markSaved) {
   if (!document.body.classList.contains("focus")) return;
@@ -1322,7 +1324,7 @@ function exHtml(ex, sg, started) {
     const best = sg.last && sg.last.heavy && sg.last.heavy.load != null ? sg.last.heavy.load : "";
     rows.push(`<div class="set" data-ex="${logId}" data-set="${n}" data-kind="work" data-best="${best}" ${side?`data-side="${side}"`:""}><div class="k">${n}${side?side:""}</div>
       ${bw ? (pull ? `<input class="n assist" type="number" placeholder="assist" ${started?"":"disabled"}>` : `<div></div>`) : `<input class="n load" type="number" step="0.5" value="${fmt(sg.load)}"${loadPh} ${started?"":"disabled"}>`}
-      ${carry ? `<input class="n secs" type="number" placeholder="${fmt(sg.seconds)}" ${started?"":"disabled"}>` : `<input class="n reps" type="number" placeholder="${fmt(sg.reps)}" ${started?"":"disabled"}>`}
+      ${carry ? `<input class="n secs" type="number" value="${fmt(sg.seconds)}" placeholder="${fmt(sg.seconds)}" ${started?"":"disabled"}>` : `<input class="n reps" type="number" value="${fmt(sg.reps)}" placeholder="${fmt(sg.reps)}" ${started?"":"disabled"}>`}
       <input class="n rir" type="number" placeholder="RIR" min="0" max="5" ${started?"":"disabled"}>${painSel(started)}</div>`);
   }
   const acts = started ? `<div class="exacts">${sg.swapped?`<button type="button" class="swapb swapundo" data-planned="${ex.id}">Undo</button>`:""}<button type="button" class="swapb swapopen" data-planned="${ex.id}">Change</button></div>` : "";
