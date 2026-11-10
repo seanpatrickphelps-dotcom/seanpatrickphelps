@@ -1,5 +1,5 @@
-// train-v14: header Goals and Out match the soft pill buttons.
-const VERSION = "train-v14";
+// train-v15: water ring fallback, set saves that survive a duplicate, history months.
+const VERSION = "train-v15";
 const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {

@@ -1,7 +1,7 @@
 // GET /api/train-next?day=1   -> today's prescription for that day, prehab, readiness-adjusted, plus deload check
 // GET /api/train-next?board=1 -> dashboard and trend scoreboard for every exercise with a goal
 // Header: Authorization: Bearer <access_token>
-import { json, db, requireUser, ensureSeeded, scoreboard, deloadCheck, historyByExercise, readiness, sessionStats, PREHAB, buildSlotSuggestion, migrationError, targetsOf, schemaMissing, chicagoDate, weightProgress, profilePatchForSean, shouldSeedWeighIn, seanWeightDefaults } from "../lib/train.js";
+import { json, db, requireUser, ensureSeeded, scoreboard, deloadCheck, historyByExercise, readiness, sessionStats, PREHAB, buildSlotSuggestion, migrationError, targetsOf, schemaMissing, chicagoDate, weightProgress, profilePatchForSean, shouldSeedWeighIn, seanWeightDefaults, liftingDaysFromSets, summarizeLiftingMonths } from "../lib/train.js";
 
 // Consecutive planned sessions finished without missing two in a row (Rule 07: never miss twice).
 function streakOf(sessions) {
@@ -21,6 +21,13 @@ export default async function handler(req, res) {
     const user = await requireUser(req);
     await ensureSeeded(user.id);
     const uid = user.id;
+
+    if (req.query.history === "1") {
+      const today = chicagoDate();
+      const rows = await loggedSetsSince(uid, "2026-08-31T05:00:00Z");
+      const dates = liftingDaysFromSets(rows, today);
+      return json(res, 200, { today, months: summarizeLiftingMonths({ dates, today }) });
+    }
 
     if (req.query.date) {
       const date = String(req.query.date);
@@ -150,6 +157,17 @@ export default async function handler(req, res) {
   } catch (e) {
     return json(res, e.status || 500, { error: e.message });
   }
+}
+
+async function loggedSetsSince(uid, since) {
+  const rows = [];
+  for (let from = 0; from < 20000; from += 1000) {
+    const batch = await db(`sets?user_id=eq.${uid}&logged_at=gte.${since}&select=logged_at&order=logged_at.asc`, { range: `${from}-${from + 999}` });
+    if (!batch?.length) break;
+    rows.push(...batch);
+    if (batch.length < 1000) break;
+  }
+  return rows;
 }
 
 async function ensureSeanWeight(uid, email, profile) {
