@@ -1,5 +1,5 @@
-// train-v13: water ring and a one-set logger in focus mode.
-const VERSION = "train-v13";
+// train-v14: header Goals and Out match the soft pill buttons.
+const VERSION = "train-v14";
 const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
