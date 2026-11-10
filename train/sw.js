@@ -1,5 +1,5 @@
-// train-v12: quieter surfaces, rings, and bottom sheets.
-const VERSION = "train-v12";
+// train-v13: water ring and a one-set logger in focus mode.
+const VERSION = "train-v13";
 const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {

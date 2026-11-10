@@ -244,9 +244,9 @@ body.in .btn{background:#24302c}
 body.in .day{border:0;border-radius:14px;background:#1A211F}
 .wt .big{font-size:clamp(64px,18vw,84px);font-weight:560;letter-spacing:-.03em}
 .hero .goal{margin:6px 0 0;color:#9BA2A6;font-size:15px}
-.rings{display:flex;gap:18px;align-items:center;margin-top:18px}
-.ring{display:flex;align-items:center;gap:10px;min-width:0}
-.ring svg{width:72px;height:72px;flex:none}
+.rings{display:flex;gap:8px;align-items:flex-start;justify-content:space-between;margin-top:16px}
+.ring{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;min-width:0;flex:1;background:none;border:0;color:inherit;font:inherit;padding:0;cursor:pointer}
+.ring svg{width:68px;height:68px;flex:none}
 .ring .track{fill:none;stroke:#2A3330;stroke-width:4}
 .ring .arc{fill:none;stroke-width:4;stroke-linecap:round;transform:rotate(-90deg);transform-origin:36px 36px;transition:stroke-dasharray .5s ease}
 .ring .rl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6}
@@ -282,6 +282,30 @@ body.focus #focusBar{display:block;margin-top:auto;padding-top:8px}
 #swapShade{position:fixed;inset:0;z-index:74;background:rgba(8,10,9,.62)}
 #swapShade[hidden]{display:none}
 body.focus .swapbox{position:fixed;z-index:76;left:0;right:0;bottom:0;margin:0;max-height:72dvh;overflow:auto;border:0;border-radius:22px 22px 0 0;background:#161C1A;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+body.focus .hd{display:none}
+body.focus .set{display:block;background:transparent;border:0;margin:0 0 8px;padding:0}
+body.focus .set:not(.checked):not(.active){display:none}
+body.focus .set>.k,body.focus .set>input,body.focus .set>select,body.focus .set>div:not(.glide){position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+body.focus .set.saved .k:after{content:none}
+.glide .sum{display:none;width:100%;text-align:left;background:none;border:0;color:#9BA2A6;font:15px/1.3 var(--sans);font-variant-numeric:tabular-nums;padding:8px 4px}
+body.focus .set.checked .sum{display:block}
+.glide .card{display:none;background:linear-gradient(180deg,#1E2724,#141A18);border-radius:28px;padding:16px 14px 14px}
+body.focus .set.active .card{display:block;animation:glidein .35s ease}
+.glide .pair{display:flex;gap:12px}
+.glide .pair>div{flex:1;text-align:center}
+.glide .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6;margin:4px 0 6px}
+.glide .dial{display:flex;align-items:center;justify-content:center;gap:6px}
+.fig{min-width:72px;min-height:64px;background:none;border:0;color:var(--snow);font:560 52px/1 var(--sans);font-variant-numeric:tabular-nums;cursor:pointer}
+.step{width:48px;height:48px;border-radius:999px;border:0;background:#24302c;color:var(--snow);font:600 22px/1 var(--sans);cursor:pointer}
+.pills{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
+.pills button{min-width:36px;height:40px;padding:0 8px;border:0;border-radius:999px;background:#24302c;color:#C9CFCB;font:600 15px/1 var(--sans);cursor:pointer}
+.pills button.on{background:var(--snow);color:#17211F}
+.glide .complete{margin-top:8px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.pad button{min-height:56px;border:0;border-radius:16px;background:#24302c;color:var(--snow);font:600 22px/1 var(--sans);cursor:pointer}
+#padRead{font:560 64px/1 var(--sans);font-variant-numeric:tabular-nums;text-align:center;margin:8px 0}
+@keyframes glidein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){body.focus .set.active .card{animation:none}}
 body.in .swapbox .opt{background:#24302c;color:var(--snow);border-color:#3A4642}
 body.in .pane.on{animation:rise .28s ease}
 @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -408,6 +432,10 @@ body.in .pane.on{animation:rise .28s ease}
   <div class="coverbody" id="setHost"></div>
 </div>
 <div id="swapShade" hidden></div>
+<div id="padSheet" class="cover" hidden>
+  <div class="coverbar"><button type="button" id="closePad">Close</button><span class="mono" id="padLabel">Number</span></div>
+  <div class="coverbody"><div id="padRead">0</div><div class="pad" id="padKeys"></div><button type="button" class="btn rust" id="padDone">Done</button></div>
+</div>
 <div id="toast" hidden></div>
 
 <script>
@@ -477,6 +505,7 @@ function applyFocus() {
   $("focusPrev").disabled = state.focusAt === 0;
   $("focusNext").textContent = state.focusAt === cards.length - 1 ? "Finish" : "Next";
   if ($("swapShade")) $("swapShade").hidden = state.swapOpen == null;
+  layoutSets(true);
 }
 function stepFocus(dir) {
   const n = document.querySelectorAll("#exList .ex").length;
@@ -517,6 +546,116 @@ $("exList").addEventListener("pointerup", (e) => {
   if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 64) stepFocus(dx < 0 ? 1 : -1);
 });
 $("exList").addEventListener("pointercancel", () => { gesture = null; });
+$("exList").addEventListener("click", (e) => {
+  const row = e.target.closest(".set");
+  if (!row || !document.body.classList.contains("focus")) return;
+  const step = e.target.closest("[data-step]");
+  if (step) { bumpField(row, step.dataset.field, Number(step.dataset.step)); return; }
+  const fig = e.target.closest("[data-fig]");
+  if (fig) { openPad(row, fig.dataset.fig); return; }
+  const pill = e.target.closest("[data-pill]");
+  if (pill) { setField(row, pill.dataset.field, pill.dataset.pill); return; }
+  if (e.target.closest(".complete")) completeSet(row);
+});
+let padTarget = null;
+function closePad() { $("padSheet").hidden = true; document.body.classList.remove("sheet-open"); padTarget = null; }
+function openPad(row, field) {
+  const el = row.querySelector("." + field);
+  if (!el || el.disabled) return;
+  padTarget = { row, field };
+  $("padLabel").textContent = field === "load" ? "Weight" : field === "secs" ? "Seconds" : "Reps";
+  $("padRead").textContent = el.value || "0";
+  $("padSheet").hidden = false;
+  document.body.classList.add("sheet-open");
+}
+function padKey(k) {
+  if (!padTarget) return;
+  const el = padTarget.row.querySelector("." + padTarget.field);
+  let v = String(el.value || "");
+  if (k === "del") v = v.slice(0, -1);
+  else if (k === "." && v.includes(".")) return;
+  else v = (v + k).replace(/^0+(?=\d)/, "");
+  el.value = v;
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+  $("padRead").textContent = v || "0";
+  syncGlide(padTarget.row);
+}
+$("padKeys").innerHTML = ["1","2","3","4","5","6","7","8","9",".","0","del"].map(k => `<button type="button" data-key="${k}">${k === "del" ? "Del" : k}</button>`).join("");
+$("padKeys").onclick = (e) => { const b = e.target.closest("[data-key]"); if (b) padKey(b.dataset.key); };
+$("closePad").onclick = closePad;
+$("padDone").onclick = closePad;
+$("padSheet").onclick = (e) => { if (e.target === $("padSheet")) closePad(); };
+function fieldEl(row, field) { return row.querySelector("." + field); }
+function bumpField(row, field, delta) {
+  const el = fieldEl(row, field);
+  if (!el || el.disabled) return;
+  const next = Math.max(0, (Number(el.value) || 0) + delta);
+  el.value = String(next);
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+  syncGlide(row);
+}
+function setField(row, field, value) {
+  const el = fieldEl(row, field);
+  if (!el || el.disabled) return;
+  el.value = value;
+  el.dispatchEvent(new Event(el.tagName === "SELECT" ? "change" : "input", { bubbles: true }));
+  syncGlide(row);
+}
+function syncGlide(row) {
+  const load = fieldEl(row, "load");
+  const reps = fieldEl(row, "reps") || fieldEl(row, "secs");
+  const rir = fieldEl(row, "rir");
+  row.querySelectorAll("[data-fig]").forEach(b => {
+    const el = fieldEl(row, b.dataset.fig);
+    if (el) b.textContent = el.value || "0";
+  });
+  row.querySelectorAll("[data-pill]").forEach(b => {
+    const el = fieldEl(row, b.dataset.field);
+    b.classList.toggle("on", !!el && String(el.value) === b.dataset.pill);
+  });
+  const sum = row.querySelector(".sum");
+  if (sum) {
+    const n = row.querySelector(".k") ? row.querySelector(".k").textContent : "";
+    const lv = load ? load.value : "";
+    const rv = reps ? reps.value : "";
+    const unit = fieldEl(row, "secs") ? "s" : "";
+    const rr = rir && rir.value !== "" ? "  RIR " + rir.value : "";
+    sum.textContent = `${n}   ${lv ? lv + " lb x " : ""}${rv}${unit}${rr}`;
+  }
+}
+function ensureGlide(row) {
+  if (row.querySelector(".glide")) return;
+  const hasLoad = !!fieldEl(row, "load");
+  const repField = fieldEl(row, "secs") ? "secs" : "reps";
+  const pills = (field) => [0,1,2,3,4,5].map(n => `<button type="button" data-pill="${n}" data-field="${field}">${n}</button>`).join("");
+  const dial = (field, step, label) => `<div><div class="lbl">${label}</div><div class="dial"><button type="button" class="step" data-step="-${step}" data-field="${field}" aria-label="Decrease ${label}">-</button><button type="button" class="fig" data-fig="${field}">0</button><button type="button" class="step" data-step="${step}" data-field="${field}" aria-label="Increase ${label}">+</button></div></div>`;
+  row.insertAdjacentHTML("beforeend", `<div class="glide"><button type="button" class="sum"></button><div class="card"><div class="pair">${hasLoad ? dial("load", 5, "Weight") : ""}${dial(repField, 1, repField === "secs" ? "Seconds" : "Reps")}</div><div class="lbl">RIR</div><div class="pills">${pills("rir")}</div><div class="lbl">Pain</div><div class="pills">${pills("pain")}</div><button type="button" class="btn rust complete">Complete set</button></div></div>`);
+}
+function layoutSets(markSaved) {
+  if (!document.body.classList.contains("focus")) return;
+  const sets = [...document.querySelectorAll("#exList .ex.on .set")];
+  if (markSaved) sets.forEach(row => {
+    if (row.classList.contains("saved") && !row.dataset.seen) row.classList.add("checked");
+    row.dataset.seen = "1";
+  });
+  let picked = false;
+  sets.forEach(row => {
+    if (row.classList.contains("checked")) row.classList.remove("active");
+    else if (!picked) { row.classList.add("active"); picked = true; }
+    else row.classList.remove("active");
+    ensureGlide(row);
+    syncGlide(row);
+  });
+}
+function completeSet(row) {
+  const reps = fieldEl(row, "reps");
+  const secs = fieldEl(row, "secs");
+  if ((!reps || reps.value === "") && (!secs || secs.value === "")) { say("Add reps first"); return; }
+  row.classList.add("checked");
+  row.classList.remove("active");
+  saveSet(row);
+  layoutSets(false);
+}
 $("segMonth").onclick = () => showHist("month");
 $("segBoard").onclick = () => showHist("board");
 function showHist(which) {
@@ -529,6 +668,8 @@ function showHist(which) {
 }
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
+  if ($("padSheet") && !$("padSheet").hidden) { closePad(); return; }
+  if ($("waterSheet") && !$("waterSheet").hidden) { $("closeWater").click(); return; }
   if ($("weighSheet") && !$("weighSheet").hidden) { $("closeWeigh").click(); return; }
   if (!$("mealSheet").hidden) { closeMeal(); return; }
   if (state.swapOpen != null && document.querySelector(".swapcancel")) { document.querySelector(".swapcancel").click(); return; }
@@ -799,13 +940,15 @@ function weightCopy(prog) {
   if (lost === 0) return `0 lb lost · ${fmtFood(Math.max(rem, 0))} lb to go`;
   return `${fmtFood(Math.abs(lost))} lb above the start · ${fmtFood(rem)} lb to go`;
 }
-function ringHtml(label, current, target, color) {
+function ringHtml(label, current, target, color, tap) {
   const cur = current == null || current === "" ? null : Number(current);
   const tgt = target == null || target === "" ? null : Number(target);
   const pct = tgt > 0 ? Math.max(0, Math.min(1, (cur || 0) / tgt)) : 0;
   const C = 2 * Math.PI * 28;
   const dash = (pct * C).toFixed(1);
-  return `<div class="ring"><svg viewBox="0 0 72 72" aria-hidden="true"><circle class="track" cx="36" cy="36" r="28"></circle><circle class="arc" cx="36" cy="36" r="28" style="stroke:${color};stroke-dasharray:${dash} ${C.toFixed(1)}"></circle></svg><div><div class="rl">${label}</div><div class="rn">${cur == null ? "-" : fmtFood(cur)}${tgt > 0 ? `<small>/ ${fmtFood(tgt)}</small>` : ""}</div></div></div>`;
+  const unit = label === "Water" ? " oz" : "";
+  const inner = `<svg viewBox="0 0 72 72" aria-hidden="true"><circle class="track" cx="36" cy="36" r="28"></circle><circle class="arc" cx="36" cy="36" r="28" style="stroke:${color};stroke-dasharray:${dash} ${C.toFixed(1)}"></circle></svg><div class="rl">${label}</div><div class="rn">${cur == null ? "-" : fmtFood(cur)}${tgt > 0 ? `<small>/ ${fmtFood(tgt)}${unit}</small>` : unit}</div>`;
+  return tap ? `<button type="button" class="ring" id="openWater" aria-label="Log water">${inner}</button>` : `<div class="ring">${inner}</div>`;
 }
 function renderToday() {
   const el = $("todayCard");
@@ -824,14 +967,27 @@ function renderToday() {
   const fat = p.target_fat != null && p.target_fat !== "" ? `Fat ${fmtFood(food.fat)} / ${fmtFood(p.target_fat)} g` : "";
   el.innerHTML = `<div class="instrument"><div class="hero wt"><div class="mono">Weight</div>${big}<p class="goal">${weightCopy(prog)}</p>
     <button type="button" class="btn ghost" id="openWeigh">Weigh in</button></div>
-    <div class="rings">${ringHtml("Calories", food.calories, p.target_calories, "#3E97BC")}${ringHtml("Protein", food.protein, p.target_protein, "#4E7B53")}</div>
-    <p class="quiet">Water ${ounces == null ? "-" : fmtFood(ounces)}${p.target_hydration_oz ? " / " + fmtFood(p.target_hydration_oz) + " oz" : " oz"}</p>
+    <div class="rings">${ringHtml("Calories", food.calories, p.target_calories, "#3E97BC")}${ringHtml("Protein", food.protein, p.target_protein, "#4E7B53")}${ringHtml("Water", ounces, p.target_hydration_oz, "#1B948C", true)}</div>
     ${carbs || fat ? `<p class="quiet">${[carbs, fat].filter(Boolean).join("  ")}</p>` : ""}
     <div class="acts"><button type="button" class="act go" id="openLog">Log meal</button><button type="button" class="act" id="openTrain">Train</button></div>
+    <div id="waterSheet" class="cover" hidden>
+      <div class="coverbar"><button type="button" id="closeWater">Close</button><span class="mono">Water</span></div>
+      <div class="coverbody"><div class="weighline"><input class="n" id="waterOz" type="number" min="0" step="1" inputmode="decimal" value="${ounces == null ? "" : ounces}" aria-label="Water ounces"><button type="button" class="btn rust" id="saveWater">Save</button></div>
+      <div class="pills" style="margin-top:12px"><button type="button" data-add="8">+8</button><button type="button" data-add="12">+12</button><button type="button" data-add="16">+16</button></div></div>
+    </div>
     <div id="weighSheet" class="cover" hidden>
       <div class="coverbar"><button type="button" id="closeWeigh">Close</button><span class="mono">Weigh in</span></div>
       <div class="coverbody">${hint}<div class="weighline"><input class="n" id="weighLb" type="number" min="0" max="1000" step="0.1" inputmode="decimal" value="${todayLb == null ? "" : todayLb}" aria-label="Today's weight in pounds"><button type="button" class="btn rust" id="saveWeigh">Save</button></div></div>
     </div></div>`;
+  $("openWater").onclick = () => { $("waterSheet").hidden = false; document.body.classList.add("sheet-open"); $("waterOz").focus(); };
+  $("closeWater").onclick = () => { $("waterSheet").hidden = true; document.body.classList.remove("sheet-open"); };
+  $("waterSheet").onclick = (e) => { if (e.target === $("waterSheet")) $("closeWater").click(); };
+  $("saveWater").onclick = () => saveWaterTotal($("waterOz").value);
+  $("waterSheet").querySelectorAll("[data-add]").forEach(b => b.onclick = () => {
+    const cur = Number($("waterOz").value || 0);
+    $("waterOz").value = String(cur + Number(b.dataset.add));
+    saveWaterTotal($("waterOz").value);
+  });
   $("openWeigh").onclick = () => { $("weighSheet").hidden = false; document.body.classList.add("sheet-open"); $("weighLb").focus(); };
   $("closeWeigh").onclick = () => { $("weighSheet").hidden = true; document.body.classList.remove("sheet-open"); };
   $("weighSheet").onclick = (e) => { if (e.target === $("weighSheet")) $("closeWeigh").click(); };
@@ -1043,6 +1199,16 @@ async function removeMeal(date, id, p) {
     loadCal(calMonth).catch(()=>{});
   } catch (e) { say(e.message); }
 }
+async function saveWaterTotal(ounces) {
+  const date = chicagoToday();
+  say("Saving water");
+  try {
+    const d = await foodPost({ action: "hydration", date, ounces });
+    state.hydrationByDate[date] = d.hydration ? d.hydration.ounces : null;
+    say(d.hydration ? "Water saved" : "Water cleared");
+    renderToday();
+  } catch (e) { say(e.message); }
+}
 async function saveHydration(p, date) {
   say("Saving water");
   try {
@@ -1145,7 +1311,8 @@ function exHtml(ex, sg, started) {
   const rx = bw ? `${sg.sets} x ${fmt(sg.reps)} reps` : carry ? (sg.swapped && sg.load==null ? `open load x ${fmt(sg.seconds)} sec, ${sg.sets} sets` : `${fmt(sg.load)} lb x ${fmt(sg.seconds)} sec, ${sg.sets} sets`) : (sg.swapped && sg.load==null ? `open load x ${fmt(sg.reps)}, ${sg.sets} sets` : `${fmt(sg.load)} x ${fmt(sg.reps)}, ${sg.sets} sets`);
   const L = sg.last;
   const reps = Array.isArray(L?.reps) && L.reps.length ? L.reps.join("/") : (Array.isArray(L?.secs) ? L.secs.filter(x => x != null).join("/") + "s" : "");
-  const last = L ? `${L.load!=null?L.load+" x ":""}${reps}${L.avg_rir!=null?` · RIR ${Math.round(L.avg_rir*10)/10}`:""}${L.max_pain!=null?` · pain ${L.max_pain}`:""}${L.heavy?` · heavy ${L.heavy.load}x${L.heavy.reps}`:""}${L.asymmetry!=null?` · L/R gap ${L.asymmetry}%`:""}` || "No history" : "No history";
+  const lastBody = `${L && L.load!=null?L.load+" x ":""}${reps}${L && L.avg_rir!=null?` · RIR ${Math.round(L.avg_rir*10)/10}`:""}${L && L.max_pain!=null?` · pain ${L.max_pain}`:""}${L && L.heavy?` · heavy ${L.heavy.load}x${L.heavy.reps}`:""}${L && L.asymmetry!=null?` · L/R gap ${L.asymmetry}%`:""}`.replace(/^( · )+/, "");
+  const last = L ? (lastBody || "No history") : "No history";
   const light = sg.light ? `<span class="tag lt-${sg.light}">${sg.status==="pain_hold"?"PAIN HOLD":sg.status}</span>` : "";
   const heavyRow = sg.heavy ? `<div class="set heavy" data-ex="${logId}" data-set="1" data-kind="heavy"><div class="k">HVY</div><input class="n load" type="number" step="2.5" value="${fmt(sg.heavy.load)}" ${started?"":"disabled"}><input class="n reps" type="number" placeholder="${sg.heavy.reps}" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
   const benchRow = bw && sg.benchmark_due ? `<div class="todaynote">Benchmark due: one max clean set, stop when form breaks.</div><div class="set heavy" data-ex="${logId}" data-set="1" data-kind="benchmark"><div class="k">MAX</div><div></div><input class="n reps" type="number" placeholder="max" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
