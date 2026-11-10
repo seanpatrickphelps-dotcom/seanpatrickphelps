@@ -1,6 +1,6 @@
-// train-v8: phone column stays full width and the daily rows no longer stretch apart.
-const VERSION = "train-v8";
-const SHELL = ["/train/index.html", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
+// train-v11: Geist Sans is the only face in the training log.
+const VERSION = "train-v11";
+const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
