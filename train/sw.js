@@ -1,5 +1,5 @@
-// train-v15: water ring fallback, set saves that survive a duplicate, history months.
-const VERSION = "train-v15";
+// train-v18: fat mass on the hero, with a loss bar and scan trends.
+const VERSION = "train-v18";
 const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {

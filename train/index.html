@@ -237,6 +237,7 @@ body.in .track{background:#2c3834}
 .cover[hidden]{display:none}
 .coverbar{flex:none;display:flex;align-items:center;gap:12px;min-height:56px}
 .coverbar button{min-height:48px;min-width:88px;font-family:var(--sans);font-size:17px;font-weight:600;background:transparent;color:var(--snow);border:1px solid #5c6b66;cursor:pointer}
+.coverbar .btn{width:auto;margin:0;text-transform:none;letter-spacing:0;font-size:16px}
 .cover .btn{font-family:var(--sans);font-size:16px;font-weight:600;letter-spacing:0;text-transform:none;min-height:48px}
 .coverbody{flex:1;min-height:0;overflow:auto}
 .seg{display:flex;gap:8px;margin-bottom:10px}
@@ -266,6 +267,50 @@ body.in .day{border:0;border-radius:14px;background:#1A211F}
 .ring .rl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6}
 .ring .rn{font-size:16px;font-variant-numeric:tabular-nums;margin-top:2px}
 .ring .rn small{color:#9BA2A6;font-size:12px;margin-left:2px}
+.recomp .overall{margin:4px 0 0;color:#C9CFCB;font-size:16px;font-weight:560}
+.recomp .fat{margin-top:6px;font-size:clamp(48px,13vw,60px);font-weight:560;letter-spacing:-.04em;line-height:.88;font-variant-numeric:tabular-nums}
+.recomp .fat small{font-size:22px;margin-left:2px;color:#9BA2A6;font-weight:500}
+.recomp .sub{margin:6px 0 0;color:#9BA2A6;font-size:15px;font-variant-numeric:tabular-nums}
+.recomp .line{margin:2px 0 0;color:#C9CFCB;font-size:16px;font-variant-numeric:tabular-nums}
+.fatbar{display:block;width:100%;margin-top:10px;padding:2px 0 0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;min-height:44px}
+.fatbar .fatline{display:block;font-size:16px;font-variant-numeric:tabular-nums;color:#C9CFCB}
+.fatbar .win,.since .win{color:#4E7B53;font-weight:560}
+.fattrack{display:block;height:6px;margin-top:8px;border-radius:999px;background:#2A3330;overflow:hidden}
+.fattrack i{display:block;height:100%;background:#4E7B53;border-radius:999px}
+.since{margin:4px 0 0;color:#9BA2A6;font-size:14px;font-variant-numeric:tabular-nums}
+.band{margin-top:16px}
+.recomp .band{margin-top:16px}
+.band .k{margin:0 0 8px;color:#9BA2A6}
+.rings.goals{margin-top:0}
+.rings.goals .ring{gap:2px}
+.dial{position:relative;width:84px;height:84px;display:block}
+.dial svg{width:84px;height:84px}
+.dial .mid{position:absolute;inset:0;display:grid;place-items:center;font-size:15px;font-weight:560;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.ring .rg{font-size:12px;color:#9BA2A6;font-variant-numeric:tabular-nums}
+.rings.daily{margin-top:4px}
+.rings.daily svg{width:52px;height:52px}
+.instrument .act{min-height:56px}
+.recomp .tools,.scanform .tools{display:flex;gap:8px;margin-top:8px}
+.recomp .tools .btn,.scanform .tools .btn{width:auto;min-width:0;flex:1;margin:0;text-transform:none;letter-spacing:0;font-size:16px;font-weight:600;border-radius:14px}
+.scanform{display:flex;flex-direction:column;gap:6px}
+.scanform .btn{margin-top:2px}
+.scanform .pair,.scanform .trio{display:grid;gap:8px}
+.scanform .pair{grid-template-columns:1fr 1fr}
+.scanform .trio{grid-template-columns:1fr 1fr 1fr}
+.scanform label{display:block;color:#9BA2A6;font-size:12px;margin-bottom:4px}
+.scanform input,.scanform textarea{width:100%;min-height:44px}
+.spark{display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #2c3834}
+.spark b{display:block;font-weight:560;font-size:16px}
+.spark .sv{color:#9BA2A6;font-size:13px;font-variant-numeric:tabular-nums}
+.spark svg{width:132px;height:40px;display:block}
+.widechart svg{width:100%;height:84px;display:block;margin-top:8px}
+.scans{margin:0 0 8px}
+.segstats{display:flex;gap:16px;margin:6px 0 12px}
+.segstats div{min-width:0}
+.segstats b{display:block;font-size:28px;font-weight:560;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.segstats span{color:#9BA2A6;font-size:12px}
+.trend{margin-top:12px}
+.trend button,.trend div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #2c3834;font-variant-numeric:tabular-nums;background:none;border-left:0;border-right:0;border-bottom:0;color:inherit;width:100%;font:inherit}
 .quiet{margin:12px 0 0;color:#9BA2A6;font-size:14px;font-variant-numeric:tabular-nums}
 .acts{grid-template-columns:1.4fr .8fr}
 .act,.day,.seg button,.coverbar button,body.in .btn{border-radius:14px}
@@ -273,8 +318,13 @@ body.in .day{border:0;border-radius:14px;background:#1A211F}
 #appNav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;letter-spacing:.08em}
 .ico{width:22px;height:22px;display:block}
 .cover{background:rgba(8,10,9,.62);justify-content:flex-end;padding:0}
-.coverbar,.coverbody{background:#161C1A}
-.coverbar{border-radius:22px 22px 0 0;padding:10px 16px 0}
+.coverbar,.coverbody,.sheethead{background:#161C1A}
+.coverbar,.sheethead{border-radius:22px 22px 0 0;padding:10px 16px 0}
+.sheethead{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;min-height:64px;padding:8px 16px 6px}
+.sheethead .mono{text-align:center}
+.sheethead .x{justify-self:start;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border:0;border-radius:999px;background:rgba(239,238,231,.08);color:var(--snow);display:grid;place-items:center;cursor:pointer}
+.sheethead .pill,body.in .sheethead .pill{width:auto;min-width:72px;min-height:44px;margin:0;padding:0 18px;border:0;border-radius:999px;justify-self:end;text-transform:none;letter-spacing:0;font-size:16px;font-weight:600}
+body.in .sheethead .x{border:0;border-radius:999px;background:rgba(239,238,231,.08)}
 .coverbody{max-height:min(70dvh,100%);padding:8px 16px max(16px,env(safe-area-inset-bottom))}
 .seg button.on{background:transparent;border-color:transparent;box-shadow:inset 0 -2px 0 var(--glacier);color:var(--snow)}
 #toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:80;background:#EFEEE7;color:#17211F;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:600}
@@ -689,6 +739,8 @@ function showHist(which) {
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   if ($("padSheet") && !$("padSheet").hidden) { closePad(); return; }
+  if ($("scanSheet") && !$("scanSheet").hidden) { $("closeScan").click(); return; }
+  if ($("segSheet") && !$("segSheet").hidden) { $("closeSeg").click(); return; }
   if ($("waterSheet") && !$("waterSheet").hidden) { $("closeWater").click(); return; }
   if ($("weighSheet") && !$("weighSheet").hidden) { $("closeWeigh").click(); return; }
   if (!$("mealSheet").hidden) { closeMeal(); return; }
@@ -816,12 +868,57 @@ function miniRing(pct, color) {
   const dash = (p * C).toFixed(1);
   return `<svg class="mring" viewBox="0 0 40 40" aria-hidden="true"><circle class="track" cx="20" cy="20" r="16"></circle><circle class="arc" cx="20" cy="20" r="16" style="stroke:${color};stroke-dasharray:${dash} ${C.toFixed(1)}"></circle></svg>`;
 }
+function sparkline(points, color) {
+  const vals = (points || []).filter((p) => p && p.value != null && Number.isFinite(Number(p.value)));
+  if (!vals.length) return "";
+  const w = 132, h = 40;
+  const min = Math.min(...vals.map((p) => Number(p.value)));
+  const max = Math.max(...vals.map((p) => Number(p.value)));
+  const span = max - min || 1;
+  const x = (i) => vals.length === 1 ? w / 2 : (i / (vals.length - 1)) * (w - 6) + 3;
+  const y = (v) => 3 + (1 - (v - min) / span) * (h - 6);
+  const d = vals.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(Number(p.value)).toFixed(1)}`).join(" ");
+  const last = vals.length - 1;
+  const marks = vals.length === 1 ? [0] : [0, last];
+  const dots = marks.map((i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(Number(vals[i].value)).toFixed(1)}" r="${i === last ? 2.6 : 2}" fill="${color}"></circle>`).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>${dots}</svg>`;
+}
+function scansChartHtml(scans) {
+  const rows = (scans || []).slice().sort((a, b) => String(a.scan_date).localeCompare(String(b.scan_date)));
+  if (!rows.length) return "";
+  const avg = (s, l, r) => {
+    const xs = [s[l], s[r]].map(Number).filter((n) => Number.isFinite(n));
+    return xs.length ? Math.round((xs.reduce((a, b) => a + b, 0) / xs.length) * 10) / 10 : null;
+  };
+  const series = [
+    ["Body fat", rows.map((s) => ({ value: s.body_fat_pct })), "%", "#3E97BC"],
+    ["Fat mass", rows.map((s) => ({ value: s.fat_mass_lb })), "lb", "#4E7B53"],
+    ["Visceral fat", rows.map((s) => ({ value: s.visceral_fat })), "", "#1B948C"],
+    ["Lean mass", rows.map((s) => ({ value: s.lean_mass_lb })), "lb", "#4E7B53"],
+    ["Arms", rows.map((s) => ({ value: avg(s, "arm_left_muscle_lb", "arm_right_muscle_lb") })), "lb", "#3E97BC"],
+    ["Trunk", rows.map((s) => ({ value: s.trunk_muscle_lb })), "lb", "#4E7B53"],
+    ["Legs", rows.map((s) => ({ value: avg(s, "leg_left_muscle_lb", "leg_right_muscle_lb") })), "lb", "#1B948C"],
+  ];
+  const line = (name, points, unit, color) => {
+    const nums = points.map((p) => p.value).filter((v) => v != null && v !== "");
+    if (!nums.length) return "";
+    const fmt = unit === "lb" ? fmtLb : fmtFood;
+    const first = fmt(nums[0]), last = fmt(nums[nums.length - 1]);
+    const suffix = unit ? " " + unit : "";
+    const caption = nums.length > 1 ? `${first} to ${last}${suffix}` : `${last}${suffix}`;
+    return `<div class="spark"><div><b>${name}</b><div class="sv">${caption}</div></div>${sparkline(points, color)}</div>`;
+  };
+  return `<section class="scans" aria-label="Body scans"><div class="mono">Scans</div>${series.map((s) => line(...s)).join("")}</section>`;
+}
 function renderMonthList() {
   const el = $("monthList");
   if (!el) return;
   const rows = state.liftingMonths || [];
-  if (!rows.length) { el.innerHTML = `<div class="small">Loading</div>`; return; }
-  el.innerHTML = `<p class="quiet histnote">Five lifting days each week.</p><div class="mlist">${rows.map(monthRowHtml).join("")}</div>`;
+  const chart = scansChartHtml(state.scans || []);
+  const list = rows.length
+    ? `<p class="quiet histnote">Five lifting days each week.</p><div class="mlist">${rows.map(monthRowHtml).join("")}</div>`
+    : (chart ? "" : `<div class="small">Loading</div>`);
+  el.innerHTML = chart + list;
   el.querySelectorAll("[data-month]").forEach(b => b.onclick = () => loadCal(b.dataset.month, { show: true }).catch(() => { $("cal").innerHTML = `<div class="small">Calendar unavailable.</div>`; say("Calendar unavailable"); }));
 }
 function monthRowHtml(row) {
@@ -952,11 +1049,24 @@ async function openSession(sid) {
 $("detBack").onclick = () => { show("sHome"); window.scrollTo(0,0); loadCal().catch(()=>{}); renderFood(); };
 
 const foodPost = (body) => api("/train-food", { method:"POST", body: JSON.stringify(body) });
+const bodyPost = (body) => api("/train-body", { method:"POST", body: JSON.stringify(body) });
 function fmtFood(n) {
   if (n == null || n === "") return "-";
   const x = Math.round(Number(n) * 10) / 10;
   const [w, f] = String(x).split(".");
   return w.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (f ? "." + f : "");
+}
+function fmtLb(n) {
+  if (n == null || n === "" || !Number.isFinite(Number(n))) return "-";
+  const x = Math.round(Number(n) * 10) / 10;
+  const [w, f] = x.toFixed(1).split(".");
+  return w.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + f;
+}
+function shortDate(iso) {
+  const m = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return String(iso || "");
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return months[Number(m[2]) - 1] + " " + Number(m[3]);
 }
 function sumItems(items) {
   const t = { calories: 0, protein: 0, carbs: 0, fat: 0 };
@@ -1062,6 +1172,86 @@ function ringHtml(label, current, target, color, tap) {
   const inner = `<svg viewBox="0 0 72 72" aria-hidden="true"><circle class="track" cx="36" cy="36" r="28"></circle><circle class="arc" cx="36" cy="36" r="28" style="stroke:${color};stroke-dasharray:${dash} ${C.toFixed(1)}"></circle></svg><div class="rl">${label}</div><div class="rn">${cur == null ? "-" : fmtFood(cur)}${tgt > 0 ? `<small>/ ${fmtFood(tgt)}${unit}</small>` : unit}</div>`;
   return tap ? `<button type="button" class="ring" id="openWater" aria-label="Log water">${inner}</button>` : `<div class="ring">${inner}</div>`;
 }
+function recompHero(phy) {
+  const fat = phy.fat || {};
+  const lean = phy.lean || {};
+  const weight = phy.weight || {};
+  const rings = phy.rings || {};
+  const fatNow = fat.current != null ? fmtFood(fat.current) : "-";
+  const fatSub = fat.ready ? `from ${fmtFood(fat.baseline)} toward ${fmtFood(fat.goal)}` : "";
+  const leanLine = lean.current != null ? `Lean ${fmtLb(lean.current)} lb toward ${fmtLb(lean.goal)}` : "";
+  const wtLine = weight.current != null ? `Weight ${fmtLb(weight.current)} lb toward ${fmtLb(weight.goal)}` : "";
+  return `<div class="hero recomp"><div class="mono">Recomposition</div>
+    <p class="overall">${fmtFood(phy.overall)}% toward the goal physique</p>
+    <div class="fat" id="fatNow">${fatNow}<small>%</small></div>
+    <p class="sub">${fatSub}</p>
+    ${leanLine ? `<p class="line">${leanLine}</p>` : ""}
+    ${wtLine ? `<p class="line">${wtLine}</p>` : ""}
+    ${fatMassBlock(phy.fatMass)}
+    ${sinceLine(phy.since)}
+    <div class="band"><div class="mono k">Muscle</div><div class="rings goals">${goalRingHtml("arms", rings.arms || {})}${goalRingHtml("trunk", rings.trunk || {})}${goalRingHtml("legs", rings.legs || {})}</div></div>
+    <div class="tools"><button type="button" class="btn ghost" id="openWeigh">Weigh in</button><button type="button" class="btn ghost" id="openScan">Add scan</button></div>
+  </div>`;
+}
+function scanField(key, label) {
+  return `<div><label for="scan-${key}">${label}</label><input class="n" id="scan-${key}" data-scan="${key}" type="number" step="0.1" inputmode="decimal"></div>`;
+}
+function scanSheetHtml() {
+  const main = [["weight_lb","Weight"],["body_fat_pct","Body fat %"],["lean_mass_lb","Lean mass"],["skeletal_muscle_lb","Skeletal muscle"],["visceral_fat","Visceral fat"]];
+  const seg = [["arm_left_muscle_lb","Arm L"],["arm_right_muscle_lb","Arm R"],["leg_left_muscle_lb","Leg L"],["leg_right_muscle_lb","Leg R"]];
+  const more = [["fat_mass_lb","Fat mass"],["muscle_lb","Muscle"],["body_water_lb","Body water"],["protein_lb","Protein"],["minerals_lb","Minerals"],["bmr_kcal","BMR"],["bmi","BMI"],["body_score","Score"],["arm_left_fat_lb","Arm fat L"],["arm_right_fat_lb","Arm fat R"],["trunk_fat_lb","Trunk fat"],["leg_left_fat_lb","Leg fat L"],["leg_right_fat_lb","Leg fat R"]];
+  return `<div id="scanSheet" class="cover" hidden>
+    <div class="sheethead"><button type="button" class="x" id="closeScan" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button><span class="mono">Add scan</span><button type="button" class="btn rust pill" id="saveScan">Save</button></div>
+    <div class="coverbody"><form class="scanform" id="scanForm">
+      <div><label for="scanDate">Date</label><input id="scanDate" type="date" aria-label="Scan date"></div>
+      <button type="button" class="btn ghost" id="scanUpload">Upload report</button>
+      <div class="pair">${main.slice(0, 2).map((f) => scanField(...f)).join("")}</div>
+      <div class="pair">${main.slice(2, 4).map((f) => scanField(...f)).join("")}</div>
+      ${scanField("visceral_fat", "Visceral fat")}
+      <div class="mono">Segmental muscle</div>
+      <div class="pair">${seg.slice(0, 2).map((f) => scanField(...f)).join("")}</div>
+      ${scanField("trunk_muscle_lb", "Trunk")}
+      <div class="pair">${seg.slice(2).map((f) => scanField(...f)).join("")}</div>
+      <details class="more"><summary>Optional</summary><div class="pair" style="margin-top:8px">${more.map((f) => scanField(...f)).join("")}</div>
+        <div style="margin-top:8px"><label for="scanNotes">Notes</label><textarea id="scanNotes" rows="2"></textarea></div>
+      </details>
+      <p class="small" id="scanNote"></p>
+      <input id="scanFile" type="file" accept="image/*" hidden>
+    </form></div>
+  </div>`;
+}
+function fatMassBlock(mass) {
+  if (!mass || mass.current == null) return "";
+  let move = "";
+  if (mass.change != null && mass.change < 0) move = `<span class="win">down ${fmtLb(-mass.change)} lb</span>`;
+  else if (mass.change > 0) move = `up ${fmtLb(mass.change)} lb`;
+  else if (mass.change === 0) move = "even";
+  const toward = mass.goal != null ? `toward ${fmtLb(mass.goal)}` : "";
+  const text = [`Fat ${fmtLb(mass.current)} lb`, move, toward].filter(Boolean).join(", ");
+  const bar = mass.ready ? `<span class="fattrack" aria-hidden="true"><i style="width:${Math.max(0, Math.min(100, Number(mass.pct) || 0))}%"></i></span>` : "";
+  return `<button type="button" class="fatbar" id="openFat" aria-label="${text.replace(/<[^>]+>/g, "")}">${`<span class="fatline">${text}</span>`}${bar}</button>`;
+}
+function sinceLine(since) {
+  if (!since || !since.date) return "";
+  const bits = [`since ${shortDate(since.date)}`];
+  if (since.fatLost > 0) bits.push(`<span class="win">${fmtLb(since.fatLost)} lb fat lost</span>`);
+  else if (since.fatLost < 0) bits.push(`${fmtLb(-since.fatLost)} lb fat gained`);
+  if (since.leanGained > 0) bits.push(`<span class="win">${fmtLb(since.leanGained)} lb lean gained</span>`);
+  else if (since.leanGained < 0) bits.push(`${fmtLb(-since.leanGained)} lb lean lost`);
+  if (bits.length < 2) return "";
+  return `<p class="since">${bits.join(" · ")}</p>`;
+}
+function goalRingHtml(key, ring) {
+  const ready = ring && ring.ready;
+  const pct = ready ? Math.max(0, Math.min(1, Number(ring.pct) / 100)) : 0;
+  const C = 2 * Math.PI * 28;
+  const dash = (pct * C).toFixed(1);
+  const cur = ring && ring.current != null ? fmtLb(ring.current) : "-";
+  const goal = ring && ring.goal != null ? fmtLb(ring.goal) : "";
+  const color = key === "arms" ? "#3E97BC" : key === "trunk" ? "#4E7B53" : "#1B948C";
+  const label = (ring && ring.label) || key;
+  return `<button type="button" class="ring goal" data-seg="${key}" aria-label="${esc(label)}, ${cur} pounds, goal ${goal}"><span class="dial"><svg viewBox="0 0 72 72" aria-hidden="true"><circle class="track" cx="36" cy="36" r="28"></circle><circle class="arc" cx="36" cy="36" r="28" style="stroke:${color};stroke-dasharray:${dash} ${C.toFixed(1)}"></circle></svg><span class="mid">${cur}</span></span><div class="rl">${esc(label)}</div><div class="rg">${goal ? "goal " + goal : ""}</div></button>`;
+}
 function renderToday() {
   const el = $("todayCard");
   if (!el) return;
@@ -1076,11 +1266,13 @@ function renderToday() {
   const big = prog.ready ? `<div class="big"><span id="wtNow">${fmtFood(prog.current)}</span> <small>lb</small></div>` : `<div class="big">-</div>`;
   const hint = latest ? "" : (p.start_bodyweight != null && p.start_bodyweight !== "" ? `<p class="small">No weigh-in yet. Current weight is the start weight until you save one.</p>` : "");
   const carbs = p.target_carbs != null && p.target_carbs !== "" ? `Carbs ${fmtFood(food.carbs)} / ${fmtFood(p.target_carbs)} g` : "";
-  const fat = p.target_fat != null && p.target_fat !== "" ? `Fat ${fmtFood(food.fat)} / ${fmtFood(p.target_fat)} g` : "";
-  el.innerHTML = `<div class="instrument"><div class="hero wt"><div class="mono">Weight</div>${big}<p class="goal">${weightCopy(prog)}</p>
-    <button type="button" class="btn ghost" id="openWeigh">Weigh in</button></div>
-    <div class="rings">${ringHtml("Calories", food.calories, p.target_calories, "#3E97BC")}${ringHtml("Protein", food.protein, p.target_protein, "#4E7B53")}${ringHtml("Water", ounces, hydrationTarget(p.target_hydration_oz), "#1B948C", true)}</div>
-    ${carbs || fat ? `<p class="quiet">${[carbs, fat].filter(Boolean).join("  ")}</p>` : ""}
+  const fatLine = p.target_fat != null && p.target_fat !== "" ? `Fat ${fmtFood(food.fat)} / ${fmtFood(p.target_fat)} g` : "";
+  const phy = state.physique;
+  const recomp = phy && phy.ready;
+  const hero = recomp ? recompHero(phy) : `<div class="hero wt"><div class="mono">Weight</div>${big}<p class="goal">${weightCopy(prog)}</p><button type="button" class="btn ghost" id="openWeigh">Weigh in</button>${state.scansReady ? `<button type="button" class="btn ghost" id="openScan">Add scan</button>` : ""}</div>`;
+  el.innerHTML = `<div class="instrument">${hero}
+    <div class="band"><div class="mono k">Today</div><div class="rings daily">${ringHtml("Calories", food.calories, p.target_calories, "#3E97BC")}${ringHtml("Protein", food.protein, p.target_protein, "#4E7B53")}${ringHtml("Water", ounces, hydrationTarget(p.target_hydration_oz), "#1B948C", true)}</div></div>
+    ${carbs || fatLine ? `<p class="quiet">${[carbs, fatLine].filter(Boolean).join("  ")}</p>` : ""}
     <div class="acts"><button type="button" class="act go" id="openLog">Log meal</button><button type="button" class="act" id="openTrain">Train</button></div>
     <div id="waterSheet" class="cover" hidden>
       <div class="coverbar"><button type="button" id="closeWater">Close</button><span class="mono">Water</span></div>
@@ -1090,7 +1282,12 @@ function renderToday() {
     <div id="weighSheet" class="cover" hidden>
       <div class="coverbar"><button type="button" id="closeWeigh">Close</button><span class="mono">Weigh in</span></div>
       <div class="coverbody">${hint}<div class="weighline"><input class="n" id="weighLb" type="number" min="0" max="1000" step="0.1" inputmode="decimal" value="${todayLb == null ? "" : todayLb}" aria-label="Today's weight in pounds"><button type="button" class="btn rust" id="saveWeigh">Save</button></div></div>
-    </div></div>`;
+    </div>
+    <div id="segSheet" class="cover" hidden>
+      <div class="sheethead"><button type="button" class="x" id="closeSeg" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button><span class="mono" id="segTitle">Muscle</span><span></span></div>
+      <div class="coverbody" id="segBody"></div>
+    </div>
+    ${state.scansReady ? scanSheetHtml() : ""}</div>`;
   $("openWater").onclick = () => { $("waterSheet").hidden = false; document.body.classList.add("sheet-open"); $("waterOz").focus(); };
   $("closeWater").onclick = () => { $("waterSheet").hidden = true; document.body.classList.remove("sheet-open"); };
   $("waterSheet").onclick = (e) => { if (e.target === $("waterSheet")) $("closeWater").click(); };
@@ -1106,8 +1303,103 @@ function renderToday() {
   $("saveWeigh").onclick = saveWeigh;
   $("openLog").onclick = () => { openMeal(); renderFood(); };
   $("openTrain").onclick = () => showPane("Train");
+  document.querySelectorAll(".ring.goal").forEach(b => b.onclick = () => openSeg(b.dataset.seg));
+  if ($("openFat")) $("openFat").onclick = openFat;
+  if ($("openScan")) $("openScan").onclick = openScanSheet;
+  if ($("closeSeg")) {
+    $("closeSeg").onclick = () => { $("segSheet").hidden = true; document.body.classList.remove("sheet-open"); };
+    $("segSheet").onclick = (e) => { if (e.target === $("segSheet")) $("closeSeg").click(); };
+  }
+  if ($("closeScan")) {
+    $("closeScan").onclick = () => { $("scanSheet").hidden = true; document.body.classList.remove("sheet-open"); };
+    $("scanSheet").onclick = (e) => { if (e.target === $("scanSheet")) $("closeScan").click(); };
+    $("saveScan").onclick = () => saveScanForm();
+    $("scanUpload").onclick = () => $("scanFile").click();
+    $("scanFile").onchange = () => readScanReport($("scanFile").files && $("scanFile").files[0]);
+    const form = $("scanForm");
+    if (form) form.onsubmit = (e) => { e.preventDefault(); saveScanForm(); };
+  }
   const wt = $("wtNow");
   if (wt && prog.ready) countTo(wt, prog.current);
+}
+function openFat() {
+  const fat = state.physique && state.physique.fatMass;
+  if (!fat || fat.current == null || !$("segSheet")) return;
+  $("segTitle").textContent = "Fat";
+  const parts = fat.parts || {};
+  const row = (label, value) => value == null ? "" : `<div><span>${label}</span><span>${fmtLb(value)} lb</span></div>`;
+  const from = fat.baseline != null ? `<p class="sub">from ${fmtLb(fat.baseline)}${fat.goal != null ? ` toward ${fmtLb(fat.goal)}` : ""}</p>` : "";
+  const segs = row("Arm L", parts.armLeft) + row("Arm R", parts.armRight) + row("Trunk", parts.trunk) + row("Leg L", parts.legLeft) + row("Leg R", parts.legRight);
+  const trend = (fat.trend || []).map((p) => `<div><span>${esc(shortDate(p.date))}</span><span>${fmtLb(p.value)} lb</span></div>`).join("");
+  $("segBody").innerHTML = `<div class="segstats"><div><b>${fmtLb(fat.current)}</b><span>Fat mass</span></div></div>${from}<div class="trend">${segs}</div><div class="widechart">${sparkline(fat.trend, "#4E7B53")}</div><div class="trend">${trend}</div>`;
+  $("segSheet").hidden = false;
+  document.body.classList.add("sheet-open");
+}
+function openSeg(key) {
+  const ring = state.physique && state.physique.rings && state.physique.rings[key];
+  if (!ring || !$("segSheet")) return;
+  $("segTitle").textContent = ring.label || "Muscle";
+  const sides = ring.left != null || ring.right != null
+    ? `<div class="segstats"><div><b>${fmtLb(ring.left)}</b><span>Left</span></div><div><b>${fmtLb(ring.right)}</b><span>Right</span></div><div><b>${fmtLb(ring.current)}</b><span>Average</span></div></div>`
+    : `<div class="segstats"><div><b>${fmtLb(ring.current)}</b><span>Now</span></div></div>`;
+  const from = ring.ready ? `<p class="sub">from ${fmtLb(ring.baseline)} toward ${fmtLb(ring.goal)}</p>` : "";
+  const trend = (ring.trend || []).map((p) => `<div><span>${esc(shortDate(p.date))}</span><span>${fmtLb(p.value)} lb</span></div>`).join("");
+  $("segBody").innerHTML = `${sides}${from}<div class="widechart">${sparkline(ring.trend, "#3E97BC")}</div><div class="trend">${trend}</div>`;
+  $("segSheet").hidden = false;
+  document.body.classList.add("sheet-open");
+}
+function openScanSheet() {
+  if (!$("scanSheet")) return;
+  $("scanDate").value = chicagoToday();
+  $("scanNote").textContent = "";
+  if ($("scanNotes")) $("scanNotes").value = "";
+  document.querySelectorAll("[data-scan]").forEach((el) => { el.value = ""; });
+  $("scanSheet").hidden = false;
+  document.body.classList.add("sheet-open");
+  $("scanDate").focus();
+}
+function fillScan(fields) {
+  if (!fields) return;
+  if (fields.scan_date) $("scanDate").value = fields.scan_date;
+  document.querySelectorAll("[data-scan]").forEach((el) => {
+    const v = fields[el.dataset.scan];
+    if (v != null && v !== "") el.value = v;
+  });
+}
+async function saveScanForm() {
+  if (!$("scanDate")) return;
+  const body = { action: "save", scan_date: $("scanDate").value, source: "starfit", notes: $("scanNotes") ? $("scanNotes").value : "" };
+  document.querySelectorAll("[data-scan]").forEach((el) => { body[el.dataset.scan] = el.value; });
+  say("Saving scan");
+  try {
+    const d = await bodyPost(body);
+    state.scans = d.scans || [];
+    state.physique = d.physique || { ready: false };
+    state.scansReady = true;
+    if ($("closeScan")) $("closeScan").click();
+    renderToday();
+    if (typeof histView !== "undefined" && histView === "list") renderMonthList();
+    say("Scan saved");
+  } catch (e) { say(e.message); if ($("scanNote")) $("scanNote").textContent = e.message; }
+}
+async function readScanReport(file) {
+  if (!file) return;
+  $("scanFile").value = "";
+  say("Reading report");
+  try {
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(new Error("Could not read that photo."));
+      reader.readAsDataURL(file);
+    });
+    const media = (dataUrl.match(/^data:([^;]+);/) || [])[1] || file.type;
+    const d = await bodyPost({ action: "extract", image: dataUrl, media_type: media });
+    if (!d.ok) { $("scanNote").textContent = d.message || "Type the scan."; say("Ready"); return; }
+    fillScan(d.fields || {});
+    $("scanNote").textContent = "Check the numbers, then save.";
+    say("Ready");
+  } catch (e) { $("scanNote").textContent = e.message; say(e.message); }
 }
 async function saveWeigh() {
   const date = chicagoToday();
@@ -1351,6 +1643,9 @@ async function loadHome() {
   state.nutritionByDate = state.nutritionByDate || {};
   if (!state.foodDate) state.foodDate = chicagoToday();
   state.latestWeighIn = d.latest_weigh_in || null;
+  state.scans = d.body_scans || [];
+  state.scansReady = d.scans_ready !== false;
+  state.physique = d.physique || { ready: false };
   state.weighByDate = state.weighByDate || {};
   if (d.nutrition_date) {
     state.nutritionByDate[d.nutrition_date] = d.nutrition_today || null;
