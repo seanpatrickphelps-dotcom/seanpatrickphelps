@@ -1,5 +1,5 @@
-// train-v8: phone column stays full width and the daily rows no longer stretch apart.
-const VERSION = "train-v8";
+// train-v9: Universal Sans Display is the UI face once licensed files are in /train/fonts/.
+const VERSION = "train-v9";
 const SHELL = ["/train/index.html", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
