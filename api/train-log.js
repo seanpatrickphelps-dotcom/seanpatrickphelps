@@ -7,7 +7,7 @@
 //   { action:"profile", display_name, goal_date, goal_bodyweight, start_bodyweight, target_calories, target_protein, target_carbs, target_fat } -> { ok }
 //   { action:"swap",   session_id, planned_exercise_id, replacement_name|null }  -> { suggestion }
 //   { action:"nutrition", date, calories, protein, carbs, fat }                  -> { nutrition }
-import { json, db, requireUser, ensureSeeded, suggest, historyByExercise, readiness, sessionStats, buildSlotSuggestion, substitutionOptions, normalizeName, replacementKind, cleanMacro, migrationError } from "../lib/train.js";
+import { json, db, requireUser, ensureSeeded, suggest, historyByExercise, readiness, sessionStats, buildSlotSuggestion, substitutionOptions, normalizeName, replacementKind, cleanMacro, migrationError, saveSetRow } from "../lib/train.js";
 import { PERSONA, VOICE } from "../lib/coach-kb.js";
 
 export default async function handler(req, res) {
@@ -36,9 +36,9 @@ export default async function handler(req, res) {
         load: num(b.load), reps: num(b.reps), rir: num(b.rir), seconds: num(b.seconds), pain: num(b.pain) ?? 0, pain_flag: (num(b.pain) ?? 0) >= 3,
         assist_load: num(b.assist_load), completed: b.completed !== false, logged_at: new Date().toISOString(),
       };
-      // Upsert on the V2 key: delete any existing row for this slot, then insert.
-      await db(`sets?session_id=eq.${row.session_id}&exercise_id=eq.${row.exercise_id}&set_number=eq.${row.set_number}&set_kind=eq.${row.set_kind}&side=${row.side ? "eq." + row.side : "is.null"}`, { method: "DELETE", prefer: "return=minimal" });
-      await db("sets", { method: "POST", body: row, prefer: "return=minimal" });
+      // sets_unique_v2 rejects a second insert for the same slot. Update in place,
+      // and if a concurrent Complete set already inserted, patch that row.
+      await saveSetRow(db, row);
       return json(res, 200, { ok: true });
     }
 

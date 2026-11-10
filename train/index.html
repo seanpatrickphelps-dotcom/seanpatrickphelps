@@ -22,7 +22,7 @@ body{margin:0;background:var(--snow);color:var(--night);font-family:var(--sans);
 :focus-visible{outline:2px solid var(--glacier);outline-offset:2px}
 .serif{font-family:var(--sans);font-weight:600}
 .mono{font-family:var(--sans);letter-spacing:.12em;text-transform:uppercase;font-size:10px}
-.wt .big,.meter .num,.mtable td,input.n,select.n,.set,.dash .v,.card .kv b,.card .big,.series,.miles span,.cal .c,.chips .v,.lt .v,.det .exblock .sets2,.scale button,.nrow .mono{font-variant-numeric:tabular-nums}
+.wt .big,.meter .num,.mtable td,input.n,select.n,.set,.dash .v,.card .kv b,.card .big,.series,.miles span,.cal .c,.chips .v,.lt .v,.det .exblock .sets2,.scale button,.nrow .mono,.mmeta,.mpace,.ring .rn{font-variant-numeric:tabular-nums}
 .pill{display:inline-block;background:var(--rust);color:var(--snow);font-family:var(--sans);font-size:10px;letter-spacing:.16em;padding:4px 8px 3px}
 header{background:var(--night);color:var(--snow);padding:8px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
 header .t{font-size:18px;line-height:1}
@@ -134,7 +134,20 @@ input.n,select.n{font-family:var(--sans);text-align:center;padding:8px 4px;font-
 .cal{background:#fff;border:1px solid var(--line);padding:14px;margin-top:10px}
 .cal .hd2{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .cal .hd2 .m{font-family:var(--sans);font-size:18px}
-.cal .hd2 button{background:none;border:1px solid var(--line);font-family:var(--sans);font-size:14px;padding:4px 12px;cursor:pointer}
+.cal .hd2 button{background:none;border:1px solid var(--line);font-family:var(--sans);font-size:18px;padding:4px 12px;cursor:pointer;border-radius:999px}
+.cal .hd2 button:disabled{opacity:.28;cursor:default}
+.caltop{display:flex;align-items:center;min-height:48px;margin-bottom:4px}
+.caltop button{min-height:48px;padding:0 4px;border:0;background:transparent;color:inherit;font-family:var(--sans);font-size:16px;font-weight:600;cursor:pointer}
+.mlist{display:flex;flex-direction:column}
+.histnote{margin:4px 0 8px}
+.mrow{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid #2c3834;color:inherit;font:inherit;padding:12px 2px;min-height:76px;cursor:pointer}
+.mring{width:44px;height:44px;flex:none;display:block}
+.mring .track{fill:none;stroke:#2A3330;stroke-width:3.5}
+.mring .arc{fill:none;stroke-width:3.5;stroke-linecap:round;transform:rotate(-90deg);transform-origin:20px 20px}
+.mcopy{display:flex;flex-direction:column;min-width:0}
+.mname{font-size:22px;font-weight:560;letter-spacing:-.02em}
+.mmeta{color:#9BA2A6;font-size:15px;margin-top:2px}
+.mpace{color:#9BA2A6;font-size:13px;margin-top:2px}
 .cal .dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;font-family:var(--sans);font-size:8px;letter-spacing:.1em;color:var(--slate);text-align:center;margin-bottom:4px}
 .cal .grid2{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .cal .c{aspect-ratio:1;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--sans);font-size:11px;color:var(--slate);position:relative;background:#fff}
@@ -198,9 +211,10 @@ body.in .day{background:transparent;color:var(--snow);border-color:#3c4c47;displ
 body.in #paneTrain .days{display:flex;flex-direction:column;gap:8px}
 body.in .day .l{font-size:16px;letter-spacing:.02em;margin:0;color:var(--snow);font-family:var(--sans);text-transform:none}
 body.in .day .n{font-size:22px;width:28px}
-body.in .cal{background:transparent;border-color:#3c4c47;color:var(--snow)}
+body.in .cal{background:transparent;border:0;padding:0;margin-top:0;color:var(--snow);touch-action:pan-y}
 body.in .cal .c{background:#24302c;color:#b7beb8;border-color:#3c4c47}
-body.in .cal .hd2 button{min-height:48px;min-width:48px;color:var(--snow);border-color:#5c6b66}
+body.in .cal .hd2 button{min-height:48px;min-width:48px;padding:0;display:grid;place-items:center;color:var(--snow);border:0;background:rgba(239,238,231,.08)}
+body.in .caltop button{color:var(--snow)}
 body.in .prehab,body.in .banner,body.in .swapbox,body.in .chips .c2{background:#24302c;color:var(--snow);border-color:#3c4c47}
 body.in .scale button{background:#24302c;color:var(--snow);border-color:#3c4c47}
 body.in .mtable td.food,body.in .mtable tr.tot td,body.in .ex .nm,body.in .card .nm,body.in h1,body.in h2{color:var(--snow)}
@@ -307,7 +321,7 @@ body.focus .set.active .card{display:block;animation:glidein .35s ease}
 #padRead{font:560 64px/1 var(--sans);font-variant-numeric:tabular-nums;text-align:center;margin:8px 0}
 @keyframes glidein{from{transform:translateY(8px)}to{transform:none}}
 body.focus .whyb,body.focus .swapb,body.focus .panelbar .btn,body.focus .focusActs .btn.ghost{border:0;border-radius:999px;background:rgba(239,238,231,.08);color:#EFEEE7;box-shadow:none}
-@media (prefers-reduced-motion:reduce){body.focus .set.active .card{animation:none}}
+@media (prefers-reduced-motion:reduce){body.focus .set.active .card{animation:none}.ring .arc,.mring .arc{transition:none}}
 body.in .swapbox .opt{background:#24302c;color:var(--snow);border-color:#3A4642}
 body.in .pane.on{animation:rise .28s ease}
 @keyframes rise{from{transform:translateY(8px)}to{transform:none}}
@@ -347,7 +361,7 @@ body.in .pane.on{animation:rise .28s ease}
       <button type="button" id="segMonth" class="on" role="tab" aria-selected="true">Month</button>
       <button type="button" id="segBoard" role="tab" aria-selected="false">Board</button>
     </div>
-    <div id="histMonth"><div class="cal" id="cal"></div></div>
+    <div id="histMonth"><div id="monthList"></div><div class="cal" id="cal" hidden></div></div>
     <div id="histBoard" hidden><div id="board"></div></div>
   </div>
 </section>
@@ -406,13 +420,13 @@ body.in .pane.on{animation:rise .28s ease}
     <div><div class="mono" style="font-size:9px">Goal weight</div><input class="n p-goal_bodyweight" type="number" step="0.1"></div>
     <div><div class="mono" style="font-size:9px">Goal date</div><input class="p-goal_date" type="date"></div></div>
     <div class="nm" style="margin-top:14px">Daily food</div>
-    <p class="small">Optional targets. Leave them blank and the log still saves, including on a rest day.</p>
+    <p class="small">Optional targets. Leave food blank and the log still saves, including on a rest day. A blank water goal draws the ring against 100 oz until you set one here.</p>
     <div class="goal-edit">
       <div><div class="mono" style="font-size:9px">Calories</div><input class="n p-target_calories" type="number" min="0" step="1" inputmode="numeric"></div>
       <div><div class="mono" style="font-size:9px">Protein</div><input class="n p-target_protein" type="number" min="0" step="1" inputmode="numeric"></div>
       <div><div class="mono" style="font-size:9px">Carbs</div><input class="n p-target_carbs" type="number" min="0" step="1" inputmode="numeric"></div>
       <div><div class="mono" style="font-size:9px">Fat</div><input class="n p-target_fat" type="number" min="0" step="1" inputmode="numeric"></div>
-      <div><div class="mono" style="font-size:9px">Water oz</div><input class="n p-target_hydration_oz" type="number" min="0" step="1" inputmode="numeric"></div>
+      <div><div class="mono" style="font-size:9px">Water oz</div><input class="n p-target_hydration_oz" type="number" min="0" step="1" inputmode="numeric" placeholder="100" aria-label="Daily water goal in ounces"></div>
     </div>
     <button class="btn sm" id="saveProfile" style="margin-top:8px">Save</button></div>
   <p class="lead" style="margin-top:16px">Per exercise: starting load is where the trend begins, the goal is where it ends, the date is when. Increment is the smallest jump the app will ever suggest.</p>
@@ -469,13 +483,14 @@ function showPane(name) {
     b.setAttribute("aria-current", on ? "page" : "false");
   });
   show("sHome");
+  if (name === "History" && state.histTab !== "board" && histView === "list") renderMonthList();
 }
 function openMeal() { $("mealSheet").hidden = false; document.body.classList.add("sheet-open"); $("closeMeal").focus(); }
 function closeMeal() { $("mealSheet").hidden = true; document.body.classList.remove("sheet-open"); const back = $("openLog"); if (back) back.focus(); }
-function toast(msg) {
+function toast(msg, ms) {
   const t = $("toast"); if (!t) return;
   t.textContent = msg; t.hidden = false;
-  clearTimeout(t._t); t._t = setTimeout(() => { t.hidden = true; }, 1600);
+  clearTimeout(t._t); t._t = setTimeout(() => { t.hidden = true; }, ms || 1600);
 }
 function countTo(el, value) {
   const to = Number(value);
@@ -653,6 +668,7 @@ function completeSet(row) {
   const reps = fieldEl(row, "reps");
   const secs = fieldEl(row, "secs");
   if ((!reps || reps.value === "") && (!secs || secs.value === "")) { say("Add reps first"); return; }
+  clearTimeout(row._t);
   row.classList.add("checked");
   row.classList.remove("active");
   saveSet(row);
@@ -661,12 +677,14 @@ function completeSet(row) {
 $("segMonth").onclick = () => showHist("month");
 $("segBoard").onclick = () => showHist("board");
 function showHist(which) {
+  state.histTab = which;
   $("histMonth").hidden = which !== "month";
   $("histBoard").hidden = which !== "board";
   $("segMonth").classList.toggle("on", which === "month");
   $("segBoard").classList.toggle("on", which === "board");
   $("segMonth").setAttribute("aria-selected", which === "month" ? "true" : "false");
   $("segBoard").setAttribute("aria-selected", which === "board" ? "true" : "false");
+  if (which === "month" && histView === "list") renderMonthList();
 }
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
@@ -771,12 +789,78 @@ function cardHtml(c) {
     ${series}${miles}</div>`;
 }
 const DAYCOL = {1:"var(--rust)",2:"var(--glacier)",3:"var(--teton)",4:"var(--rust)",5:"var(--glacier)"};
+const HISTORY_START = "2026-09";
 let calMonth = null;
-async function loadCal(month) {
+let histView = "list";
+function shiftMonthKey(key, delta) {
+  const [y, m] = String(key).split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1 + Number(delta), 1));
+  return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+function adjacentHistoryMonth(key, delta, today) {
+  const next = shiftMonthKey(key, delta);
+  const current = String(today).slice(0, 7);
+  if (next < HISTORY_START || next > current) return null;
+  return next;
+}
+function paceLine(row) {
+  if (!row || !row.current) return "";
+  const n = Number(row.pace) || 0;
+  if (n === 0) return "On pace";
+  const word = Math.abs(n) === 1 ? "day" : "days";
+  return n > 0 ? `${n} ${word} ahead of pace` : `${Math.abs(n)} ${word} behind pace`;
+}
+function miniRing(pct, color) {
+  const C = 2 * Math.PI * 16;
+  const p = Math.max(0, Math.min(1, Number(pct) || 0));
+  const dash = (p * C).toFixed(1);
+  return `<svg class="mring" viewBox="0 0 40 40" aria-hidden="true"><circle class="track" cx="20" cy="20" r="16"></circle><circle class="arc" cx="20" cy="20" r="16" style="stroke:${color};stroke-dasharray:${dash} ${C.toFixed(1)}"></circle></svg>`;
+}
+function renderMonthList() {
+  const el = $("monthList");
+  if (!el) return;
+  const rows = state.liftingMonths || [];
+  if (!rows.length) { el.innerHTML = `<div class="small">Loading</div>`; return; }
+  el.innerHTML = `<p class="quiet histnote">Five lifting days each week.</p><div class="mlist">${rows.map(monthRowHtml).join("")}</div>`;
+  el.querySelectorAll("[data-month]").forEach(b => b.onclick = () => loadCal(b.dataset.month, { show: true }).catch(() => { $("cal").innerHTML = `<div class="small">Calendar unavailable.</div>`; say("Calendar unavailable"); }));
+}
+function monthRowHtml(row) {
+  const pace = paceLine(row);
+  const label = `${row.name}, ${row.lifted} of ${row.daysInMonth} days${pace ? ", " + pace : ""}`;
+  return `<button type="button" class="mrow" data-month="${row.month}" aria-label="${esc(label)}"><span class="mring">${miniRing(row.pct, "#3E97BC")}</span><span class="mcopy"><span class="mname">${esc(row.name)}</span><span class="mmeta">${row.lifted} / ${row.daysInMonth} days</span>${pace ? `<span class="mpace">${esc(pace)}</span>` : ""}</span></button>`;
+}
+function showMonthList() {
+  histView = "list";
+  $("cal").hidden = true;
+  $("monthList").hidden = false;
+  renderMonthList();
+}
+function nudgeMonth(delta) {
+  const next = adjacentHistoryMonth(calMonth, delta, chicagoToday());
+  if (!next) return;
+  loadCal(next, { show: true }).catch(() => { $("cal").innerHTML = `<div class="small">Calendar unavailable.</div>`; say("Calendar unavailable"); });
+}
+async function loadHistory() {
+  const d = await api("/train-next?history=1");
+  state.liftingMonths = d.months || [];
+  if (histView === "list") renderMonthList();
+}
+async function loadCal(month, opts = {}) {
   const now = new Date();
-  calMonth = month || calMonth || `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
-  $("cal").innerHTML = `<div class="small">Loading…</div>`;
-  const d = await api("/train-next?month=" + calMonth);
+  const todayKey = chicagoToday().slice(0, 7);
+  calMonth = month || calMonth || todayKey || `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+  if (calMonth < HISTORY_START) calMonth = HISTORY_START;
+  if (calMonth > todayKey) calMonth = todayKey;
+  const showCal = !!(opts && opts.show) || histView === "cal";
+  if (showCal) {
+    histView = "cal";
+    $("monthList").hidden = true;
+    $("cal").hidden = false;
+  }
+  const requested = calMonth;
+  $("cal").innerHTML = `<div class="small">Loading</div>`;
+  const d = await api("/train-next?month=" + requested);
+  if (requested !== calMonth) return;
   const [y,m] = calMonth.split("-").map(Number);
   const first = new Date(y, m-1, 1), days = new Date(y, m, 0).getDate(), lead = first.getDay();
   const byDate = {}; for (const s of d.days) (byDate[s.session_date] ||= []).push(s);
@@ -812,20 +896,41 @@ async function loadCal(month) {
   const bw = d.days.filter(s=>s.bodyweight).map(s=>s.bodyweight);
   const fedDays = new Set([...Object.keys(fed).filter(k => foodLogged(fed[k])), ...Object.keys(mealsBy)]);
   const fedCount = fedDays.size;
-  $("cal").innerHTML = `<div class="hd2"><button data-nav="-1">‹</button><span class="m">${label}</span><button data-nav="1">›</button></div>
+  const prevOk = !!adjacentHistoryMonth(calMonth, -1, today);
+  const nextOk = !!adjacentHistoryMonth(calMonth, 1, today);
+  $("cal").innerHTML = `<div class="caltop"><button type="button" id="calBack">Months</button></div><div class="hd2"><button type="button" data-nav="-1" aria-label="Previous month" ${prevOk?"":"disabled"}><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5L9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="m">${label}</span><button type="button" data-nav="1" aria-label="Next month" ${nextOk?"":"disabled"}><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6.5L15 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <div class="dow"><div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div></div>
     <div class="grid2">${cells}</div>
     <div class="legend"><span><i style="background:var(--rust)"></i>Bench, 1 and 4</span><span><i style="background:var(--glacier)"></i>Pull, 2 and 5</span><span><i style="background:var(--teton)"></i>Posterior, 3</span><span><i style="background:var(--slate)"></i>Unfinished</span><span><i style="background:var(--rust);border-radius:50%"></i>Pain 3+</span><span><i style="background:var(--braies)"></i>Food logged</span></div>
     <div class="sum">${finished.length} session${finished.length===1?"":"s"} this month${bw.length?` · bodyweight ${bw[0]} to ${bw.at(-1)}`:""}${d.streak?.count?` · ${d.streak.count} in a row`:""}${fedCount?` · food on ${fedCount} day${fedCount===1?"":"s"}`:""}</div>`;
-  $("cal").querySelectorAll("[data-nav]").forEach(b => b.onclick = () => {
-    const dt = new Date(y, m-1+Number(b.dataset.nav), 1);
-    loadCal(`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}`);
-  });
+  $("calBack").onclick = () => showMonthList();
+  $("cal").querySelectorAll("[data-nav]").forEach(b => b.onclick = () => { if (!b.disabled) nudgeMonth(Number(b.dataset.nav)); });
   $("cal").querySelectorAll("[data-date]").forEach(c => c.onclick = () => {
     if (c.dataset.sid) { openSession(Number(c.dataset.sid)); return; }
     selectFoodDate(c.dataset.date);
   });
 }
+
+(function bindCalSwipe() {
+  const el = $("cal");
+  if (!el || el.dataset.swipe) return;
+  el.dataset.swipe = "1";
+  let swipe = null;
+  el.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 1 || e.target.closest("button")) { swipe = null; return; }
+    swipe = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }, { passive: true });
+  el.addEventListener("touchend", (e) => {
+    if (!swipe || !e.changedTouches.length) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - swipe.x;
+    const dy = t.clientY - swipe.y;
+    swipe = null;
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+    nudgeMonth(dx < 0 ? 1 : -1);
+  }, { passive: true });
+  el.addEventListener("touchcancel", () => { swipe = null; });
+})();
 
 async function openSession(sid) {
   say("Loading session");
@@ -908,8 +1013,9 @@ function dashHtmlFood(date, part, compact) {
     if (pro) chips.push(pro);
   }
   if (want === "all" || want === "hydration") {
-    const water = chipFor("hydration", ounces, p.target_hydration_oz);
-    html += barHtml("Hydration", ounces, p.target_hydration_oz, "oz", "over", line(water));
+    const waterGoal = hydrationTarget(p.target_hydration_oz);
+    const water = chipFor("hydration", ounces, waterGoal);
+    html += barHtml("Hydration", ounces, waterGoal, "oz", "over", line(water));
     if (water) chips.push(water);
   }
   if (compact) return html;
@@ -942,6 +1048,10 @@ function weightCopy(prog) {
   if (lost === 0) return `0 lb lost · ${fmtFood(Math.max(rem, 0))} lb to go`;
   return `${fmtFood(Math.abs(lost))} lb above the start · ${fmtFood(rem)} lb to go`;
 }
+function hydrationTarget(value) {
+  const n = value == null || value === "" ? NaN : Number(value);
+  return Number.isFinite(n) && n > 0 ? n : 100;
+}
 function ringHtml(label, current, target, color, tap) {
   const cur = current == null || current === "" ? null : Number(current);
   const tgt = target == null || target === "" ? null : Number(target);
@@ -969,7 +1079,7 @@ function renderToday() {
   const fat = p.target_fat != null && p.target_fat !== "" ? `Fat ${fmtFood(food.fat)} / ${fmtFood(p.target_fat)} g` : "";
   el.innerHTML = `<div class="instrument"><div class="hero wt"><div class="mono">Weight</div>${big}<p class="goal">${weightCopy(prog)}</p>
     <button type="button" class="btn ghost" id="openWeigh">Weigh in</button></div>
-    <div class="rings">${ringHtml("Calories", food.calories, p.target_calories, "#3E97BC")}${ringHtml("Protein", food.protein, p.target_protein, "#4E7B53")}${ringHtml("Water", ounces, p.target_hydration_oz, "#1B948C", true)}</div>
+    <div class="rings">${ringHtml("Calories", food.calories, p.target_calories, "#3E97BC")}${ringHtml("Protein", food.protein, p.target_protein, "#4E7B53")}${ringHtml("Water", ounces, hydrationTarget(p.target_hydration_oz), "#1B948C", true)}</div>
     ${carbs || fat ? `<p class="quiet">${[carbs, fat].filter(Boolean).join("  ")}</p>` : ""}
     <div class="acts"><button type="button" class="act go" id="openLog">Log meal</button><button type="button" class="act" id="openTrain">Train</button></div>
     <div id="waterSheet" class="cover" hidden>
@@ -1261,6 +1371,7 @@ async function loadHome() {
   $("board").innerHTML = d.cards.map(cardHtml).join("") || `<div class="small">No goals set yet. Tap Goals.</div>`;
   renderFood();
   loadCal().catch(()=>{ $("cal").innerHTML = `<div class="small">Calendar unavailable.</div>`; });
+  loadHistory().catch(()=>{ if ($("monthList")) $("monthList").innerHTML = `<div class="small">History unavailable.</div>`; });
   if (d.last_bodyweight) $("bw").value = d.last_bodyweight;
   if (d.open_session && !state.leftSession) { await openDay(d.open_session.workout_day); return; }
   show("sHome"); say("Ready");
@@ -1402,14 +1513,37 @@ async function chooseSwap(plannedId, name) {
     say(name ? "Swapped for this session" : "Back to the planned exercise");
   } catch (e) { say(e.message); }
 }
-async function saveSet(row) {
+function classifySetSaveError(error) {
+  const name = error && error.name || "";
+  const message = String(error && error.message || "");
+  const offline = name === "TypeError" || /failed to fetch|networkerror|load failed|offline/i.test(message);
+  if (offline) return { queue: true, message: "No signal, set queued. It saves when you are back online." };
+  const shown = message && !/^Supabase\b/.test(message) ? message : "That set did not save. Try again.";
+  return { queue: false, message: shown };
+}
+function saveSet(row) {
+  clearTimeout(row._t);
   if (!state.session) return;
+  row._dirtySave = true;
+  if (row._save) return row._save;
+  const run = async () => {
+    while (row._dirtySave) {
+      row._dirtySave = false;
+      await writeSet(row);
+    }
+    row._save = null;
+    if (row._dirtySave) row._save = run();
+  };
+  row._save = run();
+  return row._save;
+}
+async function writeSet(row) {
   const g = (c) => { const el = row.querySelector("."+c); return el ? el.value : ""; };
   if (g("reps")==="" && g("secs")==="") return;
   say("Saving");
   const item = { action:"set", session_id: state.session.id, exercise_id: Number(row.dataset.ex), set_number: Number(row.dataset.set), side: row.dataset.side||null, set_kind: row.dataset.kind||"work",
       load: g("load"), reps: g("reps"), seconds: g("secs"), rir: g("rir"), pain: g("pain")||0, assist_load: g("assist") };
-  row.classList.add("saved"); delete row.dataset.dirty;   // the row is safe the moment it is queued
+  row.classList.add("saved"); delete row.dataset.dirty;
   try {
     await post(item);
     if (!row.dataset.buzzed) {
@@ -1424,9 +1558,17 @@ async function saveSet(row) {
     }
     say(Number(g("pain"))>=3 ? "Saved. Pain 3+: that exercise holds." : "Saved");
   } catch (e) {
-    if (!token) return;                       // signed out for real, nothing to retry
-    const q = queueGet().filter(x => !(x.session_id===item.session_id && x.exercise_id===item.exercise_id && x.set_number===item.set_number && x.side===item.side && x.set_kind===item.set_kind));
-    q.push(item); queuePut(q); say("No signal, set queued. It saves when you are back online.");
+    if (!token) return;
+    const fail = classifySetSaveError(e);
+    if (fail.queue) {
+      const q = queueGet().filter(x => !(x.session_id===item.session_id && x.exercise_id===item.exercise_id && x.set_number===item.set_number && x.side===item.side && x.set_kind===item.set_kind));
+      q.push(item); queuePut(q); say(fail.message); return;
+    }
+    row.classList.remove("saved");
+    row.classList.remove("checked");
+    if (document.body.classList.contains("focus")) layoutSets(false);
+    say(fail.message);
+    toast(fail.message, 4000);
   }
 }
 $("startBtn").onclick = async () => {

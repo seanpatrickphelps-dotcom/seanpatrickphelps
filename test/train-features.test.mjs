@@ -6,6 +6,8 @@ import {
   mealTotals, normalizeMealEstimate, effectiveDayFood, foodBar, foodChip,
   presentSessionFood, requestMealEstimate, foodActionWrites, FOOD_KEY_MESSAGE,
   chicagoDate, weightProgress, seanWeightDefaults, profilePatchForSean, shouldSeedWeighIn, targetsOf,
+  hydrationTarget, ringProgress, saveSetRow, classifySetSaveError,
+  liftingGoal, monthSpan, adjacentHistoryMonth, liftingDaysFromSets, summarizeLiftingMonths, paceCopy,
 } from "../lib/train.js";
 
 const planned = {
@@ -272,6 +274,106 @@ test("Chicago dates and Sean's defaults stay off every other account", () => {
   assert.equal(foodActionWrites("weigh"), true);
   assert.equal(foodBar(1000, 2000).pct, 50);
   assert.equal(effectiveDayFood([{ items: [{ calories: 500, protein: 40, carbs: 30, fat: 10 }] }], null).calories, 500);
+});
+
+test("48 oz fills the water ring when the goal is unset", () => {
+  assert.equal(hydrationTarget(null), 100);
+  assert.equal(hydrationTarget(undefined), 100);
+  assert.equal(hydrationTarget(""), 100);
+  assert.equal(hydrationTarget(0), 100);
+  assert.equal(hydrationTarget(80), 80);
+  const ring = ringProgress(48, hydrationTarget(null));
+  assert.equal(ring.current, 48);
+  assert.equal(ring.target, 100);
+  assert.equal(Math.round(ring.pct * 100), 48);
+  assert.ok(ring.pct > 0);
+  assert.equal(targetsOf({ target_hydration_oz: null }).hydration, null);
+  assert.equal(ringProgress(48, hydrationTarget(128)).target, 128);
+});
+
+test("a set save updates the same row and a 409 patches it instead of inserting twice", async () => {
+  const row = { user_id: "u", session_id: 4, exercise_id: 9, set_number: 1, side: null, set_kind: "work", load: 185, reps: 8 };
+  const calls = [];
+  const db = async (path, opts) => {
+    calls.push({ path, method: opts.method, body: opts.body });
+    const patches = calls.filter((c) => c.method === "PATCH").length;
+    if (opts.method === "PATCH" && patches === 1) return [];
+    if (opts.method === "POST") throw new Error('Supabase POST sets: 409 {"code":"23505","message":"duplicate key value violates unique constraint \\"sets_unique_v2\\""}');
+    if (opts.method === "PATCH") return [{ id: 7, reps: opts.body.reps, load: opts.body.load }];
+    return null;
+  };
+  const saved = await saveSetRow(db, row);
+  assert.equal(saved.id, 7);
+  assert.equal(saved.reps, 8);
+  assert.deepEqual(calls.map((c) => c.method), ["PATCH", "POST", "PATCH"]);
+  assert.equal(calls.some((c) => c.method === "DELETE"), false);
+  assert.match(calls[0].path, /session_id=eq\.4/);
+  assert.match(calls[0].path, /side=is\.null/);
+  assert.match(calls[0].path, /set_kind=eq\.work/);
+
+  const again = [];
+  const update = async (path, opts) => {
+    again.push(opts.method);
+    if (opts.method === "PATCH") return [{ id: 7, reps: 10 }];
+    throw new Error("insert should not run when the slot already exists");
+  };
+  const edited = await saveSetRow(update, { ...row, reps: 10 });
+  assert.equal(edited.reps, 10);
+  assert.deepEqual(again, ["PATCH"]);
+
+  const offline = classifySetSaveError(new TypeError("Failed to fetch"));
+  assert.equal(offline.queue, true);
+  const conflict = classifySetSaveError(new Error("That set did not save. Try again."));
+  assert.equal(conflict.queue, false);
+  assert.match(conflict.message, /did not save/);
+  const raw = classifySetSaveError(new Error("Supabase POST sets: 409 duplicate key"));
+  assert.equal(raw.queue, false);
+  assert.equal(raw.message, "That set did not save. Try again.");
+});
+
+test("history months run from September 2026 through this month, newest first", () => {
+  assert.equal(liftingGoal(30), 21);
+  assert.equal(liftingGoal(31), 22);
+  assert.equal(liftingGoal(28), 20);
+  assert.equal(liftingGoal(10), 7);
+  const span = monthSpan("2026-09", "2026-11-10");
+  assert.deepEqual(span, ["2026-11", "2026-10", "2026-09"]);
+  assert.equal(span.includes("2026-08"), false);
+  assert.equal(adjacentHistoryMonth("2026-09", -1, "2026-11-10"), null);
+  assert.equal(adjacentHistoryMonth("2026-11", 1, "2026-11-10"), null);
+  assert.equal(adjacentHistoryMonth("2026-10", 1, "2026-11-10"), "2026-11");
+  assert.equal(adjacentHistoryMonth("2026-10", -1, "2026-11-10"), "2026-09");
+
+  const logged = [
+    "2026-11-02T18:00:00Z",
+    "2026-11-03T18:00:00Z",
+    "2026-11-05T18:00:00Z",
+    "2026-11-06T18:00:00Z",
+    "2026-11-08T18:00:00Z",
+    "2026-11-09T18:00:00Z",
+    "2026-11-10T16:00:00Z",
+    "2026-11-10T04:30:00Z",
+  ].map((logged_at) => ({ logged_at }));
+  const dates = liftingDaysFromSets(logged, "2026-11-10");
+  assert.equal(dates.includes("2026-11-09"), true);
+  assert.equal(dates.filter((d) => d === "2026-11-10").length, 1);
+  assert.equal(dates.includes("2026-08-31"), false);
+  const months = summarizeLiftingMonths({ dates, today: "2026-11-10" });
+  assert.equal(months[0].month, "2026-11");
+  assert.equal(months[0].name, "November");
+  assert.equal(months[0].lifted, 7);
+  assert.equal(months[0].daysInMonth, 30);
+  assert.equal(months[0].goal, 21);
+  assert.equal(months[0].paceGoal, 7);
+  assert.equal(months[0].pace, 0);
+  assert.equal(paceCopy(months[0]), "On pace");
+  assert.equal(Math.round(months[0].pct * 21), 7);
+  assert.equal(months.at(-1).month, "2026-09");
+  assert.equal(paceCopy(months[1]), "");
+  const ahead = { current: true, pace: 2 };
+  const behind = { current: true, pace: -1 };
+  assert.equal(paceCopy(ahead), "2 days ahead of pace");
+  assert.equal(paceCopy(behind), "1 day behind pace");
 });
 
 test("food helpers treat zero as logged and reject junk", () => {
