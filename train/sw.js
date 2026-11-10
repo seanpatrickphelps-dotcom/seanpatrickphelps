@@ -1,5 +1,5 @@
-// train-v19: Today opens on food rings, then muscle, then fat loss.
-const VERSION = "train-v19";
+// train-v20: Log meal sits under the food rings. Weigh in and Add scan close the screen.
+const VERSION = "train-v20";
 const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
