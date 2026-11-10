@@ -294,12 +294,15 @@ body.in .day{border:0;border-radius:14px;background:#1A211F}
 .rings.daily svg{width:52px;height:52px}
 .instrument .act{min-height:56px}
 .instrument .acts{margin-top:14px}
+.today .mealacts{margin-top:10px}
 .leadband{margin-top:2px}
 .today .band{margin-top:20px}
 .today .leadband{margin-top:2px}
-.weighrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}
-.weighrow .w{flex:1 0 100%;font-size:16px;color:#C9CFCB;font-variant-numeric:tabular-nums}
+.weighrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px}
 .weighrow .btn{width:auto;flex:1;min-height:44px;margin:0;padding:0 14px;border-radius:999px;text-transform:none;letter-spacing:0;font-size:15px;font-weight:600}
+.weightsec{margin-top:16px}
+.weightsec .overall{margin:0}
+.weightsec .wline{margin:4px 0 0;font-size:16px;color:#C9CFCB;font-variant-numeric:tabular-nums}
 .today .overall{margin:14px 0 0;font-size:16px;font-weight:560;color:#C9CFCB}
 .recomp .tools,.scanform .tools{display:flex;gap:8px;margin-top:8px}
 .recomp .tools .btn,.scanform .tools .btn{width:auto;min-width:0;flex:1;margin:0;text-transform:none;letter-spacing:0;font-size:16px;font-weight:600;border-radius:14px}
@@ -1194,9 +1197,10 @@ function todayStack(phy, p, food, ounces, prog) {
   const muscle = ready ? `<div class="band"><div class="mono k">Muscle</div><div class="rings goals">${goalRingHtml("arms", phy.rings.arms)}${goalRingHtml("trunk", phy.rings.trunk)}${goalRingHtml("legs", phy.rings.legs)}</div></div>` : "";
   const loss = ready && phy.loss ? `<div class="band"><div class="mono k">Fat loss</div><div class="rings goals">${goalRingHtml("mass", phy.loss.mass, "loss")}${goalRingHtml("body", phy.loss.body, "loss")}${goalRingHtml("visceral", phy.loss.visceral, "loss")}</div></div>` : "";
   return `<div class="today"><div class="band leadband"><div class="mono k">Today</div><div class="rings lead">${ringHtml("Calories", food.calories, p.target_calories, "#3E97BC")}${ringHtml("Protein", food.protein, p.target_protein, "#4E7B53")}${ringHtml("Water", ounces, hydrationTarget(p.target_hydration_oz), "#1B948C", true)}</div></div>
-    ${quiet}
-    <div class="weighrow"><span class="w">${weightText}</span><button type="button" class="btn ghost" id="openWeigh">Weigh in</button>${scan}</div>
-    ${muscle}${loss}</div>`;
+    <div class="acts mealacts"><button type="button" class="act go" id="openLog">Log meal</button><button type="button" class="act" id="openTrain">Train</button></div>
+    <div class="weightsec">${quiet}<p class="wline">${weightText}</p></div>
+    ${muscle}${loss}
+    <div class="weighrow"><button type="button" class="btn ghost" id="openWeigh">Weigh in</button>${scan}</div></div>`;
 }
 function scanField(key, label) {
   return `<div><label for="scan-${key}">${label}</label><input class="n" id="scan-${key}" data-scan="${key}" type="number" step="0.1" inputmode="decimal"></div>`;
@@ -1254,7 +1258,6 @@ function renderToday() {
   const phy = state.physique;
   el.innerHTML = `<div class="instrument">${todayStack(phy, p, food, ounces, prog)}
     ${carbs || fatLine ? `<p class="quiet">${[carbs, fatLine].filter(Boolean).join("  ")}</p>` : ""}
-    <div class="acts"><button type="button" class="act go" id="openLog">Log meal</button><button type="button" class="act" id="openTrain">Train</button></div>
     <div id="waterSheet" class="cover" hidden>
       <div class="coverbar"><button type="button" id="closeWater">Close</button><span class="mono">Water</span></div>
       <div class="coverbody"><div class="weighline"><input class="n" id="waterOz" type="number" min="0" step="1" inputmode="decimal" value="${ounces == null ? "" : ounces}" aria-label="Water ounces"><button type="button" class="btn rust" id="saveWater">Save</button></div>
