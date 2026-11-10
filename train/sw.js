@@ -1,5 +1,5 @@
-// train-v18: fat mass on the hero, with a loss bar and scan trends.
-const VERSION = "train-v18";
+// train-v19: Today opens on food rings, then muscle, then fat loss.
+const VERSION = "train-v19";
 const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {

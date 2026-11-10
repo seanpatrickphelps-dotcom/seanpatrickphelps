@@ -448,6 +448,23 @@ test("the earliest scan is the baseline, and fat lost is measured from it", () =
   assert.equal(view.fat.baseline, 28.4);
 });
 
+test("fat loss rings start at the earliest scan and use the profile goals", () => {
+  const early = { scan_date: "2026-07-22", fat_mass_lb: 80, body_fat_pct: 31.5, visceral_fat: 15, weight_lb: 254, lean_mass_lb: 174, arm_left_muscle_lb: 10.1, arm_right_muscle_lb: 10.1, trunk_muscle_lb: 76.1, leg_left_muscle_lb: 29.1, leg_right_muscle_lb: 29.1 };
+  const late = { scan_date: "2026-11-05", fat_mass_lb: 65.5, body_fat_pct: 26.6, visceral_fat: 12, weight_lb: 246, lean_mass_lb: 180.6, arm_left_muscle_lb: 10.6, arm_right_muscle_lb: 10.8, trunk_muscle_lb: 78.9, leg_left_muscle_lb: 30.2, leg_right_muscle_lb: 30.2 };
+  const view = physiqueView({ profile: { ...goals, goal_visceral_fat: 6 }, scans: [late, early], latestWeighIn: null });
+  assert.equal(view.baselineDate, "2026-07-22");
+  assert.equal(view.loss.mass.current, 65.5);
+  assert.equal(view.loss.mass.baseline, 80);
+  assert.equal(view.loss.mass.goal, 25.2);
+  assert.equal(view.loss.body.current, 26.6);
+  assert.equal(view.loss.body.goal, 12);
+  assert.equal(view.loss.visceral.current, 12);
+  assert.equal(view.loss.visceral.goal, 6);
+  assert.equal(view.loss.visceral.trend[0].date, "2026-07-22");
+  assert.equal(view.loss.mass.trend.length, 2);
+  assert.equal(view.weight.current, 246);
+});
+
 test("a scan photo prefills a draft and does not save", async () => {
   let called = false;
   const missing = await requestScanExtract({ apiKey: "", image: "abc", mediaType: "image/jpeg", fetchImpl: () => { called = true; } });
