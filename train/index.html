@@ -193,7 +193,7 @@ body.in .btn,body.in .swapb,body.in .whyb,body.in .scale button,body.in .swapbox
 body.in .btn{background:var(--glacier);color:var(--snow)}
 body.in .btn.rust{background:var(--rust)}
 body.in .btn.ghost,body.in .swapb,body.in header button{color:var(--snow);border-color:#5c6b66;background:transparent}
-body.in header button{min-height:48px;min-width:72px;font-family:var(--sans);font-size:16px;font-weight:600;letter-spacing:0}
+body.in header button{min-height:48px;min-width:72px;font-family:var(--sans);font-size:16px;font-weight:600;letter-spacing:0;border:0;border-radius:999px;background:rgba(239,238,231,.08);box-shadow:none}
 body.in .day{background:transparent;color:var(--snow);border-color:#3c4c47;display:flex;align-items:center;gap:14px;text-align:left;min-height:64px;padding:0 16px}
 body.in #paneTrain .days{display:flex;flex-direction:column;gap:8px}
 body.in .day .l{font-size:16px;letter-spacing:.02em;margin:0;color:var(--snow);font-family:var(--sans);text-transform:none}
@@ -238,6 +238,83 @@ body.in #sWork.on,body.in #sDetail.on,body.in #sGoals.on,body.in #sDone.on{overf
 .set.saved .k:after{content:none}
 @media (min-width: 800px){
   body.in header,body.in main,body.in #appNav{width:100%;max-width:720px;margin-left:auto;margin-right:auto}
+}
+body.in{background:#101413}
+body.in .btn{background:#24302c}
+body.in .day{border:0;border-radius:14px;background:#1A211F}
+.wt .big{font-size:clamp(64px,18vw,84px);font-weight:560;letter-spacing:-.03em}
+.hero .goal{margin:6px 0 0;color:#9BA2A6;font-size:15px}
+.rings{display:flex;gap:8px;align-items:flex-start;justify-content:space-between;margin-top:16px}
+.ring{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;min-width:0;flex:1;background:none;border:0;color:inherit;font:inherit;padding:0;cursor:pointer}
+.ring svg{width:68px;height:68px;flex:none}
+.ring .track{fill:none;stroke:#2A3330;stroke-width:4}
+.ring .arc{fill:none;stroke-width:4;stroke-linecap:round;transform:rotate(-90deg);transform-origin:36px 36px;transition:stroke-dasharray .5s ease}
+.ring .rl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6}
+.ring .rn{font-size:16px;font-variant-numeric:tabular-nums;margin-top:2px}
+.ring .rn small{color:#9BA2A6;font-size:12px;margin-left:2px}
+.quiet{margin:12px 0 0;color:#9BA2A6;font-size:14px;font-variant-numeric:tabular-nums}
+.acts{grid-template-columns:1.4fr .8fr}
+.act,.day,.seg button,.coverbar button,body.in .btn{border-radius:14px}
+.act:active,.day:active,#appNav button:active,body.in .btn:active{transform:scale(.98)}
+#appNav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;letter-spacing:.08em}
+.ico{width:22px;height:22px;display:block}
+.cover{background:rgba(8,10,9,.62);justify-content:flex-end;padding:0}
+.coverbar,.coverbody{background:#161C1A}
+.coverbar{border-radius:22px 22px 0 0;padding:10px 16px 0}
+.coverbody{max-height:min(70dvh,100%);padding:8px 16px max(16px,env(safe-area-inset-bottom))}
+.seg button.on{background:transparent;border-color:transparent;box-shadow:inset 0 -2px 0 var(--glacier);color:var(--snow)}
+#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:80;background:#EFEEE7;color:#17211F;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:600}
+#toast[hidden]{display:none}
+body.focus #sWork.on{display:flex;flex-direction:column}
+body.focus #exList{flex:1;min-height:0;overflow:auto}
+body.focus #startBox,body.focus #prehabBox,body.focus #readyBox,body.focus #afterBox,body.focus #wTitle{display:none !important}
+body.focus #finishBtn{display:none !important}
+body.focus #exList .ex{display:none}
+body.focus #exList .ex.on{display:block}
+#focusBar{display:none}
+body.focus #focusBar{display:block;margin-top:auto;padding-top:8px}
+.focusMeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.dots{display:flex;gap:6px;align-items:center}
+.dots i{width:6px;height:6px;border-radius:99px;background:#3A4642;display:block}
+.dots i.on{width:16px;background:var(--snow)}
+.focusActs{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px}
+.focusActs .btn{margin-top:0}
+#swapShade{position:fixed;inset:0;z-index:74;background:rgba(8,10,9,.62)}
+#swapShade[hidden]{display:none}
+body.focus .swapbox{position:fixed;z-index:76;left:0;right:0;bottom:0;margin:0;max-height:72dvh;overflow:auto;border:0;border-radius:22px 22px 0 0;background:#161C1A;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+body.focus .hd{display:none}
+body.focus .set{display:block;background:transparent;border:0;margin:0 0 8px;padding:0}
+body.focus .set:not(.checked):not(.active){display:none}
+body.focus .set>.k,body.focus .set>input,body.focus .set>select,body.focus .set>div:not(.glide){position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+body.focus .set.saved .k:after{content:none}
+.glide .sum{display:none;align-items:center;gap:8px;width:fit-content;max-width:100%;text-align:left;background:#1A211F;border:0;border-radius:999px;color:var(--snow);font:15px/1.2 var(--sans);font-variant-numeric:tabular-nums;padding:8px 14px}
+.glide .sum .tick{width:16px;height:16px;flex:none;color:#1B948C}
+body.focus .set.checked .sum{display:flex}
+.glide .card{display:none;background:linear-gradient(180deg,#24302c,#1A211F);border-radius:28px;padding:8px 12px 10px;opacity:1}
+body.focus .set.active .card{display:block;animation:glidein .35s ease}
+.glide .pair{display:flex;flex-direction:column;gap:4px}
+.glide .pair>div{text-align:center}
+.glide .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6;margin:2px 0 2px}
+.glide .dial{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center}
+.fig{width:100%;min-width:0;min-height:44px;background:none;border:0;color:var(--snow);font:560 40px/1 var(--sans);font-variant-numeric:tabular-nums;cursor:pointer}
+.step{width:48px;height:48px;border-radius:999px;border:0;background:#24302c;color:var(--snow);font:600 22px/1 var(--sans);cursor:pointer}
+.pills{display:flex;gap:6px;justify-content:center;margin-bottom:4px}
+.pills button{min-width:36px;height:40px;padding:0 8px;border:0;border-radius:999px;background:#24302c;color:#C9CFCB;font:600 15px/1 var(--sans);cursor:pointer}
+.pills button.on{background:var(--snow);color:#17211F}
+.glide .complete{margin-top:0}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.pad button{min-height:56px;border:0;border-radius:16px;background:#24302c;color:var(--snow);font:600 22px/1 var(--sans);cursor:pointer}
+#padRead{font:560 64px/1 var(--sans);font-variant-numeric:tabular-nums;text-align:center;margin:8px 0}
+@keyframes glidein{from{transform:translateY(8px)}to{transform:none}}
+body.focus .whyb,body.focus .swapb,body.focus .panelbar .btn,body.focus .focusActs .btn.ghost{border:0;border-radius:999px;background:rgba(239,238,231,.08);color:#EFEEE7;box-shadow:none}
+@media (prefers-reduced-motion:reduce){body.focus .set.active .card{animation:none}}
+body.in .swapbox .opt{background:#24302c;color:var(--snow);border-color:#3A4642}
+body.in .pane.on{animation:rise .28s ease}
+@keyframes rise{from{transform:translateY(8px)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .ring .arc{transition:none}
+  body.in .pane.on{animation:none}
+  .act:active,.day:active,#appNav button:active{transform:none}
 }
 </style>
 </head>
@@ -287,12 +364,20 @@ body.in #sWork.on,body.in #sDetail.on,body.in #sGoals.on,body.in #sDone.on{overf
       <div><div class="k">Soreness 1-5</div><select class="n" id="sore"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
     </div>
     <div id="deloadOpt"></div>
-    <button class="btn" id="startBtn">Start session</button>
+    <button class="btn rust" id="startBtn">Start session</button>
   </div>
   <div id="readyBox"></div>
   <div id="prehabBox"></div>
   <div id="exList"></div>
   <div id="afterBox"></div>
+  <div id="focusBar">
+    <div class="focusMeta"><span class="mono" id="focusCount">Exercise 1 of 1</span><span class="dots" id="focusDots"></span></div>
+    <div class="focusActs">
+      <button type="button" class="btn ghost" id="focusPrev">Back</button>
+      <button type="button" class="btn ghost" id="focusChange">Change</button>
+      <button type="button" class="btn rust" id="focusNext">Next</button>
+    </div>
+  </div>
   <button class="btn rust" id="finishBtn" style="display:none">Finish and get the readout</button>
 </section>
 
@@ -336,14 +421,24 @@ body.in #sWork.on,body.in #sDetail.on,body.in #sGoals.on,body.in #sDone.on{overf
 
 </main>
 <nav id="appNav" hidden aria-label="Sections">
-  <button type="button" data-pane="Today" class="on" aria-current="page">Today</button>
-  <button type="button" data-pane="Train" aria-current="false">Train</button>
-  <button type="button" data-pane="History" aria-current="false">History</button>
+  <button type="button" data-pane="Today" class="on" aria-current="page"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Today</span></button>
+  <button type="button" data-pane="Train" aria-current="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M8 8v8M16 8v8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Train</span></button>
+  <button type="button" data-pane="History" aria-current="false"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="6" width="14" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 4v4M16 4v4M5 10h14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>History</span></button>
 </nav>
 <div id="mealSheet" class="cover" hidden>
-  <div class="coverbar"><button type="button" id="closeMeal">Close</button><span class="mono">Log</span></div>
+  <div class="coverbar"><button type="button" id="closeMeal">Close</button><span class="mono">Meal</span></div>
   <div class="coverbody" id="foodCard"></div>
 </div>
+<div id="setSheet" class="cover" hidden>
+  <div class="coverbar"><button type="button" id="closeSet">Close</button><span class="mono" id="setTitle">Set</span></div>
+  <div class="coverbody" id="setHost"></div>
+</div>
+<div id="swapShade" hidden></div>
+<div id="padSheet" class="cover" hidden>
+  <div class="coverbar"><button type="button" id="closePad">Close</button><span class="mono" id="padLabel">Number</span></div>
+  <div class="coverbody"><div id="padRead">0</div><div class="pad" id="padKeys"></div><button type="button" class="btn rust" id="padDone">Done</button></div>
+</div>
+<div id="toast" hidden></div>
 
 <script>
 const API = "/api";
@@ -377,8 +472,192 @@ function showPane(name) {
 }
 function openMeal() { $("mealSheet").hidden = false; document.body.classList.add("sheet-open"); $("closeMeal").focus(); }
 function closeMeal() { $("mealSheet").hidden = true; document.body.classList.remove("sheet-open"); const back = $("openLog"); if (back) back.focus(); }
+function toast(msg) {
+  const t = $("toast"); if (!t) return;
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(t._t); t._t = setTimeout(() => { t.hidden = true; }, 1600);
+}
+function countTo(el, value) {
+  const to = Number(value);
+  const from = Number(state.paintedWeight);
+  state.paintedWeight = to;
+  if (!Number.isFinite(to) || !Number.isFinite(from) || from === to || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    el.textContent = fmtFood(value); return;
+  }
+  const t0 = performance.now();
+  const step = (now) => {
+    const p = Math.min(1, (now - t0) / 420);
+    el.textContent = fmtFood(Math.round((from + (to - from) * p) * 10) / 10);
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function applyFocus() {
+  const started = !!state.session;
+  document.body.classList.toggle("focus", started);
+  const bar = $("focusBar");
+  if (bar) bar.hidden = !started;
+  const cards = [...document.querySelectorAll("#exList .ex")];
+  if (!started || !cards.length) { if ($("swapShade")) $("swapShade").hidden = true; return; }
+  if (state.focusAt == null || state.focusAt >= cards.length) state.focusAt = 0;
+  if (state.focusAt < 0) state.focusAt = 0;
+  cards.forEach((c, i) => c.classList.toggle("on", i === state.focusAt));
+  $("focusCount").textContent = `Exercise ${state.focusAt + 1} of ${cards.length}`;
+  $("focusDots").innerHTML = cards.map((_, i) => `<i class="${i === state.focusAt ? "on" : ""}"></i>`).join("");
+  $("focusPrev").disabled = state.focusAt === 0;
+  $("focusNext").textContent = state.focusAt === cards.length - 1 ? "Finish" : "Next";
+  if ($("swapShade")) $("swapShade").hidden = state.swapOpen == null;
+  layoutSets(true);
+}
+function stepFocus(dir) {
+  const n = document.querySelectorAll("#exList .ex").length;
+  if (!n) return;
+  const next = (state.focusAt || 0) + dir;
+  if (next < 0 || next >= n) return;
+  state.focusAt = next;
+  applyFocus();
+}
+function openCurrentSwap() {
+  const card = document.querySelector("#exList .ex.on") || document.querySelector("#exList .ex");
+  const btn = card && card.querySelector(".swapopen");
+  if (btn) btn.click();
+}
 document.querySelectorAll("#appNav button").forEach(b => b.onclick = () => showPane(b.dataset.pane));
 $("closeMeal").onclick = closeMeal;
+$("mealSheet").onclick = (e) => { if (e.target === $("mealSheet")) closeMeal(); };
+$("focusPrev").onclick = () => stepFocus(-1);
+$("focusChange").onclick = () => openCurrentSwap();
+$("focusNext").onclick = () => {
+  const n = document.querySelectorAll("#exList .ex").length;
+  if ((state.focusAt || 0) >= n - 1) $("finishBtn").click();
+  else stepFocus(1);
+};
+$("swapShade").onclick = () => { const c = document.querySelector(".swapcancel"); if (c) c.click(); };
+let gesture = null;
+$("exList").addEventListener("pointerdown", (e) => {
+  if (!document.body.classList.contains("focus")) return;
+  if (e.target.closest("input, textarea, select, button")) return;
+  gesture = { x: e.clientX, y: e.clientY, id: e.pointerId };
+});
+$("exList").addEventListener("pointerup", (e) => {
+  if (!gesture || gesture.id !== e.pointerId) return;
+  const dx = e.clientX - gesture.x, dy = e.clientY - gesture.y;
+  gesture = null;
+  if (e.target.closest("input, textarea, select")) return;
+  if (Math.abs(dy) > Math.abs(dx) && dy < -64) { openCurrentSwap(); return; }
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 64) stepFocus(dx < 0 ? 1 : -1);
+});
+$("exList").addEventListener("pointercancel", () => { gesture = null; });
+$("exList").addEventListener("click", (e) => {
+  const row = e.target.closest(".set");
+  if (!row || !document.body.classList.contains("focus")) return;
+  const step = e.target.closest("[data-step]");
+  if (step) { bumpField(row, step.dataset.field, Number(step.dataset.step)); return; }
+  const fig = e.target.closest("[data-fig]");
+  if (fig) { openPad(row, fig.dataset.fig); return; }
+  const pill = e.target.closest("[data-pill]");
+  if (pill) { setField(row, pill.dataset.field, pill.dataset.pill); return; }
+  if (e.target.closest(".complete")) completeSet(row);
+});
+let padTarget = null;
+function closePad() { $("padSheet").hidden = true; document.body.classList.remove("sheet-open"); padTarget = null; }
+function openPad(row, field) {
+  const el = row.querySelector("." + field);
+  if (!el || el.disabled) return;
+  padTarget = { row, field };
+  $("padLabel").textContent = field === "load" ? "Weight" : field === "secs" ? "Seconds" : "Reps";
+  $("padRead").textContent = el.value || "0";
+  $("padSheet").hidden = false;
+  document.body.classList.add("sheet-open");
+}
+function padKey(k) {
+  if (!padTarget) return;
+  const el = padTarget.row.querySelector("." + padTarget.field);
+  let v = String(el.value || "");
+  if (k === "del") v = v.slice(0, -1);
+  else if (k === "." && v.includes(".")) return;
+  else v = (v + k).replace(/^0+(?=\d)/, "");
+  el.value = v;
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+  $("padRead").textContent = v || "0";
+  syncGlide(padTarget.row);
+}
+$("padKeys").innerHTML = ["1","2","3","4","5","6","7","8","9",".","0","del"].map(k => `<button type="button" data-key="${k}">${k === "del" ? "Del" : k}</button>`).join("");
+$("padKeys").onclick = (e) => { const b = e.target.closest("[data-key]"); if (b) padKey(b.dataset.key); };
+$("closePad").onclick = closePad;
+$("padDone").onclick = closePad;
+$("padSheet").onclick = (e) => { if (e.target === $("padSheet")) closePad(); };
+function fieldEl(row, field) { return row.querySelector("." + field); }
+function bumpField(row, field, delta) {
+  const el = fieldEl(row, field);
+  if (!el || el.disabled) return;
+  const next = Math.max(0, (Number(el.value) || 0) + delta);
+  el.value = String(next);
+  el.dispatchEvent(new Event("input", { bubbles: true }));
+  syncGlide(row);
+}
+function setField(row, field, value) {
+  const el = fieldEl(row, field);
+  if (!el || el.disabled) return;
+  el.value = value;
+  el.dispatchEvent(new Event(el.tagName === "SELECT" ? "change" : "input", { bubbles: true }));
+  syncGlide(row);
+}
+function syncGlide(row) {
+  const load = fieldEl(row, "load");
+  const reps = fieldEl(row, "reps") || fieldEl(row, "secs");
+  const rir = fieldEl(row, "rir");
+  row.querySelectorAll("[data-fig]").forEach(b => {
+    const el = fieldEl(row, b.dataset.fig);
+    if (el) b.textContent = el.value || "0";
+  });
+  row.querySelectorAll("[data-pill]").forEach(b => {
+    const el = fieldEl(row, b.dataset.field);
+    b.classList.toggle("on", !!el && String(el.value) === b.dataset.pill);
+  });
+  const sum = row.querySelector(".sumt");
+  if (sum) {
+    const n = row.querySelector(".k") ? row.querySelector(".k").textContent : "";
+    const lv = load && load.value !== "" ? load.value : "";
+    const rv = reps && reps.value !== "" ? reps.value : "";
+    const unit = fieldEl(row, "secs") ? "s" : "";
+    const rr = rir && rir.value !== "" ? "  RIR " + rir.value : "";
+    sum.textContent = `${n}   ${lv ? lv + " lb x " : ""}${rv}${unit}${rr}`;
+  }
+}
+function ensureGlide(row) {
+  if (row.querySelector(".glide")) return;
+  const hasLoad = !!fieldEl(row, "load");
+  const repField = fieldEl(row, "secs") ? "secs" : "reps";
+  const pills = (field) => [0,1,2,3,4,5].map(n => `<button type="button" data-pill="${n}" data-field="${field}">${n}</button>`).join("");
+  const dial = (field, step, label) => `<div><div class="lbl">${label}</div><div class="dial"><button type="button" class="step" data-step="-${step}" data-field="${field}" aria-label="Decrease ${label}">-</button><button type="button" class="fig" data-fig="${field}">0</button><button type="button" class="step" data-step="${step}" data-field="${field}" aria-label="Increase ${label}">+</button></div></div>`;
+  row.insertAdjacentHTML("beforeend", `<div class="glide"><button type="button" class="sum"><svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sumt"></span></button><div class="card"><div class="pair">${hasLoad ? dial("load", 5, "Weight") : ""}${dial(repField, 1, repField === "secs" ? "Seconds" : "Reps")}</div><div class="lbl">RIR</div><div class="pills">${pills("rir")}</div><div class="lbl">Pain</div><div class="pills">${pills("pain")}</div><button type="button" class="btn rust complete">Complete set</button></div></div>`);
+}
+function layoutSets(markSaved) {
+  if (!document.body.classList.contains("focus")) return;
+  const sets = [...document.querySelectorAll("#exList .ex.on .set")];
+  if (markSaved) sets.forEach(row => {
+    if (row.classList.contains("saved") && !row.dataset.seen) row.classList.add("checked");
+    row.dataset.seen = "1";
+  });
+  let picked = false;
+  sets.forEach(row => {
+    if (row.classList.contains("checked")) row.classList.remove("active");
+    else if (!picked) { row.classList.add("active"); picked = true; }
+    else row.classList.remove("active");
+    ensureGlide(row);
+    syncGlide(row);
+  });
+}
+function completeSet(row) {
+  const reps = fieldEl(row, "reps");
+  const secs = fieldEl(row, "secs");
+  if ((!reps || reps.value === "") && (!secs || secs.value === "")) { say("Add reps first"); return; }
+  row.classList.add("checked");
+  row.classList.remove("active");
+  saveSet(row);
+  layoutSets(false);
+}
 $("segMonth").onclick = () => showHist("month");
 $("segBoard").onclick = () => showHist("board");
 function showHist(which) {
@@ -391,7 +670,11 @@ function showHist(which) {
 }
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
+  if ($("padSheet") && !$("padSheet").hidden) { closePad(); return; }
+  if ($("waterSheet") && !$("waterSheet").hidden) { $("closeWater").click(); return; }
+  if ($("weighSheet") && !$("weighSheet").hidden) { $("closeWeigh").click(); return; }
   if (!$("mealSheet").hidden) { closeMeal(); return; }
+  if (state.swapOpen != null && document.querySelector(".swapcancel")) { document.querySelector(".swapcancel").click(); return; }
   if ($("sWork").classList.contains("on")) { $("backBtn").click(); return; }
   else if ($("sDetail").classList.contains("on")) $("detBack").click();
   else if ($("sGoals").classList.contains("on")) $("goalsBack").click();
@@ -565,7 +848,7 @@ $("detBack").onclick = () => { show("sHome"); window.scrollTo(0,0); loadCal().ca
 
 const foodPost = (body) => api("/train-food", { method:"POST", body: JSON.stringify(body) });
 function fmtFood(n) {
-  if (n == null || n === "") return "—";
+  if (n == null || n === "") return "-";
   const x = Math.round(Number(n) * 10) / 10;
   const [w, f] = String(x).split(".");
   return w.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (f ? "." + f : "");
@@ -659,6 +942,16 @@ function weightCopy(prog) {
   if (lost === 0) return `0 lb lost · ${fmtFood(Math.max(rem, 0))} lb to go`;
   return `${fmtFood(Math.abs(lost))} lb above the start · ${fmtFood(rem)} lb to go`;
 }
+function ringHtml(label, current, target, color, tap) {
+  const cur = current == null || current === "" ? null : Number(current);
+  const tgt = target == null || target === "" ? null : Number(target);
+  const pct = tgt > 0 ? Math.max(0, Math.min(1, (cur || 0) / tgt)) : 0;
+  const C = 2 * Math.PI * 28;
+  const dash = (pct * C).toFixed(1);
+  const unit = label === "Water" ? " oz" : "";
+  const inner = `<svg viewBox="0 0 72 72" aria-hidden="true"><circle class="track" cx="36" cy="36" r="28"></circle><circle class="arc" cx="36" cy="36" r="28" style="stroke:${color};stroke-dasharray:${dash} ${C.toFixed(1)}"></circle></svg><div class="rl">${label}</div><div class="rn">${cur == null ? "-" : fmtFood(cur)}${tgt > 0 ? `<small>/ ${fmtFood(tgt)}${unit}</small>` : unit}</div>`;
+  return tap ? `<button type="button" class="ring" id="openWater" aria-label="Log water">${inner}</button>` : `<div class="ring">${inner}</div>`;
+}
 function renderToday() {
   const el = $("todayCard");
   if (!el) return;
@@ -668,27 +961,55 @@ function renderToday() {
   const current = latest?.pounds ?? (p.start_bodyweight != null && p.start_bodyweight !== "" ? p.start_bodyweight : null);
   const prog = weightProgressView(p.start_bodyweight, current, p.goal_bodyweight);
   const todayLb = state.weighByDate && Object.prototype.hasOwnProperty.call(state.weighByDate, date) ? state.weighByDate[date] : (latest && latest.log_date === date ? latest.pounds : null);
-  const bar = prog.ready ? `<div class="track" style="margin-top:8px"><i style="width:${prog.pct}%"></i></div><p class="small" style="margin:6px 0 0">${weightCopy(prog)}</p>` : `<p class="small">${weightCopy(prog)}</p>`;
-  const big = prog.ready ? `<div class="big">${fmtFood(prog.current)} <small>lb</small></div><div class="small">${fmtFood(prog.start)} start · ${fmtFood(prog.goal)} goal</div>` : "";
+  const food = dayFood(date);
+  const ounces = state.hydrationByDate ? state.hydrationByDate[date] : null;
+  const big = prog.ready ? `<div class="big"><span id="wtNow">${fmtFood(prog.current)}</span> <small>lb</small></div>` : `<div class="big">-</div>`;
   const hint = latest ? "" : (p.start_bodyweight != null && p.start_bodyweight !== "" ? `<p class="small">No weigh-in yet. Current weight is the start weight until you save one.</p>` : "");
-  el.innerHTML = `<div class="instrument"><div class="hero wt"><div class="mono" style="color:var(--glacier)">Weight · ${esc(date)}</div>${big}
-    ${bar}${hint}
-    <div class="weighline"><input class="n" id="weighLb" type="number" min="0" max="1000" step="0.1" inputmode="decimal" value="${todayLb == null ? "" : todayLb}" aria-label="Today's weight in pounds"><button type="button" class="btn sm rust" id="saveWeigh">Save</button></div></div>
-    <div class="metrics">${dashHtmlFood(date, "all", true)}</div>
-    <div class="acts"><button type="button" class="act go" id="openLog">Log meal</button><button type="button" class="act" id="openTrain">Train</button></div></div>`;
+  const carbs = p.target_carbs != null && p.target_carbs !== "" ? `Carbs ${fmtFood(food.carbs)} / ${fmtFood(p.target_carbs)} g` : "";
+  const fat = p.target_fat != null && p.target_fat !== "" ? `Fat ${fmtFood(food.fat)} / ${fmtFood(p.target_fat)} g` : "";
+  el.innerHTML = `<div class="instrument"><div class="hero wt"><div class="mono">Weight</div>${big}<p class="goal">${weightCopy(prog)}</p>
+    <button type="button" class="btn ghost" id="openWeigh">Weigh in</button></div>
+    <div class="rings">${ringHtml("Calories", food.calories, p.target_calories, "#3E97BC")}${ringHtml("Protein", food.protein, p.target_protein, "#4E7B53")}${ringHtml("Water", ounces, p.target_hydration_oz, "#1B948C", true)}</div>
+    ${carbs || fat ? `<p class="quiet">${[carbs, fat].filter(Boolean).join("  ")}</p>` : ""}
+    <div class="acts"><button type="button" class="act go" id="openLog">Log meal</button><button type="button" class="act" id="openTrain">Train</button></div>
+    <div id="waterSheet" class="cover" hidden>
+      <div class="coverbar"><button type="button" id="closeWater">Close</button><span class="mono">Water</span></div>
+      <div class="coverbody"><div class="weighline"><input class="n" id="waterOz" type="number" min="0" step="1" inputmode="decimal" value="${ounces == null ? "" : ounces}" aria-label="Water ounces"><button type="button" class="btn rust" id="saveWater">Save</button></div>
+      <div class="pills" style="margin-top:12px"><button type="button" data-add="8">+8</button><button type="button" data-add="12">+12</button><button type="button" data-add="16">+16</button></div></div>
+    </div>
+    <div id="weighSheet" class="cover" hidden>
+      <div class="coverbar"><button type="button" id="closeWeigh">Close</button><span class="mono">Weigh in</span></div>
+      <div class="coverbody">${hint}<div class="weighline"><input class="n" id="weighLb" type="number" min="0" max="1000" step="0.1" inputmode="decimal" value="${todayLb == null ? "" : todayLb}" aria-label="Today's weight in pounds"><button type="button" class="btn rust" id="saveWeigh">Save</button></div></div>
+    </div></div>`;
+  $("openWater").onclick = () => { $("waterSheet").hidden = false; document.body.classList.add("sheet-open"); $("waterOz").focus(); };
+  $("closeWater").onclick = () => { $("waterSheet").hidden = true; document.body.classList.remove("sheet-open"); };
+  $("waterSheet").onclick = (e) => { if (e.target === $("waterSheet")) $("closeWater").click(); };
+  $("saveWater").onclick = () => saveWaterTotal($("waterOz").value);
+  $("waterSheet").querySelectorAll("[data-add]").forEach(b => b.onclick = () => {
+    const cur = Number($("waterOz").value || 0);
+    $("waterOz").value = String(cur + Number(b.dataset.add));
+    saveWaterTotal($("waterOz").value);
+  });
+  $("openWeigh").onclick = () => { $("weighSheet").hidden = false; document.body.classList.add("sheet-open"); $("weighLb").focus(); };
+  $("closeWeigh").onclick = () => { $("weighSheet").hidden = true; document.body.classList.remove("sheet-open"); };
+  $("weighSheet").onclick = (e) => { if (e.target === $("weighSheet")) $("closeWeigh").click(); };
   $("saveWeigh").onclick = saveWeigh;
   $("openLog").onclick = () => { openMeal(); renderFood(); };
   $("openTrain").onclick = () => showPane("Train");
+  const wt = $("wtNow");
+  if (wt && prog.ready) countTo(wt, prog.current);
 }
 async function saveWeigh() {
   const date = chicagoToday();
   say("Saving weight");
   try {
+    const prev = state.latestWeighIn && state.latestWeighIn.pounds;
     const d = await foodPost({ action: "weigh", date, pounds: $("weighLb").value });
     state.latestWeighIn = d.latest || null;
     state.weighByDate = state.weighByDate || {};
     state.weighByDate[date] = d.weigh_in ? d.weigh_in.pounds : null;
     say(d.weigh_in ? "Weight saved" : "Weight cleared");
+    if (d.weigh_in && prev != null && Number(d.weigh_in.pounds) < Number(prev)) toast("Lightest so far");
     renderToday();
   } catch (e) { say(e.message); }
 }
@@ -763,7 +1084,7 @@ function foodPanel(date, p, withDate) {
   const draft = state.mealDraft && state.mealDraft.date === date ? state.mealDraft : null;
   const photo = state.mealPhoto ? `<img class="photo" alt="Meal photo" src="${state.mealPhoto.url}">` : "";
   const list = meals.map(m => `<div class="meal" data-meal="${m.id}">${mealTable(m.items && m.items.length ? m.items : [{ name: "Meal", portion: "", calories: m.calories, protein: m.protein, carbs: m.carbs, fat: m.fat }], false)}${m.note ? `<p class="small">${esc(m.note)}</p>` : ""}<div class="rowbtns"><button type="button" class="btn sm meal-edit" data-id="${m.id}">Edit</button><button type="button" class="btn ghost sm meal-del" data-id="${m.id}">Remove</button></div></div>`).join("");
-  const draftBox = draft ? `<div class="meal" id="${p}Draft"><div class="mono" style="color:var(--glacier)">Estimate</div>${mealTable(draft.items, true)}<p class="small" id="${p}Note">${esc(draft.note || "")}</p><label class="f mono">Note</label><input id="${p}NoteIn" value="${esc(draft.note || "")}"><div class="rowbtns"><button type="button" class="btn sm" id="${p}AddLine">Add line</button></div><div class="rowbtns"><button type="button" class="btn" id="${p}Confirm">${draft.id ? "Save meal" : "Confirm"}</button><button type="button" class="btn ghost" id="${p}Discard">Discard</button></div></div>` : "";
+  const draftBox = draft ? `<div class="meal" id="${p}Draft"><div class="mono" style="color:var(--glacier)">Estimate</div>${mealTable(draft.items, true)}<p class="small" id="${p}Note">${esc(draft.note || "")}</p><label class="f mono">Note</label><input id="${p}NoteIn" value="${esc(draft.note || "")}"><div class="rowbtns"><button type="button" class="btn sm" id="${p}AddLine">Add line</button></div><div class="rowbtns"><button type="button" class="btn rust" id="${p}Confirm">${draft.id ? "Save meal" : "Confirm"}</button><button type="button" class="btn ghost" id="${p}Discard">Discard</button></div></div>` : "";
   const manualInner = meals.length ? `<p class="small">Meals are this day's total.${foodLogged(manual) ? " A typed total is still saved. Remove every meal and it shows again." : ""}</p>` : `${macroInputs(p, manual)}<button class="btn" id="${p}SaveFood">Save total</button>`;
   const oz = state.hydrationByDate[date];
   const bars = dashHtmlFood(date);
@@ -880,6 +1201,16 @@ async function removeMeal(date, id, p) {
     loadCal(calMonth).catch(()=>{});
   } catch (e) { say(e.message); }
 }
+async function saveWaterTotal(ounces) {
+  const date = chicagoToday();
+  say("Saving water");
+  try {
+    const d = await foodPost({ action: "hydration", date, ounces });
+    state.hydrationByDate[date] = d.hydration ? d.hydration.ounces : null;
+    say(d.hydration ? "Water saved" : "Water cleared");
+    renderToday();
+  } catch (e) { say(e.message); }
+}
 async function saveHydration(p, date) {
   say("Saving water");
   try {
@@ -939,6 +1270,7 @@ async function loadHome() {
 async function openDay(day) {
   say("Loading day " + day);
   const d = await api("/train-next?day=" + day);
+  if (state.focusDay !== day) { state.focusDay = day; state.focusAt = 0; }
   state = { ...state, day, session: d.open_session, exercises: d.exercises, suggestions: d.suggestions, prehab: d.prehab, readiness: d.readiness, deload: d.deload, logged: d.logged || [], leftSession: false, swapOpen: null };
   $("wDayLabel").textContent = `Workout ${day} · ${DAYNAME[day]}`; $("wTitle").textContent = DAYS[day];
   $("deloadOpt").innerHTML = d.deload.recommended ? `<label style="display:flex;gap:10px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" id="deloadChk" style="width:22px;height:22px;margin:0">Apply the recommended deload today</label>` : "";
@@ -970,6 +1302,7 @@ function renderWork() {
     if ((L.reps != null && L.reps !== "") || (L.seconds != null && L.seconds !== "")) row.classList.add("saved");
   }
   wire();
+  applyFocus();
 }
 function exHtml(ex, sg, started) {
   const name = sg.swapped && sg.name ? sg.name : ex.name;
@@ -979,16 +1312,19 @@ function exHtml(ex, sg, started) {
   const carry = kind==="carry", bw = kind==="bodyweight", pull = /pull-?up/i.test(name) && bw;
   const rx = bw ? `${sg.sets} x ${fmt(sg.reps)} reps` : carry ? (sg.swapped && sg.load==null ? `open load x ${fmt(sg.seconds)} sec, ${sg.sets} sets` : `${fmt(sg.load)} lb x ${fmt(sg.seconds)} sec, ${sg.sets} sets`) : (sg.swapped && sg.load==null ? `open load x ${fmt(sg.reps)}, ${sg.sets} sets` : `${fmt(sg.load)} x ${fmt(sg.reps)}, ${sg.sets} sets`);
   const L = sg.last;
-  const last = L ? `${L.load!=null?L.load+" x ":""}${L.reps?.length?L.reps.join("/"):L.secs?.filter(x=>x!=null).join("/")+"s"}${L.avg_rir!=null?` · RIR ${Math.round(L.avg_rir*10)/10}`:""} · pain ${L.max_pain}${L.heavy?` · heavy ${L.heavy.load}x${L.heavy.reps}`:""}${L.asymmetry!=null?` · L/R gap ${L.asymmetry}%`:""}` : "No history";
+  const reps = Array.isArray(L?.reps) && L.reps.length ? L.reps.join("/") : (Array.isArray(L?.secs) ? L.secs.filter(x => x != null).join("/") + "s" : "");
+  const lastBody = `${L && L.load!=null?L.load+" x ":""}${reps}${L && L.avg_rir!=null?` · RIR ${Math.round(L.avg_rir*10)/10}`:""}${L && L.max_pain!=null?` · pain ${L.max_pain}`:""}${L && L.heavy?` · heavy ${L.heavy.load}x${L.heavy.reps}`:""}${L && L.asymmetry!=null?` · L/R gap ${L.asymmetry}%`:""}`.replace(/^( · )+/, "");
+  const last = L ? (lastBody || "No history") : "No history";
   const light = sg.light ? `<span class="tag lt-${sg.light}">${sg.status==="pain_hold"?"PAIN HOLD":sg.status}</span>` : "";
   const heavyRow = sg.heavy ? `<div class="set heavy" data-ex="${logId}" data-set="1" data-kind="heavy"><div class="k">HVY</div><input class="n load" type="number" step="2.5" value="${fmt(sg.heavy.load)}" ${started?"":"disabled"}><input class="n reps" type="number" placeholder="${sg.heavy.reps}" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
   const benchRow = bw && sg.benchmark_due ? `<div class="todaynote">Benchmark due: one max clean set, stop when form breaks.</div><div class="set heavy" data-ex="${logId}" data-set="1" data-kind="benchmark"><div class="k">MAX</div><div></div><input class="n reps" type="number" placeholder="max" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
   const rows = [];
   const loadPh = sg.swapped && sg.load==null ? ` placeholder="load"` : "";
   for (let n=1; n<=sg.sets; n++) for (const side of (uni ? ["L","R"] : [null])) {
-    rows.push(`<div class="set" data-ex="${logId}" data-set="${n}" data-kind="work" ${side?`data-side="${side}"`:""}><div class="k">${n}${side?side:""}</div>
+    const best = sg.last && sg.last.heavy && sg.last.heavy.load != null ? sg.last.heavy.load : "";
+    rows.push(`<div class="set" data-ex="${logId}" data-set="${n}" data-kind="work" data-best="${best}" ${side?`data-side="${side}"`:""}><div class="k">${n}${side?side:""}</div>
       ${bw ? (pull ? `<input class="n assist" type="number" placeholder="assist" ${started?"":"disabled"}>` : `<div></div>`) : `<input class="n load" type="number" step="0.5" value="${fmt(sg.load)}"${loadPh} ${started?"":"disabled"}>`}
-      ${carry ? `<input class="n secs" type="number" placeholder="${fmt(sg.seconds)}" ${started?"":"disabled"}>` : `<input class="n reps" type="number" placeholder="${fmt(sg.reps)}" ${started?"":"disabled"}>`}
+      ${carry ? `<input class="n secs" type="number" value="${fmt(sg.seconds)}" placeholder="${fmt(sg.seconds)}" ${started?"":"disabled"}>` : `<input class="n reps" type="number" value="${fmt(sg.reps)}" placeholder="${fmt(sg.reps)}" ${started?"":"disabled"}>`}
       <input class="n rir" type="number" placeholder="RIR" min="0" max="5" ${started?"":"disabled"}>${painSel(started)}</div>`);
   }
   const acts = started ? `<div class="exacts">${sg.swapped?`<button type="button" class="swapb swapundo" data-planned="${ex.id}">Undo</button>`:""}<button type="button" class="swapb swapopen" data-planned="${ex.id}">Change</button></div>` : "";
@@ -1076,6 +1412,16 @@ async function saveSet(row) {
   row.classList.add("saved"); delete row.dataset.dirty;   // the row is safe the moment it is queued
   try {
     await post(item);
+    if (!row.dataset.buzzed) {
+      row.dataset.buzzed = "1";
+      if (navigator.vibrate && !matchMedia("(prefers-reduced-motion: reduce)").matches) navigator.vibrate(12);
+    }
+    const best = Number(row.dataset.best);
+    const load = Number(g("load"));
+    if (!row.dataset.praised && Number.isFinite(best) && Number.isFinite(load) && load > best) {
+      row.dataset.praised = "1";
+      toast("Best set");
+    }
     say(Number(g("pain"))>=3 ? "Saved. Pain 3+: that exercise holds." : "Saved");
   } catch (e) {
     if (!token) return;                       // signed out for real, nothing to retry
