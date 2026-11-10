@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   substitutionOptions, prescribeSwap, buildSlotSuggestion, suggest, applyToday,
   cleanMacro, hasFood, replacementKind, normalizeName, schemaMissing,
@@ -8,6 +9,7 @@ import {
   chicagoDate, weightProgress, seanWeightDefaults, profilePatchForSean, shouldSeedWeighIn, targetsOf,
   hydrationTarget, ringProgress, saveSetRow, classifySetSaveError,
   liftingGoal, monthSpan, adjacentHistoryMonth, liftingDaysFromSets, summarizeLiftingMonths, paceCopy,
+  recompSpan, pairAvg, latestBodyWeight, physiqueView, requestScanExtract, SCAN_KEY_MESSAGE,
 } from "../lib/train.js";
 
 const planned = {
@@ -374,6 +376,92 @@ test("history months run from September 2026 through this month, newest first", 
   const behind = { current: true, pace: -1 };
   assert.equal(paceCopy(ahead), "2 days ahead of pace");
   assert.equal(paceCopy(behind), "1 day behind pace");
+});
+
+const baseline = {
+  scan_date: "2026-11-05", weight_lb: 246, body_fat_pct: 26.6, lean_mass_lb: 180.6,
+  arm_left_muscle_lb: 10.6, arm_right_muscle_lb: 10.8, trunk_muscle_lb: 78.9,
+  leg_left_muscle_lb: 30.2, leg_right_muscle_lb: 30.2,
+};
+const later = {
+  scan_date: "2026-11-10", weight_lb: 243.2, body_fat_pct: 25.1, lean_mass_lb: 182.1,
+  arm_left_muscle_lb: 10.9, arm_right_muscle_lb: 11.1, trunk_muscle_lb: 79.4,
+  leg_left_muscle_lb: 30.4, leg_right_muscle_lb: 30.5,
+};
+const goals = {
+  goal_body_fat_pct: 12, goal_lean_mass_lb: 185, goal_bodyweight: 210,
+  goal_arm_muscle_lb: 11.8, goal_trunk_muscle_lb: 80, goal_leg_muscle_lb: 30.6,
+};
+
+test("recomposition moves from the baseline scan toward the physique, and stays quiet with no scans", () => {
+  assert.equal(physiqueView({ profile: goals, scans: [], latestWeighIn: null }).ready, false);
+  assert.equal(pairAvg(10.6, 10.8), 10.7);
+  assert.equal(recompSpan(26.6, 30, 12).pct, 0);
+  assert.equal(recompSpan(26.6, 10, 12).pct, 100);
+  const newerWeigh = latestBodyWeight({ log_date: "2026-11-11", pounds: 242.4 }, later);
+  assert.equal(newerWeigh.source, "weigh_in");
+  assert.equal(newerWeigh.pounds, 242.4);
+  const sameDay = latestBodyWeight({ log_date: "2026-11-10", pounds: 242.8 }, later);
+  assert.equal(sameDay.source, "weigh_in");
+  const scanWins = latestBodyWeight({ log_date: "2026-11-06", pounds: 245.6 }, later);
+  assert.equal(scanWins.source, "scan");
+  assert.equal(scanWins.pounds, 243.2);
+  const view = physiqueView({ profile: goals, scans: [later, baseline], latestWeighIn: { log_date: "2026-11-06", pounds: 245.6 } });
+  assert.equal(view.ready, true);
+  assert.equal(view.baselineDate, "2026-11-05");
+  assert.equal(view.fat.current, 25.1);
+  assert.equal(view.fat.pct, 10.3);
+  assert.equal(view.lean.pct, 34.1);
+  assert.equal(view.weight.current, 243.2);
+  assert.equal(view.weight.pct, 7.8);
+  assert.equal(view.overall, 17.4);
+  assert.equal(view.rings.arms.current, 11);
+  assert.equal(view.rings.arms.left, 10.9);
+  assert.equal(view.rings.arms.right, 11.1);
+  assert.equal(view.rings.arms.pct, 27.3);
+  assert.equal(view.rings.trunk.pct, 45.5);
+  assert.equal(view.rings.legs.pct, 75);
+  assert.equal(view.rings.arms.trend.length, 2);
+  assert.equal(view.rings.arms.trend[0].value, 10.7);
+});
+
+test("a scan photo prefills a draft and does not save", async () => {
+  let called = false;
+  const missing = await requestScanExtract({ apiKey: "", image: "abc", mediaType: "image/jpeg", fetchImpl: () => { called = true; } });
+  assert.equal(called, false);
+  assert.equal(missing.ok, false);
+  assert.equal(missing.message, SCAN_KEY_MESSAGE);
+  const draft = await requestScanExtract({
+    apiKey: "test-key",
+    image: "abcd",
+    mediaType: "image/png",
+    fetchImpl: async (_url, opts) => {
+      called = true;
+      assert.equal(opts.headers["x-api-key"], "test-key");
+      assert.equal(String(opts.body).includes("test-key"), false);
+      return { ok: true, text: async () => JSON.stringify({ content: [{ type: "text", text: '{"body_fat_pct":25.1,"lean_mass_lb":182.1,"scan_date":"2026-11-10"}' }] }) };
+    },
+  });
+  assert.equal(draft.ok, true);
+  assert.equal(draft.saved, undefined);
+  assert.equal(draft.fields.body_fat_pct, 25.1);
+  assert.equal(draft.fields.lean_mass_lb, 182.1);
+  assert.equal(draft.fields.scan_date, "2026-11-10");
+  const src = readFileSync(new URL("../api/train-body.js", import.meta.url), "utf8");
+  const extract = src.slice(src.indexOf('b.action === "extract"'), src.indexOf('b.action === "save"'));
+  assert.doesNotMatch(extract, /\bdb\(/);
+  const sql = readFileSync(new URL("../supabase/migrations/20261110_train_body_scans.sql", import.meta.url), "utf8");
+  const update = sql.slice(sql.indexOf("update public.profiles"), sql.indexOf("insert into public.body_scans"));
+  assert.match(update, /goal_body_fat_pct = 12/);
+  assert.match(update, /goal_leg_muscle_lb = 30\.6/);
+  assert.match(update, /cb555240-09c4-4038-b797-3cf0b4839939/);
+  assert.doesNotMatch(update, /start_bodyweight|goal_bodyweight/);
+  assert.match(sql, /on conflict \(user_id, scan_date\) do nothing/i);
+  assert.match(sql, /246\.0, 26\.6, 65\.5, 180\.6/);
+  assert.match(sql, /for select to authenticated/);
+  assert.match(sql, /for insert to authenticated/);
+  assert.match(sql, /for update to authenticated/);
+  assert.match(sql, /for delete to authenticated/);
 });
 
 test("food helpers treat zero as logged and reject junk", () => {

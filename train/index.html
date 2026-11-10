@@ -237,6 +237,7 @@ body.in .track{background:#2c3834}
 .cover[hidden]{display:none}
 .coverbar{flex:none;display:flex;align-items:center;gap:12px;min-height:56px}
 .coverbar button{min-height:48px;min-width:88px;font-family:var(--sans);font-size:17px;font-weight:600;background:transparent;color:var(--snow);border:1px solid #5c6b66;cursor:pointer}
+.coverbar .btn{width:auto;margin:0;text-transform:none;letter-spacing:0;font-size:16px}
 .cover .btn{font-family:var(--sans);font-size:16px;font-weight:600;letter-spacing:0;text-transform:none;min-height:48px}
 .coverbody{flex:1;min-height:0;overflow:auto}
 .seg{display:flex;gap:8px;margin-bottom:10px}
@@ -266,6 +267,42 @@ body.in .day{border:0;border-radius:14px;background:#1A211F}
 .ring .rl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6}
 .ring .rn{font-size:16px;font-variant-numeric:tabular-nums;margin-top:2px}
 .ring .rn small{color:#9BA2A6;font-size:12px;margin-left:2px}
+.recomp .overall{margin:4px 0 0;color:#C9CFCB;font-size:16px;font-weight:560}
+.recomp .fat{margin-top:8px;font-size:clamp(56px,16vw,72px);font-weight:560;letter-spacing:-.04em;line-height:.88;font-variant-numeric:tabular-nums}
+.recomp .fat small{font-size:22px;margin-left:2px;color:#9BA2A6;font-weight:500}
+.recomp .sub{margin:6px 0 0;color:#9BA2A6;font-size:15px;font-variant-numeric:tabular-nums}
+.recomp .line{margin:2px 0 0;color:#C9CFCB;font-size:16px;font-variant-numeric:tabular-nums}
+.band{margin-top:16px}
+.band .k{margin:0 0 8px;color:#9BA2A6}
+.rings.goals{margin-top:0}
+.rings.goals .ring{gap:2px}
+.dial{position:relative;width:84px;height:84px;display:block}
+.dial svg{width:84px;height:84px}
+.dial .mid{position:absolute;inset:0;display:grid;place-items:center;font-size:16px;font-weight:560;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.ring .rg{font-size:12px;color:#9BA2A6;font-variant-numeric:tabular-nums}
+.rings.daily{margin-top:4px}
+.rings.daily svg{width:58px;height:58px}
+.recomp .tools,.scanform .tools{display:flex;gap:8px;margin-top:12px}
+.recomp .tools .btn,.scanform .tools .btn{width:auto;min-width:0;flex:1;margin:0;text-transform:none;letter-spacing:0;font-size:16px;font-weight:600;border-radius:14px}
+.scanform{display:flex;flex-direction:column;gap:6px}
+.scanform .btn{margin-top:2px}
+.scanform .pair,.scanform .trio{display:grid;gap:8px}
+.scanform .pair{grid-template-columns:1fr 1fr}
+.scanform .trio{grid-template-columns:1fr 1fr 1fr}
+.scanform label{display:block;color:#9BA2A6;font-size:12px;margin-bottom:4px}
+.scanform input,.scanform textarea{width:100%;min-height:44px}
+.spark{display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #2c3834}
+.spark b{display:block;font-weight:560;font-size:16px}
+.spark .sv{color:#9BA2A6;font-size:13px;font-variant-numeric:tabular-nums}
+.spark svg{width:132px;height:40px;display:block}
+.widechart svg{width:100%;height:84px;display:block;margin-top:8px}
+.scans{margin:0 0 8px}
+.segstats{display:flex;gap:16px;margin:6px 0 12px}
+.segstats div{min-width:0}
+.segstats b{display:block;font-size:28px;font-weight:560;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.segstats span{color:#9BA2A6;font-size:12px}
+.trend{margin-top:12px}
+.trend button,.trend div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #2c3834;font-variant-numeric:tabular-nums;background:none;border-left:0;border-right:0;border-bottom:0;color:inherit;width:100%;font:inherit}
 .quiet{margin:12px 0 0;color:#9BA2A6;font-size:14px;font-variant-numeric:tabular-nums}
 .acts{grid-template-columns:1.4fr .8fr}
 .act,.day,.seg button,.coverbar button,body.in .btn{border-radius:14px}
@@ -689,6 +726,8 @@ function showHist(which) {
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   if ($("padSheet") && !$("padSheet").hidden) { closePad(); return; }
+  if ($("scanSheet") && !$("scanSheet").hidden) { $("closeScan").click(); return; }
+  if ($("segSheet") && !$("segSheet").hidden) { $("closeSeg").click(); return; }
   if ($("waterSheet") && !$("waterSheet").hidden) { $("closeWater").click(); return; }
   if ($("weighSheet") && !$("weighSheet").hidden) { $("closeWeigh").click(); return; }
   if (!$("mealSheet").hidden) { closeMeal(); return; }
@@ -816,12 +855,51 @@ function miniRing(pct, color) {
   const dash = (p * C).toFixed(1);
   return `<svg class="mring" viewBox="0 0 40 40" aria-hidden="true"><circle class="track" cx="20" cy="20" r="16"></circle><circle class="arc" cx="20" cy="20" r="16" style="stroke:${color};stroke-dasharray:${dash} ${C.toFixed(1)}"></circle></svg>`;
 }
+function sparkline(points, color) {
+  const vals = (points || []).filter((p) => p && p.value != null && Number.isFinite(Number(p.value)));
+  if (!vals.length) return "";
+  const w = 132, h = 40;
+  const min = Math.min(...vals.map((p) => Number(p.value)));
+  const max = Math.max(...vals.map((p) => Number(p.value)));
+  const span = max - min || 1;
+  const x = (i) => vals.length === 1 ? w / 2 : (i / (vals.length - 1)) * (w - 6) + 3;
+  const y = (v) => 3 + (1 - (v - min) / span) * (h - 6);
+  const d = vals.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(Number(p.value)).toFixed(1)}`).join(" ");
+  const last = vals.length - 1;
+  return `<svg viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="${x(last).toFixed(1)}" cy="${y(Number(vals[last].value)).toFixed(1)}" r="2.6" fill="${color}"></circle></svg>`;
+}
+function scansChartHtml(scans) {
+  const rows = (scans || []).slice().sort((a, b) => String(a.scan_date).localeCompare(String(b.scan_date)));
+  if (!rows.length) return "";
+  const avg = (s, l, r) => {
+    const xs = [s[l], s[r]].map(Number).filter((n) => Number.isFinite(n));
+    return xs.length ? Math.round((xs.reduce((a, b) => a + b, 0) / xs.length) * 10) / 10 : null;
+  };
+  const series = [
+    ["Body fat", rows.map((s) => ({ value: s.body_fat_pct })), "%", "#3E97BC"],
+    ["Lean mass", rows.map((s) => ({ value: s.lean_mass_lb })), "lb", "#4E7B53"],
+    ["Arms", rows.map((s) => ({ value: avg(s, "arm_left_muscle_lb", "arm_right_muscle_lb") })), "lb", "#3E97BC"],
+    ["Trunk", rows.map((s) => ({ value: s.trunk_muscle_lb })), "lb", "#4E7B53"],
+    ["Legs", rows.map((s) => ({ value: avg(s, "leg_left_muscle_lb", "leg_right_muscle_lb") })), "lb", "#1B948C"],
+  ];
+  const line = (name, points, unit, color) => {
+    const nums = points.map((p) => p.value).filter((v) => v != null && v !== "");
+    if (!nums.length) return "";
+    const first = fmtFood(nums[0]), last = fmtFood(nums[nums.length - 1]);
+    const caption = nums.length > 1 ? `${first} to ${last} ${unit}` : `${last} ${unit}`;
+    return `<div class="spark"><div><b>${name}</b><div class="sv">${caption}</div></div>${sparkline(points, color)}</div>`;
+  };
+  return `<section class="scans" aria-label="Body scans"><div class="mono">Scans</div>${series.map((s) => line(...s)).join("")}</section>`;
+}
 function renderMonthList() {
   const el = $("monthList");
   if (!el) return;
   const rows = state.liftingMonths || [];
-  if (!rows.length) { el.innerHTML = `<div class="small">Loading</div>`; return; }
-  el.innerHTML = `<p class="quiet histnote">Five lifting days each week.</p><div class="mlist">${rows.map(monthRowHtml).join("")}</div>`;
+  const chart = scansChartHtml(state.scans || []);
+  const list = rows.length
+    ? `<p class="quiet histnote">Five lifting days each week.</p><div class="mlist">${rows.map(monthRowHtml).join("")}</div>`
+    : (chart ? "" : `<div class="small">Loading</div>`);
+  el.innerHTML = chart + list;
   el.querySelectorAll("[data-month]").forEach(b => b.onclick = () => loadCal(b.dataset.month, { show: true }).catch(() => { $("cal").innerHTML = `<div class="small">Calendar unavailable.</div>`; say("Calendar unavailable"); }));
 }
 function monthRowHtml(row) {
@@ -952,6 +1030,7 @@ async function openSession(sid) {
 $("detBack").onclick = () => { show("sHome"); window.scrollTo(0,0); loadCal().catch(()=>{}); renderFood(); };
 
 const foodPost = (body) => api("/train-food", { method:"POST", body: JSON.stringify(body) });
+const bodyPost = (body) => api("/train-body", { method:"POST", body: JSON.stringify(body) });
 function fmtFood(n) {
   if (n == null || n === "") return "-";
   const x = Math.round(Number(n) * 10) / 10;
@@ -1062,6 +1141,63 @@ function ringHtml(label, current, target, color, tap) {
   const inner = `<svg viewBox="0 0 72 72" aria-hidden="true"><circle class="track" cx="36" cy="36" r="28"></circle><circle class="arc" cx="36" cy="36" r="28" style="stroke:${color};stroke-dasharray:${dash} ${C.toFixed(1)}"></circle></svg><div class="rl">${label}</div><div class="rn">${cur == null ? "-" : fmtFood(cur)}${tgt > 0 ? `<small>/ ${fmtFood(tgt)}${unit}</small>` : unit}</div>`;
   return tap ? `<button type="button" class="ring" id="openWater" aria-label="Log water">${inner}</button>` : `<div class="ring">${inner}</div>`;
 }
+function recompHero(phy) {
+  const fat = phy.fat || {};
+  const lean = phy.lean || {};
+  const weight = phy.weight || {};
+  const rings = phy.rings || {};
+  const fatNow = fat.current != null ? fmtFood(fat.current) : "-";
+  const fatSub = fat.ready ? `from ${fmtFood(fat.baseline)} toward ${fmtFood(fat.goal)}` : "";
+  const leanLine = lean.current != null ? `Lean ${fmtFood(lean.current)} lb toward ${fmtFood(lean.goal)}` : "";
+  const wtLine = weight.current != null ? `Weight ${fmtFood(weight.current)} lb toward ${fmtFood(weight.goal)}` : "";
+  return `<div class="hero recomp"><div class="mono">Recomposition</div>
+    <p class="overall">${fmtFood(phy.overall)}% toward the goal physique</p>
+    <div class="fat" id="fatNow">${fatNow}<small>%</small></div>
+    <p class="sub">${fatSub}</p>
+    ${leanLine ? `<p class="line">${leanLine}</p>` : ""}
+    ${wtLine ? `<p class="line">${wtLine}</p>` : ""}
+    <div class="band"><div class="mono k">Muscle</div><div class="rings goals">${goalRingHtml("arms", rings.arms || {})}${goalRingHtml("trunk", rings.trunk || {})}${goalRingHtml("legs", rings.legs || {})}</div></div>
+    <div class="tools"><button type="button" class="btn ghost" id="openWeigh">Weigh in</button><button type="button" class="btn ghost" id="openScan">Add scan</button></div>
+  </div>`;
+}
+function scanField(key, label) {
+  return `<div><label for="scan-${key}">${label}</label><input class="n" id="scan-${key}" data-scan="${key}" type="number" step="0.1" inputmode="decimal"></div>`;
+}
+function scanSheetHtml() {
+  const main = [["weight_lb","Weight"],["body_fat_pct","Body fat %"],["lean_mass_lb","Lean mass"],["skeletal_muscle_lb","Skeletal muscle"],["visceral_fat","Visceral fat"]];
+  const seg = [["arm_left_muscle_lb","Arm L"],["arm_right_muscle_lb","Arm R"],["leg_left_muscle_lb","Leg L"],["leg_right_muscle_lb","Leg R"]];
+  const more = [["fat_mass_lb","Fat mass"],["muscle_lb","Muscle"],["body_water_lb","Body water"],["protein_lb","Protein"],["minerals_lb","Minerals"],["bmr_kcal","BMR"],["bmi","BMI"],["body_score","Score"],["arm_left_fat_lb","Arm fat L"],["arm_right_fat_lb","Arm fat R"],["trunk_fat_lb","Trunk fat"],["leg_left_fat_lb","Leg fat L"],["leg_right_fat_lb","Leg fat R"]];
+  return `<div id="scanSheet" class="cover" hidden>
+    <div class="coverbar"><button type="button" id="closeScan">Close</button><span class="mono">Add scan</span><button type="button" class="btn rust" id="saveScan">Save</button></div>
+    <div class="coverbody"><form class="scanform" id="scanForm">
+      <div><label for="scanDate">Date</label><input id="scanDate" type="date" aria-label="Scan date"></div>
+      <button type="button" class="btn ghost" id="scanUpload">Upload report</button>
+      <div class="pair">${main.slice(0, 2).map((f) => scanField(...f)).join("")}</div>
+      <div class="pair">${main.slice(2, 4).map((f) => scanField(...f)).join("")}</div>
+      ${scanField("visceral_fat", "Visceral fat")}
+      <div class="mono">Segmental muscle</div>
+      <div class="pair">${seg.slice(0, 2).map((f) => scanField(...f)).join("")}</div>
+      ${scanField("trunk_muscle_lb", "Trunk")}
+      <div class="pair">${seg.slice(2).map((f) => scanField(...f)).join("")}</div>
+      <details class="more"><summary>Optional</summary><div class="pair" style="margin-top:8px">${more.map((f) => scanField(...f)).join("")}</div>
+        <div style="margin-top:8px"><label for="scanNotes">Notes</label><textarea id="scanNotes" rows="2"></textarea></div>
+      </details>
+      <p class="small" id="scanNote"></p>
+      <input id="scanFile" type="file" accept="image/*" hidden>
+    </form></div>
+  </div>`;
+}
+function goalRingHtml(key, ring) {
+  const ready = ring && ring.ready;
+  const pct = ready ? Math.max(0, Math.min(1, Number(ring.pct) / 100)) : 0;
+  const C = 2 * Math.PI * 28;
+  const dash = (pct * C).toFixed(1);
+  const cur = ring && ring.current != null ? fmtFood(ring.current) : "-";
+  const goal = ring && ring.goal != null ? fmtFood(ring.goal) : "";
+  const color = key === "arms" ? "#3E97BC" : key === "trunk" ? "#4E7B53" : "#1B948C";
+  const label = (ring && ring.label) || key;
+  return `<button type="button" class="ring goal" data-seg="${key}" aria-label="${esc(label)}, ${cur} pounds, goal ${goal}"><span class="dial"><svg viewBox="0 0 72 72" aria-hidden="true"><circle class="track" cx="36" cy="36" r="28"></circle><circle class="arc" cx="36" cy="36" r="28" style="stroke:${color};stroke-dasharray:${dash} ${C.toFixed(1)}"></circle></svg><span class="mid">${cur}</span></span><div class="rl">${esc(label)}</div><div class="rg">${goal ? "goal " + goal : ""}</div></button>`;
+}
 function renderToday() {
   const el = $("todayCard");
   if (!el) return;
@@ -1076,11 +1212,13 @@ function renderToday() {
   const big = prog.ready ? `<div class="big"><span id="wtNow">${fmtFood(prog.current)}</span> <small>lb</small></div>` : `<div class="big">-</div>`;
   const hint = latest ? "" : (p.start_bodyweight != null && p.start_bodyweight !== "" ? `<p class="small">No weigh-in yet. Current weight is the start weight until you save one.</p>` : "");
   const carbs = p.target_carbs != null && p.target_carbs !== "" ? `Carbs ${fmtFood(food.carbs)} / ${fmtFood(p.target_carbs)} g` : "";
-  const fat = p.target_fat != null && p.target_fat !== "" ? `Fat ${fmtFood(food.fat)} / ${fmtFood(p.target_fat)} g` : "";
-  el.innerHTML = `<div class="instrument"><div class="hero wt"><div class="mono">Weight</div>${big}<p class="goal">${weightCopy(prog)}</p>
-    <button type="button" class="btn ghost" id="openWeigh">Weigh in</button></div>
-    <div class="rings">${ringHtml("Calories", food.calories, p.target_calories, "#3E97BC")}${ringHtml("Protein", food.protein, p.target_protein, "#4E7B53")}${ringHtml("Water", ounces, hydrationTarget(p.target_hydration_oz), "#1B948C", true)}</div>
-    ${carbs || fat ? `<p class="quiet">${[carbs, fat].filter(Boolean).join("  ")}</p>` : ""}
+  const fatLine = p.target_fat != null && p.target_fat !== "" ? `Fat ${fmtFood(food.fat)} / ${fmtFood(p.target_fat)} g` : "";
+  const phy = state.physique;
+  const recomp = phy && phy.ready;
+  const hero = recomp ? recompHero(phy) : `<div class="hero wt"><div class="mono">Weight</div>${big}<p class="goal">${weightCopy(prog)}</p><button type="button" class="btn ghost" id="openWeigh">Weigh in</button>${state.scansReady ? `<button type="button" class="btn ghost" id="openScan">Add scan</button>` : ""}</div>`;
+  el.innerHTML = `<div class="instrument">${hero}
+    <div class="band"><div class="mono k">Today</div><div class="rings daily">${ringHtml("Calories", food.calories, p.target_calories, "#3E97BC")}${ringHtml("Protein", food.protein, p.target_protein, "#4E7B53")}${ringHtml("Water", ounces, hydrationTarget(p.target_hydration_oz), "#1B948C", true)}</div></div>
+    ${carbs || fatLine ? `<p class="quiet">${[carbs, fatLine].filter(Boolean).join("  ")}</p>` : ""}
     <div class="acts"><button type="button" class="act go" id="openLog">Log meal</button><button type="button" class="act" id="openTrain">Train</button></div>
     <div id="waterSheet" class="cover" hidden>
       <div class="coverbar"><button type="button" id="closeWater">Close</button><span class="mono">Water</span></div>
@@ -1090,7 +1228,12 @@ function renderToday() {
     <div id="weighSheet" class="cover" hidden>
       <div class="coverbar"><button type="button" id="closeWeigh">Close</button><span class="mono">Weigh in</span></div>
       <div class="coverbody">${hint}<div class="weighline"><input class="n" id="weighLb" type="number" min="0" max="1000" step="0.1" inputmode="decimal" value="${todayLb == null ? "" : todayLb}" aria-label="Today's weight in pounds"><button type="button" class="btn rust" id="saveWeigh">Save</button></div></div>
-    </div></div>`;
+    </div>
+    <div id="segSheet" class="cover" hidden>
+      <div class="coverbar"><button type="button" id="closeSeg">Close</button><span class="mono" id="segTitle">Muscle</span></div>
+      <div class="coverbody" id="segBody"></div>
+    </div>
+    ${state.scansReady ? scanSheetHtml() : ""}</div>`;
   $("openWater").onclick = () => { $("waterSheet").hidden = false; document.body.classList.add("sheet-open"); $("waterOz").focus(); };
   $("closeWater").onclick = () => { $("waterSheet").hidden = true; document.body.classList.remove("sheet-open"); };
   $("waterSheet").onclick = (e) => { if (e.target === $("waterSheet")) $("closeWater").click(); };
@@ -1106,8 +1249,89 @@ function renderToday() {
   $("saveWeigh").onclick = saveWeigh;
   $("openLog").onclick = () => { openMeal(); renderFood(); };
   $("openTrain").onclick = () => showPane("Train");
+  document.querySelectorAll(".ring.goal").forEach(b => b.onclick = () => openSeg(b.dataset.seg));
+  if ($("openScan")) $("openScan").onclick = openScanSheet;
+  if ($("closeSeg")) {
+    $("closeSeg").onclick = () => { $("segSheet").hidden = true; document.body.classList.remove("sheet-open"); };
+    $("segSheet").onclick = (e) => { if (e.target === $("segSheet")) $("closeSeg").click(); };
+  }
+  if ($("closeScan")) {
+    $("closeScan").onclick = () => { $("scanSheet").hidden = true; document.body.classList.remove("sheet-open"); };
+    $("scanSheet").onclick = (e) => { if (e.target === $("scanSheet")) $("closeScan").click(); };
+    $("saveScan").onclick = () => saveScanForm();
+    $("scanUpload").onclick = () => $("scanFile").click();
+    $("scanFile").onchange = () => readScanReport($("scanFile").files && $("scanFile").files[0]);
+    const form = $("scanForm");
+    if (form) form.onsubmit = (e) => { e.preventDefault(); saveScanForm(); };
+  }
   const wt = $("wtNow");
   if (wt && prog.ready) countTo(wt, prog.current);
+}
+function openSeg(key) {
+  const ring = state.physique && state.physique.rings && state.physique.rings[key];
+  if (!ring || !$("segSheet")) return;
+  $("segTitle").textContent = ring.label || "Muscle";
+  const sides = ring.left != null || ring.right != null
+    ? `<div class="segstats"><div><b>${fmtFood(ring.left)}</b><span>Left</span></div><div><b>${fmtFood(ring.right)}</b><span>Right</span></div><div><b>${fmtFood(ring.current)}</b><span>Average</span></div></div>`
+    : `<div class="segstats"><div><b>${fmtFood(ring.current)}</b><span>Now</span></div></div>`;
+  const from = ring.ready ? `<p class="sub">from ${fmtFood(ring.baseline)} toward ${fmtFood(ring.goal)}</p>` : "";
+  const trend = (ring.trend || []).map((p) => `<div><span>${esc(p.date)}</span><span>${fmtFood(p.value)} lb</span></div>`).join("");
+  $("segBody").innerHTML = `${sides}${from}<div class="widechart">${sparkline(ring.trend, "#3E97BC")}</div><div class="trend">${trend}</div>`;
+  $("segSheet").hidden = false;
+  document.body.classList.add("sheet-open");
+}
+function openScanSheet() {
+  if (!$("scanSheet")) return;
+  $("scanDate").value = chicagoToday();
+  $("scanNote").textContent = "";
+  if ($("scanNotes")) $("scanNotes").value = "";
+  document.querySelectorAll("[data-scan]").forEach((el) => { el.value = ""; });
+  $("scanSheet").hidden = false;
+  document.body.classList.add("sheet-open");
+  $("scanDate").focus();
+}
+function fillScan(fields) {
+  if (!fields) return;
+  if (fields.scan_date) $("scanDate").value = fields.scan_date;
+  document.querySelectorAll("[data-scan]").forEach((el) => {
+    const v = fields[el.dataset.scan];
+    if (v != null && v !== "") el.value = v;
+  });
+}
+async function saveScanForm() {
+  if (!$("scanDate")) return;
+  const body = { action: "save", scan_date: $("scanDate").value, source: "starfit", notes: $("scanNotes") ? $("scanNotes").value : "" };
+  document.querySelectorAll("[data-scan]").forEach((el) => { body[el.dataset.scan] = el.value; });
+  say("Saving scan");
+  try {
+    const d = await bodyPost(body);
+    state.scans = d.scans || [];
+    state.physique = d.physique || { ready: false };
+    state.scansReady = true;
+    if ($("closeScan")) $("closeScan").click();
+    renderToday();
+    if (typeof histView !== "undefined" && histView === "list") renderMonthList();
+    say("Scan saved");
+  } catch (e) { say(e.message); if ($("scanNote")) $("scanNote").textContent = e.message; }
+}
+async function readScanReport(file) {
+  if (!file) return;
+  $("scanFile").value = "";
+  say("Reading report");
+  try {
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(new Error("Could not read that photo."));
+      reader.readAsDataURL(file);
+    });
+    const media = (dataUrl.match(/^data:([^;]+);/) || [])[1] || file.type;
+    const d = await bodyPost({ action: "extract", image: dataUrl, media_type: media });
+    if (!d.ok) { $("scanNote").textContent = d.message || "Type the scan."; say("Ready"); return; }
+    fillScan(d.fields || {});
+    $("scanNote").textContent = "Check the numbers, then save.";
+    say("Ready");
+  } catch (e) { $("scanNote").textContent = e.message; say(e.message); }
 }
 async function saveWeigh() {
   const date = chicagoToday();
@@ -1351,6 +1575,9 @@ async function loadHome() {
   state.nutritionByDate = state.nutritionByDate || {};
   if (!state.foodDate) state.foodDate = chicagoToday();
   state.latestWeighIn = d.latest_weigh_in || null;
+  state.scans = d.body_scans || [];
+  state.scansReady = d.scans_ready !== false;
+  state.physique = d.physique || { ready: false };
   state.weighByDate = state.weighByDate || {};
   if (d.nutrition_date) {
     state.nutritionByDate[d.nutrition_date] = d.nutrition_today || null;

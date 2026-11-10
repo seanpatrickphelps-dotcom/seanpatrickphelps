@@ -1,7 +1,7 @@
 // GET /api/train-next?day=1   -> today's prescription for that day, prehab, readiness-adjusted, plus deload check
 // GET /api/train-next?board=1 -> dashboard and trend scoreboard for every exercise with a goal
 // Header: Authorization: Bearer <access_token>
-import { json, db, requireUser, ensureSeeded, scoreboard, deloadCheck, historyByExercise, readiness, sessionStats, PREHAB, buildSlotSuggestion, migrationError, targetsOf, schemaMissing, chicagoDate, weightProgress, profilePatchForSean, shouldSeedWeighIn, seanWeightDefaults, liftingDaysFromSets, summarizeLiftingMonths } from "../lib/train.js";
+import { json, db, requireUser, ensureSeeded, scoreboard, deloadCheck, historyByExercise, readiness, sessionStats, PREHAB, buildSlotSuggestion, migrationError, targetsOf, schemaMissing, chicagoDate, weightProgress, profilePatchForSean, shouldSeedWeighIn, seanWeightDefaults, liftingDaysFromSets, summarizeLiftingMonths, physiqueView } from "../lib/train.js";
 
 // Consecutive planned sessions finished without missing two in a row (Rule 07: never miss twice).
 function streakOf(sessions) {
@@ -76,7 +76,10 @@ export default async function handler(req, res) {
       const weigh_in_today = (await optionalFood(`weigh_ins?user_id=eq.${uid}&log_date=eq.${today}&select=log_date,pounds`))?.[0] || null;
       const latest_weigh_in = (await optionalFood(`weigh_ins?user_id=eq.${uid}&select=log_date,pounds&order=log_date.desc&limit=1`))?.[0] || null;
       const weight = weightProgress({ start: profile?.start_bodyweight, current: latest_weigh_in?.pounds ?? profile?.start_bodyweight ?? null, goal: profile?.goal_bodyweight });
-      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all.filter((e) => !e.is_library), open_session: openAny, streak: streakOf(sessions), nutrition_today, meals_today, hydration_today, nutrition_date: today, weigh_in_today, latest_weigh_in, weight });
+      const body_scans = await optionalFood(`body_scans?user_id=eq.${uid}&select=*&order=scan_date.asc`);
+      const scans_ready = Array.isArray(body_scans);
+      const physique = scans_ready ? physiqueView({ profile, scans: body_scans, latestWeighIn: latest_weigh_in }) : { ready: false };
+      return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, cards, deload, exercises: all.filter((e) => !e.is_library), open_session: openAny, streak: streakOf(sessions), nutrition_today, meals_today, hydration_today, nutrition_date: today, weigh_in_today, latest_weigh_in, weight, body_scans: body_scans || [], scans_ready, physique });
     }
 
     // Calendar: every session in a month, one line each.
