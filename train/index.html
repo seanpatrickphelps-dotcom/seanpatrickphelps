@@ -268,12 +268,18 @@ body.in .day{border:0;border-radius:14px;background:#1A211F}
 .ring .rn{font-size:16px;font-variant-numeric:tabular-nums;margin-top:2px}
 .ring .rn small{color:#9BA2A6;font-size:12px;margin-left:2px}
 .recomp .overall{margin:4px 0 0;color:#C9CFCB;font-size:16px;font-weight:560}
-.recomp .fat{margin-top:8px;font-size:clamp(56px,16vw,72px);font-weight:560;letter-spacing:-.04em;line-height:.88;font-variant-numeric:tabular-nums}
+.recomp .fat{margin-top:6px;font-size:clamp(48px,13vw,60px);font-weight:560;letter-spacing:-.04em;line-height:.88;font-variant-numeric:tabular-nums}
 .recomp .fat small{font-size:22px;margin-left:2px;color:#9BA2A6;font-weight:500}
 .recomp .sub{margin:6px 0 0;color:#9BA2A6;font-size:15px;font-variant-numeric:tabular-nums}
 .recomp .line{margin:2px 0 0;color:#C9CFCB;font-size:16px;font-variant-numeric:tabular-nums}
+.fatbar{display:block;width:100%;margin-top:10px;padding:2px 0 0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;min-height:44px}
+.fatbar .fatline{display:block;font-size:16px;font-variant-numeric:tabular-nums;color:#C9CFCB}
+.fatbar .win,.since .win{color:#4E7B53;font-weight:560}
+.fattrack{display:block;height:6px;margin-top:8px;border-radius:999px;background:#2A3330;overflow:hidden}
+.fattrack i{display:block;height:100%;background:#4E7B53;border-radius:999px}
+.since{margin:4px 0 0;color:#9BA2A6;font-size:14px;font-variant-numeric:tabular-nums}
 .band{margin-top:16px}
-.recomp .band{margin-top:28px}
+.recomp .band{margin-top:16px}
 .band .k{margin:0 0 8px;color:#9BA2A6}
 .rings.goals{margin-top:0}
 .rings.goals .ring{gap:2px}
@@ -282,8 +288,9 @@ body.in .day{border:0;border-radius:14px;background:#1A211F}
 .dial .mid{position:absolute;inset:0;display:grid;place-items:center;font-size:15px;font-weight:560;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
 .ring .rg{font-size:12px;color:#9BA2A6;font-variant-numeric:tabular-nums}
 .rings.daily{margin-top:4px}
-.rings.daily svg{width:58px;height:58px}
-.recomp .tools,.scanform .tools{display:flex;gap:8px;margin-top:12px}
+.rings.daily svg{width:52px;height:52px}
+.instrument .act{min-height:56px}
+.recomp .tools,.scanform .tools{display:flex;gap:8px;margin-top:8px}
 .recomp .tools .btn,.scanform .tools .btn{width:auto;min-width:0;flex:1;margin:0;text-transform:none;letter-spacing:0;font-size:16px;font-weight:600;border-radius:14px}
 .scanform{display:flex;flex-direction:column;gap:6px}
 .scanform .btn{margin-top:2px}
@@ -872,7 +879,9 @@ function sparkline(points, color) {
   const y = (v) => 3 + (1 - (v - min) / span) * (h - 6);
   const d = vals.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(Number(p.value)).toFixed(1)}`).join(" ");
   const last = vals.length - 1;
-  return `<svg viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="${x(last).toFixed(1)}" cy="${y(Number(vals[last].value)).toFixed(1)}" r="2.6" fill="${color}"></circle></svg>`;
+  const marks = vals.length === 1 ? [0] : [0, last];
+  const dots = marks.map((i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(Number(vals[i].value)).toFixed(1)}" r="${i === last ? 2.6 : 2}" fill="${color}"></circle>`).join("");
+  return `<svg viewBox="0 0 ${w} ${h}" aria-hidden="true"><path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>${dots}</svg>`;
 }
 function scansChartHtml(scans) {
   const rows = (scans || []).slice().sort((a, b) => String(a.scan_date).localeCompare(String(b.scan_date)));
@@ -883,6 +892,8 @@ function scansChartHtml(scans) {
   };
   const series = [
     ["Body fat", rows.map((s) => ({ value: s.body_fat_pct })), "%", "#3E97BC"],
+    ["Fat mass", rows.map((s) => ({ value: s.fat_mass_lb })), "lb", "#4E7B53"],
+    ["Visceral fat", rows.map((s) => ({ value: s.visceral_fat })), "", "#1B948C"],
     ["Lean mass", rows.map((s) => ({ value: s.lean_mass_lb })), "lb", "#4E7B53"],
     ["Arms", rows.map((s) => ({ value: avg(s, "arm_left_muscle_lb", "arm_right_muscle_lb") })), "lb", "#3E97BC"],
     ["Trunk", rows.map((s) => ({ value: s.trunk_muscle_lb })), "lb", "#4E7B53"],
@@ -893,7 +904,8 @@ function scansChartHtml(scans) {
     if (!nums.length) return "";
     const fmt = unit === "lb" ? fmtLb : fmtFood;
     const first = fmt(nums[0]), last = fmt(nums[nums.length - 1]);
-    const caption = nums.length > 1 ? `${first} to ${last} ${unit}` : `${last} ${unit}`;
+    const suffix = unit ? " " + unit : "";
+    const caption = nums.length > 1 ? `${first} to ${last}${suffix}` : `${last}${suffix}`;
     return `<div class="spark"><div><b>${name}</b><div class="sv">${caption}</div></div>${sparkline(points, color)}</div>`;
   };
   return `<section class="scans" aria-label="Body scans"><div class="mono">Scans</div>${series.map((s) => line(...s)).join("")}</section>`;
@@ -1175,6 +1187,8 @@ function recompHero(phy) {
     <p class="sub">${fatSub}</p>
     ${leanLine ? `<p class="line">${leanLine}</p>` : ""}
     ${wtLine ? `<p class="line">${wtLine}</p>` : ""}
+    ${fatMassBlock(phy.fatMass)}
+    ${sinceLine(phy.since)}
     <div class="band"><div class="mono k">Muscle</div><div class="rings goals">${goalRingHtml("arms", rings.arms || {})}${goalRingHtml("trunk", rings.trunk || {})}${goalRingHtml("legs", rings.legs || {})}</div></div>
     <div class="tools"><button type="button" class="btn ghost" id="openWeigh">Weigh in</button><button type="button" class="btn ghost" id="openScan">Add scan</button></div>
   </div>`;
@@ -1205,6 +1219,27 @@ function scanSheetHtml() {
       <input id="scanFile" type="file" accept="image/*" hidden>
     </form></div>
   </div>`;
+}
+function fatMassBlock(mass) {
+  if (!mass || mass.current == null) return "";
+  let move = "";
+  if (mass.change != null && mass.change < 0) move = `<span class="win">down ${fmtLb(-mass.change)} lb</span>`;
+  else if (mass.change > 0) move = `up ${fmtLb(mass.change)} lb`;
+  else if (mass.change === 0) move = "even";
+  const toward = mass.goal != null ? `toward ${fmtLb(mass.goal)}` : "";
+  const text = [`Fat ${fmtLb(mass.current)} lb`, move, toward].filter(Boolean).join(", ");
+  const bar = mass.ready ? `<span class="fattrack" aria-hidden="true"><i style="width:${Math.max(0, Math.min(100, Number(mass.pct) || 0))}%"></i></span>` : "";
+  return `<button type="button" class="fatbar" id="openFat" aria-label="${text.replace(/<[^>]+>/g, "")}">${`<span class="fatline">${text}</span>`}${bar}</button>`;
+}
+function sinceLine(since) {
+  if (!since || !since.date) return "";
+  const bits = [`since ${shortDate(since.date)}`];
+  if (since.fatLost > 0) bits.push(`<span class="win">${fmtLb(since.fatLost)} lb fat lost</span>`);
+  else if (since.fatLost < 0) bits.push(`${fmtLb(-since.fatLost)} lb fat gained`);
+  if (since.leanGained > 0) bits.push(`<span class="win">${fmtLb(since.leanGained)} lb lean gained</span>`);
+  else if (since.leanGained < 0) bits.push(`${fmtLb(-since.leanGained)} lb lean lost`);
+  if (bits.length < 2) return "";
+  return `<p class="since">${bits.join(" · ")}</p>`;
 }
 function goalRingHtml(key, ring) {
   const ready = ring && ring.ready;
@@ -1269,6 +1304,7 @@ function renderToday() {
   $("openLog").onclick = () => { openMeal(); renderFood(); };
   $("openTrain").onclick = () => showPane("Train");
   document.querySelectorAll(".ring.goal").forEach(b => b.onclick = () => openSeg(b.dataset.seg));
+  if ($("openFat")) $("openFat").onclick = openFat;
   if ($("openScan")) $("openScan").onclick = openScanSheet;
   if ($("closeSeg")) {
     $("closeSeg").onclick = () => { $("segSheet").hidden = true; document.body.classList.remove("sheet-open"); };
@@ -1285,6 +1321,19 @@ function renderToday() {
   }
   const wt = $("wtNow");
   if (wt && prog.ready) countTo(wt, prog.current);
+}
+function openFat() {
+  const fat = state.physique && state.physique.fatMass;
+  if (!fat || fat.current == null || !$("segSheet")) return;
+  $("segTitle").textContent = "Fat";
+  const parts = fat.parts || {};
+  const row = (label, value) => value == null ? "" : `<div><span>${label}</span><span>${fmtLb(value)} lb</span></div>`;
+  const from = fat.baseline != null ? `<p class="sub">from ${fmtLb(fat.baseline)}${fat.goal != null ? ` toward ${fmtLb(fat.goal)}` : ""}</p>` : "";
+  const segs = row("Arm L", parts.armLeft) + row("Arm R", parts.armRight) + row("Trunk", parts.trunk) + row("Leg L", parts.legLeft) + row("Leg R", parts.legRight);
+  const trend = (fat.trend || []).map((p) => `<div><span>${esc(shortDate(p.date))}</span><span>${fmtLb(p.value)} lb</span></div>`).join("");
+  $("segBody").innerHTML = `<div class="segstats"><div><b>${fmtLb(fat.current)}</b><span>Fat mass</span></div></div>${from}<div class="trend">${segs}</div><div class="widechart">${sparkline(fat.trend, "#4E7B53")}</div><div class="trend">${trend}</div>`;
+  $("segSheet").hidden = false;
+  document.body.classList.add("sheet-open");
 }
 function openSeg(key) {
   const ring = state.physique && state.physique.rings && state.physique.rings[key];

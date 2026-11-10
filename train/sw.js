@@ -1,5 +1,5 @@
-// train-v17: tenths on pounds, short scan dates, pill sheet headers.
-const VERSION = "train-v17";
+// train-v18: fat mass on the hero, with a loss bar and scan trends.
+const VERSION = "train-v18";
 const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {

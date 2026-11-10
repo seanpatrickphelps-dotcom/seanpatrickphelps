@@ -9,7 +9,7 @@ import {
   chicagoDate, weightProgress, seanWeightDefaults, profilePatchForSean, shouldSeedWeighIn, targetsOf,
   hydrationTarget, ringProgress, saveSetRow, classifySetSaveError,
   liftingGoal, monthSpan, adjacentHistoryMonth, liftingDaysFromSets, summarizeLiftingMonths, paceCopy,
-  recompSpan, pairAvg, latestBodyWeight, physiqueView, requestScanExtract, SCAN_KEY_MESSAGE,
+  recompSpan, pairAvg, latestBodyWeight, physiqueView, goalFatMassLb, requestScanExtract, SCAN_KEY_MESSAGE,
 } from "../lib/train.js";
 
 const planned = {
@@ -423,6 +423,29 @@ test("recomposition moves from the baseline scan toward the physique, and stays 
   assert.equal(view.rings.legs.pct, 75);
   assert.equal(view.rings.arms.trend.length, 2);
   assert.equal(view.rings.arms.trend[0].value, 10.7);
+  assert.equal(goalFatMassLb({ goal_bodyweight: 210, goal_body_fat_pct: 12 }), 25.2);
+  assert.equal(goalFatMassLb({ goal_bodyweight: 210 }), null);
+  assert.equal(view.fatMass.goal, 25.2);
+  assert.equal(view.fatMass.change, null);
+});
+
+test("the earliest scan is the baseline, and fat lost is measured from it", () => {
+  const sept = { scan_date: "2026-09-12", body_fat_pct: 28.4, fat_mass_lb: 71.1, lean_mass_lb: 179.3, weight_lb: 250.4, visceral_fat: 13 };
+  const oct = { scan_date: "2026-10-08", body_fat_pct: 27.4, fat_mass_lb: 68.0, lean_mass_lb: 180.0, weight_lb: 248.0, visceral_fat: 12 };
+  const nov = { scan_date: "2026-11-10", body_fat_pct: 25.1, fat_mass_lb: 63.4, lean_mass_lb: 182.1, weight_lb: 243.2, visceral_fat: 11, arm_left_fat_lb: 4.0, arm_right_fat_lb: 3.9, trunk_fat_lb: 33.8, leg_left_fat_lb: 9.1, leg_right_fat_lb: 9.0 };
+  const view = physiqueView({ profile: goals, scans: [nov, oct, sept], latestWeighIn: null });
+  assert.equal(view.baselineDate, "2026-09-12");
+  assert.equal(view.latestDate, "2026-11-10");
+  assert.equal(view.fatMass.current, 63.4);
+  assert.equal(view.fatMass.baseline, 71.1);
+  assert.equal(view.fatMass.goal, 25.2);
+  assert.equal(view.fatMass.change, -7.7);
+  assert.equal(view.since.fatLost, 7.7);
+  assert.equal(view.since.leanGained, 2.8);
+  assert.equal(view.fatMass.trend.length, 3);
+  assert.equal(view.fatMass.trend[0].date, "2026-09-12");
+  assert.equal(view.fatMass.parts.trunk, 33.8);
+  assert.equal(view.fat.baseline, 28.4);
 });
 
 test("a scan photo prefills a draft and does not save", async () => {
