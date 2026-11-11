@@ -111,8 +111,9 @@ input.n,select.n{font-family:var(--sans);text-align:center;padding:8px 4px;font-
 .rowbtns .btn{margin-top:0}
 .ex .nm{font-family:var(--sans);font-weight:600;font-size:19px;line-height:1.15}
 .lt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.lt>div{min-width:0}
 .lt .k{font-family:var(--sans);font-size:9px;letter-spacing:.14em;color:var(--slate);text-transform:uppercase}
-.lt .v{font-family:var(--sans);font-size:13px;margin-top:3px;line-height:1.4}
+.lt .v{font-family:var(--sans);font-size:13px;margin-top:3px;line-height:1.4;overflow-wrap:break-word}
 .lt .v.today{font-size:16px;font-weight:700}
 .why{display:none;color:var(--slate);font-size:13px;margin-top:8px;line-height:1.45;border-left:3px solid var(--glacier);padding-left:10px}
 .why.on{display:block}
@@ -283,9 +284,9 @@ body.in .day{border:0;border-radius:14px;background:#1A211F}
 .band .k{margin:0 0 8px;color:#9BA2A6}
 .rings.goals{margin-top:0}
 .rings.goals .ring{gap:2px}
-.dial{position:relative;width:84px;height:84px;display:block}
-.dial svg{width:84px;height:84px}
-.dial .mid{position:absolute;inset:0;display:grid;place-items:center;font-size:15px;font-weight:560;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.ring .dial{position:relative;width:84px;height:84px;display:block}
+.ring .dial svg{width:84px;height:84px}
+.ring .dial .mid{position:absolute;inset:0;display:grid;place-items:center;font-size:15px;font-weight:560;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
 .ring .rg{font-size:12px;color:#9BA2A6;font-variant-numeric:tabular-nums}
 .rings.daily{margin-top:4px}
 .rings.lead{margin-top:2px}
@@ -345,11 +346,13 @@ body.in .sheethead .x{border:0;border-radius:999px;background:rgba(239,238,231,.
 #toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:80;background:#EFEEE7;color:#17211F;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:600}
 #toast[hidden]{display:none}
 body.focus #sWork.on{display:flex;flex-direction:column}
-body.focus #exList{flex:1;min-height:0;overflow:auto}
+body.focus #exList{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+body.focus #exList .ex.on{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+body.focus .ex.on .whyb{align-self:flex-start;width:auto}
+body.focus .sets{flex:1;min-height:0;overflow:auto}
 body.focus #startBox,body.focus #prehabBox,body.focus #readyBox,body.focus #afterBox,body.focus #wTitle{display:none !important}
 body.focus #finishBtn{display:none !important}
 body.focus #exList .ex{display:none}
-body.focus #exList .ex.on{display:block}
 #focusBar{display:none}
 body.focus #focusBar{display:block;margin-top:auto;padding-top:8px}
 .focusMeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -362,22 +365,23 @@ body.focus #focusBar{display:block;margin-top:auto;padding-top:8px}
 #swapShade[hidden]{display:none}
 body.focus .swapbox{position:fixed;z-index:76;left:0;right:0;bottom:0;margin:0;max-height:72dvh;overflow:auto;border:0;border-radius:22px 22px 0 0;background:#161C1A;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
 body.focus .hd{display:none}
-body.focus .set{display:block;background:transparent;border:0;margin:0 0 8px;padding:0}
+body.focus .set{position:relative;display:block;background:transparent;border:0;margin:0 0 8px;padding:0}
+body.focus .set.active{margin-bottom:0}
 body.focus .set:not(.checked):not(.active){display:none}
 body.focus .set>.k,body.focus .set>input,body.focus .set>select,body.focus .set>div:not(.glide){position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
 body.focus .set.saved .k:after{content:none}
 .glide .sum{display:none;align-items:center;gap:8px;width:fit-content;max-width:100%;text-align:left;background:#1A211F;border:0;border-radius:999px;color:var(--snow);font:15px/1.2 var(--sans);font-variant-numeric:tabular-nums;padding:8px 14px}
 .glide .sum .tick{width:16px;height:16px;flex:none;color:#1B948C}
 body.focus .set.checked .sum{display:flex}
-.glide .card{display:none;background:linear-gradient(180deg,#24302c,#1A211F);border-radius:28px;padding:8px 12px 10px;opacity:1}
+.glide .card{display:none;background:linear-gradient(180deg,#24302c,#1A211F);border-radius:28px;padding:6px 14px 8px;opacity:1}
 body.focus .set.active .card{display:block;animation:glidein .35s ease}
-.glide .pair{display:flex;flex-direction:column;gap:4px}
+.glide .pair{display:flex;flex-direction:column;gap:2px}
 .glide .pair>div{text-align:center}
-.glide .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6;margin:2px 0 2px}
-.glide .dial{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center}
-.fig{width:100%;min-width:0;min-height:44px;background:none;border:0;color:var(--snow);font:560 40px/1 var(--sans);font-variant-numeric:tabular-nums;cursor:pointer}
+.glide .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6;margin:1px 0;text-align:center}
+.glide .dial{position:static;width:auto;height:auto;min-height:48px;display:grid;grid-template-columns:48px minmax(4.5rem,1fr) 48px;align-items:center;justify-items:center}
+.fig{width:100%;min-width:0;min-height:48px;padding:0;background:none;border:0;color:var(--snow);font:560 40px/1 var(--sans);font-variant-numeric:tabular-nums;text-align:center;cursor:pointer}
 .step{width:48px;height:48px;border-radius:999px;border:0;background:#24302c;color:var(--snow);font:600 22px/1 var(--sans);cursor:pointer}
-.pills{display:flex;gap:6px;justify-content:center;margin-bottom:4px}
+.pills{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;margin:1px 0 2px}
 .pills button{min-width:36px;height:40px;padding:0 8px;border:0;border-radius:999px;background:#24302c;color:#C9CFCB;font:600 15px/1 var(--sans);cursor:pointer}
 .pills button.on{background:var(--snow);color:#17211F}
 .glide .complete{margin-top:0}
@@ -1739,8 +1743,8 @@ function exHtml(ex, sg, started) {
     <div class="lt"><div><div class="k">Last</div><div class="v">${last}</div></div><div><div class="k">Today</div><div class="v today">${rx}</div>${sg.heavy?`<div class="v">then ${sg.heavy.load} x ${sg.heavy.reps}</div>`:""}</div></div>
     ${sg.today?`<div class="todaynote">${sg.today}</div>`:""}
     <button class="whyb" type="button">WHY?</button><div class="why">${sg.why||""}${ex.note?` ${ex.note}`:""}${sg.heavy?` ${sg.heavy.note}`:""}${uni?" Weak side goes first. The strong side never exceeds the weak side's reps.":""}</div>
-    <div class="hd"><div></div><div>${bw?(pull?"Assist":""):"Load"}</div><div>${carry?"Seconds":"Reps"}</div><div>RIR</div><div>Pain</div></div>
-    ${rows.join("")}${heavyRow}${benchRow}</div>`;
+    <div class="sets"><div class="hd"><div></div><div>${bw?(pull?"Assist":""):"Load"}</div><div>${carry?"Seconds":"Reps"}</div><div>RIR</div><div>Pain</div></div>
+    ${rows.join("")}${heavyRow}${benchRow}</div></div>`;
 }
 function painSel(started){ return `<select class="n pain" ${started?"":"disabled"}>${[0,1,2,3,4,5].map(n=>`<option value="${n}">${n}</option>`).join("")}</select>`; }
 function wire() {
