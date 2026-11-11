@@ -1,5 +1,5 @@
-// train-v20: Log meal sits under the food rings. Weigh in and Add scan close the screen.
-const VERSION = "train-v20";
+// train-v21: Set steppers show the full weight and reps. The target line stays clear of Back.
+const VERSION = "train-v21";
 const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
