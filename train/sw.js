@@ -1,5 +1,5 @@
-// train-v22: Warm-up is the first swipe card. Pain after sits on its own card before Finish.
-const VERSION = "train-v22";
+// train-v23: Weight plus and minus move one pound. Typed weight can still be any number.
+const VERSION = "train-v23";
 const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
