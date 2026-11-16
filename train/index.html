@@ -345,11 +345,29 @@ body.in .sheethead .x{border:0;border-radius:999px;background:rgba(239,238,231,.
 .seg button.on{background:transparent;border-color:transparent;box-shadow:inset 0 -2px 0 var(--glacier);color:var(--snow)}
 #toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:80;background:#EFEEE7;color:#17211F;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:600}
 #toast[hidden]{display:none}
-body.focus #sWork.on{display:flex;flex-direction:column}
+body.focus #sWork.on{display:flex;flex-direction:column;overflow:hidden;min-height:0}
 body.focus #exList{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
 body.focus #exList .ex.on{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
-body.focus .ex.on .whyb{align-self:flex-start;width:auto}
-body.focus .sets{flex:1;min-height:0;overflow:auto}
+body.focus .ex.on:not(.deck){padding:0;margin:0;border:0}
+body.focus .ex.on .top{align-items:center;gap:8px}
+body.focus .ex.on .nm{font-size:22px;line-height:1.1;letter-spacing:-.02em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+body.focus .ex.on .lt{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) auto;align-items:center;gap:8px;margin-top:4px}
+body.focus .ex.on .lt .v{font-size:13px;margin-top:1px}
+body.focus .ex.on .lt .v.today{font-size:15px}
+body.focus .ex.on .lt .whyb{grid-column:auto;align-self:center;margin:0}
+body.focus .ex.on .whyb{align-self:center;width:auto;min-height:32px;height:32px;padding:0 12px;margin:0;font-size:11px}
+body.focus .ex.on .swapb{min-height:32px;height:32px;padding:0 12px;font-size:12px;letter-spacing:.06em}
+body.focus .ex.on .todaynote{margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+body.focus .ex.on .why.on{flex:none;max-height:64px;overflow:auto;margin-top:4px}
+body.focus .sets{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+body.focus .logged{display:flex;flex:none;flex-wrap:nowrap;gap:4px;align-items:center;overflow-x:auto;overflow-y:hidden;max-height:32px;margin-top:8px;scrollbar-width:none}
+body.focus .logged::-webkit-scrollbar{display:none}
+body.focus .logged:empty{display:none}
+body.focus .logged .set{flex:0 0 auto;width:max-content;margin:0}
+body.focus .panelbar{min-height:44px;margin-bottom:2px}
+body.focus #focusBar{padding-top:4px}
+body.focus .focusMeta{margin-bottom:4px}
+body.focus .focusActs .btn{min-height:44px}
 /* Warm-up and after pain live in the swipe deck. These blocks stay out of the way. */
 body.focus #startBox,body.focus #prehabBox,body.focus #readyBox,body.focus #afterBox,body.focus #wTitle{display:none !important}
 body.focus #finishBtn{display:none !important}
@@ -371,19 +389,21 @@ body.focus .set.active{margin-bottom:0}
 body.focus .set:not(.checked):not(.active){display:none}
 body.focus .set>.k,body.focus .set>input,body.focus .set>select,body.focus .set>div:not(.glide){position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
 body.focus .set.saved .k:after{content:none}
-.glide .sum{display:none;align-items:center;gap:8px;width:fit-content;max-width:100%;text-align:left;background:#1A211F;border:0;border-radius:999px;color:var(--snow);font:15px/1.2 var(--sans);font-variant-numeric:tabular-nums;padding:8px 14px}
-.glide .sum .tick{width:16px;height:16px;flex:none;color:#1B948C}
+.glide .sum{display:none;align-items:center;gap:0;width:max-content;max-width:100%;text-align:left;background:#1A211F;border:0;border-radius:999px;color:var(--snow);font:12px/1 var(--sans);font-variant-numeric:tabular-nums;padding:0 8px;height:28px;min-height:28px}
+.glide .sum .tick{display:none}
 body.focus .set.checked .sum{display:flex}
-.glide .card{display:none;background:linear-gradient(180deg,#24302c,#1A211F);border-radius:28px;padding:6px 14px 8px;opacity:1}
+.glide .card{display:none;background:linear-gradient(180deg,#24302c,#1A211F);border-radius:24px;padding:6px 12px 8px;opacity:1}
+body.focus .set.active{margin-top:auto;flex:none}
 body.focus .set.active .card{display:block;animation:glidein .35s ease}
-.glide .pair{display:flex;flex-direction:column;gap:2px}
+body.focus .glide .complete{min-height:44px;margin-top:2px}
+.glide .pair{display:flex;flex-direction:column;gap:0}
 .glide .pair>div{text-align:center}
-.glide .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6;margin:1px 0;text-align:center}
-.glide .dial{position:static;width:auto;height:auto;min-height:48px;display:grid;grid-template-columns:48px minmax(4.5rem,1fr) 48px;align-items:center;justify-items:center}
-.fig{width:100%;min-width:0;min-height:48px;padding:0;background:none;border:0;color:var(--snow);font:560 40px/1 var(--sans);font-variant-numeric:tabular-nums;text-align:center;cursor:pointer}
-.step{width:48px;height:48px;border-radius:999px;border:0;background:#24302c;color:var(--snow);font:600 22px/1 var(--sans);cursor:pointer}
-.pills{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;margin:1px 0 2px}
-.pills button{min-width:36px;height:40px;padding:0 8px;border:0;border-radius:999px;background:#24302c;color:#C9CFCB;font:600 15px/1 var(--sans);cursor:pointer}
+.glide .lbl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6;margin:0;text-align:center}
+.glide .dial{position:static;width:auto;height:auto;min-height:40px;display:grid;grid-template-columns:40px minmax(3.2rem,1fr) 40px;align-items:center;justify-items:center}
+.fig{width:100%;min-width:0;min-height:40px;padding:0;background:none;border:0;color:var(--snow);font:560 32px/1 var(--sans);font-variant-numeric:tabular-nums;text-align:center;cursor:pointer}
+.step{width:40px;height:40px;border-radius:999px;border:0;background:#24302c;color:var(--snow);font:600 20px/1 var(--sans);cursor:pointer}
+.pills{display:flex;gap:4px;justify-content:center;flex-wrap:nowrap;margin:2px 0 4px}
+.pills button{flex:1;min-width:0;height:32px;min-height:32px;padding:0;border:0;border-radius:999px;background:#24302c;color:#C9CFCB;font:600 14px/1 var(--sans);cursor:pointer}
 .pills button.on{background:var(--snow);color:#17211F}
 .glide .complete{margin-top:0}
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
@@ -730,11 +750,19 @@ function syncGlide(row) {
   const sum = row.querySelector(".sumt");
   if (sum) {
     const n = row.querySelector(".k") ? row.querySelector(".k").textContent : "";
+    const side = row.dataset.side ? row.dataset.side + " " : "";
     const lv = load && load.value !== "" ? load.value : "";
     const rv = reps && reps.value !== "" ? reps.value : "";
     const unit = fieldEl(row, "secs") ? "s" : "";
-    const rr = rir && rir.value !== "" ? "  RIR " + rir.value : "";
-    sum.textContent = `${n}   ${lv ? lv + " lb x " : ""}${rv}${unit}${rr}`;
+    const assist = fieldEl(row, "assist");
+    const av = assist && assist.value !== "" ? assist.value : "";
+    const core = lv && (rv || unit) ? `${lv}x${rv}${unit}` : unit ? `${rv}${unit}` : av && rv ? `${rv}+${av}` : (rv || lv);
+    sum.textContent = `${side}${core}`.trim();
+    const chip = row.querySelector(".sum");
+    if (chip) {
+      const bits = [n && `Set ${n}`, lv && `${lv} lb`, rv && (unit ? `${rv} seconds` : `${rv} reps`), av && `assist ${av}`, rir && rir.value !== "" && `RIR ${rir.value}`].filter(Boolean);
+      chip.setAttribute("aria-label", bits.join(", "));
+    }
   }
 }
 function ensureGlide(row) {
@@ -747,7 +775,18 @@ function ensureGlide(row) {
 }
 function layoutSets(markSaved) {
   if (!document.body.classList.contains("focus")) return;
-  const sets = [...document.querySelectorAll("#exList .ex.on .set")];
+  const ex = document.querySelector("#exList .ex.on");
+  if (!ex || ex.dataset.deck) return;
+  const host = ex.querySelector(".sets");
+  if (!host) return;
+  let tray = host.querySelector(":scope > .logged");
+  if (!tray) {
+    tray = document.createElement("div");
+    tray.className = "logged";
+    tray.setAttribute("aria-label", "Logged sets");
+    host.prepend(tray);
+  }
+  const sets = [...host.querySelectorAll(".set")];
   if (markSaved) sets.forEach(row => {
     if (row.classList.contains("saved") && !row.dataset.seen) row.classList.add("checked");
     row.dataset.seen = "1";
@@ -759,6 +798,8 @@ function layoutSets(markSaved) {
     else row.classList.remove("active");
     ensureGlide(row);
     syncGlide(row);
+    if (row.classList.contains("checked")) tray.appendChild(row);
+    else host.appendChild(row);
   });
 }
 function completeSet(row) {
@@ -1775,15 +1816,15 @@ function exHtml(ex, sg, started) {
     <button type="button" class="btn ghost swapcancel">Cancel</button></div>` : "";
   return `<div class="ex"><div class="top"><div><div class="nm">${esc(name)}</div>${sg.swapped?`<div class="swapfrom">In place of ${esc(sg.swap_from || ex.name)}</div>`:""}</div><div>${light}${acts}</div></div>
     ${panel}
-    <div class="lt"><div><div class="k">Last</div><div class="v">${last}</div></div><div><div class="k">Today</div><div class="v today">${rx}</div>${sg.heavy?`<div class="v">then ${sg.heavy.load} x ${sg.heavy.reps}</div>`:""}</div></div>
+    <div class="lt"><div><div class="k">Last</div><div class="v">${last}</div></div><div><div class="k">Today</div><div class="v today">${rx}</div>${sg.heavy?`<div class="v">then ${sg.heavy.load} x ${sg.heavy.reps}</div>`:""}</div><button class="whyb" type="button">WHY?</button></div>
     ${sg.today?`<div class="todaynote">${sg.today}</div>`:""}
-    <button class="whyb" type="button">WHY?</button><div class="why">${sg.why||""}${ex.note?` ${ex.note}`:""}${sg.heavy?` ${sg.heavy.note}`:""}${uni?" Weak side goes first. The strong side never exceeds the weak side's reps.":""}</div>
+    <div class="why">${sg.why||""}${ex.note?` ${ex.note}`:""}${sg.heavy?` ${sg.heavy.note}`:""}${uni?" Weak side goes first. The strong side never exceeds the weak side's reps.":""}</div>
     <div class="sets"><div class="hd"><div></div><div>${bw?(pull?"Assist":""):"Load"}</div><div>${carry?"Seconds":"Reps"}</div><div>RIR</div><div>Pain</div></div>
     ${rows.join("")}${heavyRow}${benchRow}</div></div>`;
 }
 function painSel(started){ return `<select class="n pain" ${started?"":"disabled"}>${[0,1,2,3,4,5].map(n=>`<option value="${n}">${n}</option>`).join("")}</select>`; }
 function wire() {
-  document.querySelectorAll(".whyb").forEach(b => b.onclick = () => b.nextElementSibling.classList.toggle("on"));
+  document.querySelectorAll(".whyb").forEach(b => b.onclick = () => { const why = b.closest(".ex")?.querySelector(".why") || b.nextElementSibling; if (why) why.classList.toggle("on"); });
   document.querySelectorAll(".set").forEach(row => {
     row.querySelectorAll("input,select").forEach(el => {
       el.addEventListener("change", () => saveSet(row));
