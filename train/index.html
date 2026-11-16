@@ -350,6 +350,7 @@ body.focus #exList{flex:1;min-height:0;overflow:hidden;display:flex;flex-directi
 body.focus #exList .ex.on{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
 body.focus .ex.on .whyb{align-self:flex-start;width:auto}
 body.focus .sets{flex:1;min-height:0;overflow:auto}
+/* Warm-up and after pain live in the swipe deck. These blocks stay out of the way. */
 body.focus #startBox,body.focus #prehabBox,body.focus #readyBox,body.focus #afterBox,body.focus #wTitle{display:none !important}
 body.focus #finishBtn{display:none !important}
 body.focus #exList .ex{display:none}
@@ -390,6 +391,24 @@ body.focus .set.active .card{display:block;animation:glidein .35s ease}
 #padRead{font:560 64px/1 var(--sans);font-variant-numeric:tabular-nums;text-align:center;margin:8px 0}
 @keyframes glidein{from{transform:translateY(8px)}to{transform:none}}
 body.focus .whyb,body.focus .swapb,body.focus .panelbar .btn,body.focus .focusActs .btn.ghost{border:0;border-radius:999px;background:rgba(239,238,231,.08);color:#EFEEE7;box-shadow:none}
+body.focus .ex.deck{border:0;margin:0;padding:0;min-height:0}
+body.focus .ex.deck[data-deck="after"]{justify-content:center}
+body.focus .ex.on .deckcard{flex:0 1 auto;min-height:0;overflow:auto;background:linear-gradient(180deg,#24302c,#1A211F);border-radius:28px;padding:22px 16px 18px}
+body.focus .deck .kicker{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6}
+body.focus .deck .nm{font-size:28px;font-weight:560;letter-spacing:-.03em;line-height:1.05;margin-top:6px}
+body.focus .deck .prepitems{display:flex;flex-direction:column;gap:8px;margin-top:18px}
+body.focus .deck .it{position:relative;display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 12px;border-radius:16px;background:rgba(239,238,231,.06);font-size:16px;line-height:1.35;cursor:pointer}
+body.focus .deck .it input{position:absolute;width:22px;height:22px;margin:0;padding:0;border:0;opacity:0}
+body.focus .deck .it .box{width:22px;height:22px;flex:none;border-radius:7px;border:1.5px solid #6d7a75;display:grid;place-items:center}
+body.focus .deck .it input:checked+.box{background:#1B948C;border-color:#1B948C}
+body.focus .deck .it input:checked+.box:after{content:"";width:5px;height:9px;border:solid #101413;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+body.focus .deck .it input:focus-visible+.box{outline:2px solid var(--glacier);outline-offset:2px}
+body.focus .deck .painblock{margin-top:22px}
+body.focus .deck .joint{margin-top:14px}
+body.focus .deck .joint .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9BA2A6}
+body.focus .deck .scale{display:flex;gap:6px;margin-top:8px}
+body.focus .deck .scale button{flex:1;min-width:0;min-height:44px;padding:0;border:0;border-radius:999px;background:#24302c;color:#C9CFCB;font:600 15px/1 var(--sans)}
+body.focus .deck .scale button.on{background:var(--snow);color:#17211F}
 @media (prefers-reduced-motion:reduce){body.focus .set.active .card{animation:none}.ring .arc,.mring .arc{transition:none}}
 body.in .swapbox .opt{background:#24302c;color:var(--snow);border-color:#3A4642}
 body.in .pane.on{animation:rise .28s ease}
@@ -582,14 +601,23 @@ function applyFocus() {
   const bar = $("focusBar");
   if (bar) bar.hidden = !started;
   const cards = [...document.querySelectorAll("#exList .ex")];
-  if (!started || !cards.length) { if ($("swapShade")) $("swapShade").hidden = true; return; }
+  if (!started || !cards.length) {
+    if ($("swapShade")) $("swapShade").hidden = true;
+    if ($("focusChange")) $("focusChange").disabled = false;
+    return;
+  }
   if (state.focusAt == null || state.focusAt >= cards.length) state.focusAt = 0;
   if (state.focusAt < 0) state.focusAt = 0;
   cards.forEach((c, i) => c.classList.toggle("on", i === state.focusAt));
-  $("focusCount").textContent = `Exercise ${state.focusAt + 1} of ${cards.length}`;
+  const card = cards[state.focusAt];
+  const exercises = cards.filter((c) => !c.dataset.deck);
+  const exAt = exercises.indexOf(card);
+  const deck = card.dataset.deck;
+  $("focusCount").textContent = deck === "warm" ? "Warm-up" : deck === "after" ? "After" : `Exercise ${exAt + 1} of ${exercises.length}`;
   $("focusDots").innerHTML = cards.map((_, i) => `<i class="${i === state.focusAt ? "on" : ""}"></i>`).join("");
   $("focusPrev").disabled = state.focusAt === 0;
   $("focusNext").textContent = state.focusAt === cards.length - 1 ? "Finish" : "Next";
+  $("focusChange").disabled = !card.querySelector(".swapopen");
   if ($("swapShade")) $("swapShade").hidden = state.swapOpen == null;
   layoutSets(true);
 }
@@ -1684,18 +1712,25 @@ async function openDay(day) {
 function scaleHtml(name, val) {
   return `<div class="scale" data-scale="${name}">${[0,1,2,3,4,5].map(n=>`<button type="button" class="${val==n?"on":""}" data-v="${n}">${n}</button>`).join("")}</div>`;
 }
+function warmCard(p, s) {
+  const items = p.items.map((it, i) => `<label class="it"><input type="checkbox" class="pre" data-i="${i}" ${s.prehab_done ? "checked" : ""}><span class="box" aria-hidden="true"></span><span>${esc(it)}</span></label>`).join("");
+  const joints = p.joints.map((j) => `<div class="joint"><div class="k">${esc(j)} before</div>${scaleHtml("before:" + j, s.pain_before?.[j])}</div>`).join("");
+  return `<div class="ex deck" data-deck="warm"><div class="deckcard"><div class="kicker">Warm-up</div><div class="nm">${esc(p.title)}</div><div class="prepitems">${items}</div><div class="painblock">${joints}</div></div></div>`;
+}
+function afterCard(p, s) {
+  const joints = p.joints.map((j) => `<div class="joint"><div class="k">${esc(j)} after</div>${scaleHtml("after:" + j, s.pain_after?.[j])}</div>`).join("");
+  return `<div class="ex deck" data-deck="after"><div class="deckcard"><div class="kicker">After</div><div class="nm">Pain</div><div class="painblock">${joints}</div></div></div>`;
+}
 function renderWork() {
   const s = state.session, started = !!s;
   $("startBox").style.display = started ? "none" : "block";
   $("readyBox").innerHTML = started && state.readiness ? `<div class="banner" style="border-color:${({green:"var(--teton)",yellow:"var(--amber)",red:"var(--rust)"})[state.readiness.level]}"><span class="mono">Readiness ${state.readiness.score??""} · ${state.readiness.label}${s.deload?" · DELOAD":""}</span><p>${state.readiness.note}${s.bodyweight?` Bodyweight ${s.bodyweight}.`:""}</p></div>` : "";
-  // pre-hab
   const p = state.prehab;
-  $("prehabBox").innerHTML = started && p ? `<div class="prehab"><span class="mono" style="color:var(--glacier);font-weight:700">${p.title}</span>
-    ${p.items.map((it,i)=>`<label class="it"><input type="checkbox" class="pre" data-i="${i}" ${s.prehab_done?"checked":""}>${it}</label>`).join("")}
-    ${p.joints.map(j=>`<div class="joint"><div class="k">${j} before</div>${scaleHtml("before:"+j, s.pain_before?.[j])}</div>`).join("")}</div>` : "";
-  // exercises
-  $("exList").innerHTML = state.exercises.map(ex => exHtml(ex, state.suggestions.find(x => x.planned_exercise_id === ex.id) || state.suggestions.find(x => x.exercise_id === ex.id && !x.swapped) || {}, started)).join("");
-  $("afterBox").innerHTML = started && p ? `<div class="prehab"><span class="mono" style="color:var(--glacier);font-weight:700">AFTER</span>${p.joints.map(j=>`<div class="joint"><div class="k">${j} after</div>${scaleHtml("after:"+j, s.pain_after?.[j])}</div>`).join("")}</div>` : "";
+  $("prehabBox").innerHTML = "";
+  $("afterBox").innerHTML = "";
+  const warm = started && p ? warmCard(p, s) : "";
+  const after = started && p ? afterCard(p, s) : "";
+  $("exList").innerHTML = warm + state.exercises.map(ex => exHtml(ex, state.suggestions.find(x => x.planned_exercise_id === ex.id) || state.suggestions.find(x => x.exercise_id === ex.id && !x.swapped) || {}, started)).join("") + after;
   $("finishBtn").style.display = started ? "block" : "none";
   // Prefill everything already saved for this session, plus anything still queued on the phone.
   const pending = queueGet().filter(q => state.session && q.session_id === state.session.id);
@@ -1757,7 +1792,9 @@ function wire() {
   });
   document.querySelectorAll(".pre").forEach(cb => cb.onchange = async () => {
     const all = [...document.querySelectorAll(".pre")].every(c=>c.checked);
-    await post({ action:"prehab", session_id: state.session.id, prehab_done: all }); say(all ? "Prep done" : "Saved");
+    await post({ action:"prehab", session_id: state.session.id, prehab_done: all });
+    state.session.prehab_done = all;
+    say(all ? "Prep done" : "Saved");
   });
   document.querySelectorAll(".scale button").forEach(b => b.onclick = async () => {
     const sc = b.parentElement; sc.querySelectorAll("button").forEach(x=>x.classList.remove("on")); b.classList.add("on");

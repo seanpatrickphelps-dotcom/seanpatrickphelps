@@ -1,5 +1,5 @@
-// train-v21: Set steppers show the full weight and reps. The target line stays clear of Back.
-const VERSION = "train-v21";
+// train-v22: Warm-up is the first swipe card. Pain after sits on its own card before Finish.
+const VERSION = "train-v22";
 const SHELL = ["/train/index.html", "/train/fonts/Geist-Variable.woff2", "/train/manifest.json", "/train/icon-192.png", "/train/icon-512.png"];
 
 self.addEventListener("install", (e) => {
