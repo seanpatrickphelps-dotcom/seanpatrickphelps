@@ -22,6 +22,24 @@ test("daily rows stay stacked instead of stretching to fill the screen", () => {
   assert.match(html, /\.acts\{[^}]*margin-top:auto/);
 });
 
+test("a logged set opens an editor with a rust Save and a secondary Delete", () => {
+  const sheet = html.slice(html.indexOf('id="setSheet"'), html.indexOf('id="swapShade"'));
+  assert.match(sheet, /id="saveEdit"/);
+  assert.match(sheet, /btn rust pill/);
+  assert.match(html, /Delete this set\?/);
+  assert.match(html, /data-edit-step="-1"/);
+  assert.match(html, /data-edit-step="1"/);
+  assert.match(html, /function openSetEditor/);
+  assert.match(html, /action: "edit-set"/);
+  assert.match(html, /action: "delete-set"/);
+  assert.equal(sheet.includes("\u2014"), false);
+  assert.equal(html.slice(html.indexOf("function editorHtml"), html.indexOf("function syncEditor")).includes("btn rust"), false);
+  const danger = html.match(/#setSheet \.btn\.danger\{[^}]*\}/);
+  assert.ok(danger, "delete button style");
+  assert.match(danger[0], /background:transparent/);
+  assert.doesNotMatch(danger[0], /background:var\(--rust\)/);
+});
+
 test("the phone column is full width until the desktop breakpoint", () => {
   const main = html.match(/body\.in main\{[^}]*\}/);
   assert.ok(main, "main rule");

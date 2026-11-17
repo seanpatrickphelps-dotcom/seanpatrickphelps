@@ -7,7 +7,7 @@ import {
   mealTotals, normalizeMealEstimate, effectiveDayFood, foodBar, foodChip,
   presentSessionFood, requestMealEstimate, foodActionWrites, FOOD_KEY_MESSAGE,
   chicagoDate, weightProgress, seanWeightDefaults, profilePatchForSean, shouldSeedWeighIn, targetsOf,
-  hydrationTarget, ringProgress, saveSetRow, classifySetSaveError,
+  hydrationTarget, ringProgress, saveSetRow, classifySetSaveError, sameSetGroup, renumberPlan, editSetPatch, publicSet, shiftQueuedSets, nextSetDefaults, setGroupQuery,
   liftingGoal, monthSpan, adjacentHistoryMonth, liftingDaysFromSets, summarizeLiftingMonths, paceCopy,
   recompSpan, pairAvg, latestBodyWeight, physiqueView, goalFatMassLb, requestScanExtract, SCAN_KEY_MESSAGE,
 } from "../lib/train.js";
@@ -331,6 +331,78 @@ test("a set save updates the same row and a 409 patches it instead of inserting 
   const raw = classifySetSaveError(new Error("Supabase POST sets: 409 duplicate key"));
   assert.equal(raw.queue, false);
   assert.equal(raw.message, "That set did not save. Try again.");
+});
+
+test("editing a set changes only its load, reps, RIR, and pain", () => {
+  const edited = editSetPatch({ id: 9, user_id: "other", set_number: 4, logged_at: "2026-11-01", load: "595", reps: "8", rir: "2", pain: "1", seconds: "", assist_load: null });
+  assert.equal(edited.error, undefined);
+  assert.equal(edited.patch.load, 595);
+  assert.equal(edited.patch.reps, 8);
+  assert.equal(edited.patch.rir, 2);
+  assert.equal(edited.patch.pain, 1);
+  assert.equal(edited.patch.pain_flag, false);
+  assert.equal(edited.patch.seconds, null);
+  assert.equal(edited.patch.assist_load, null);
+  assert.equal(edited.patch.id, undefined);
+  assert.equal(edited.patch.user_id, undefined);
+  assert.equal(edited.patch.set_number, undefined);
+  assert.equal(edited.patch.logged_at, undefined);
+  assert.equal(editSetPatch({ pain: 3 }).patch.pain_flag, true);
+  assert.match(editSetPatch({ rir: 9 }).error, /RIR/);
+  assert.match(editSetPatch({ load: "heavy" }).error, /number/);
+  const shown = publicSet({ id: 3, exercise_id: 8, session_id: 2, set_number: "2", side: null, set_kind: null, load: 575, reps: 8, rir: 2, seconds: null, pain: 0, assist_load: null, logged_at: "2026-11-17T12:00:00Z" });
+  assert.equal(shown.set_number, 2);
+  assert.equal(shown.set_kind, "work");
+  assert.equal(shown.pain, 0);
+});
+
+test("deleting a set renumbers that side and kind to 1..n in logged order", () => {
+  const session = { session_id: 4, exercise_id: 9 };
+  const rows = [
+    { ...session, id: 1, side: null, set_kind: "work", set_number: 1, logged_at: "2026-11-17T15:00:00Z", load: 575, reps: 8 },
+    { ...session, id: 2, side: null, set_kind: "work", set_number: 2, logged_at: "2026-11-17T15:02:00Z", load: 595, reps: 8 },
+    { ...session, id: 3, side: null, set_kind: "work", set_number: 3, logged_at: "2026-11-17T15:04:00Z", load: 605, reps: 6 },
+    { ...session, id: 4, side: "L", set_kind: "work", set_number: 2, logged_at: "2026-11-17T15:03:00Z", load: 50, reps: 8 },
+    { ...session, id: 5, side: null, set_kind: "heavy", set_number: 1, logged_at: "2026-11-17T15:05:00Z", load: 625, reps: 2 },
+  ];
+  const target = rows[1];
+  const remaining = rows.filter((row) => row.id !== target.id && sameSetGroup(row, target));
+  assert.equal(remaining.some((row) => row.id === 4 || row.id === 5), false);
+  const plan = renumberPlan(remaining);
+  assert.deepEqual(plan.sets.map((row) => [row.id, row.set_number, row.load]), [[1, 1, 575], [3, 2, 605]]);
+  assert.deepEqual(plan.park, [{ id: 3, set_number: -3 }]);
+  assert.deepEqual(plan.write, [{ id: 3, set_number: 2 }]);
+  assert.equal(plan.sets[0].logged_at, rows[0].logged_at);
+  assert.equal(rows[0].set_number, 1);
+
+  const swapped = renumberPlan([
+    { id: 10, set_number: 2, logged_at: "2026-11-17T15:00:00Z" },
+    { id: 11, set_number: 1, logged_at: "2026-11-17T15:01:00Z" },
+  ]);
+  assert.deepEqual(swapped.sets.map((row) => [row.id, row.set_number]), [[10, 1], [11, 2]]);
+  assert.deepEqual(swapped.park.map((row) => row.set_number), [-10, -11]);
+
+  const tied = renumberPlan([
+    { id: 8, set_number: 2, logged_at: "2026-11-17T15:00:00Z" },
+    { id: 7, set_number: 1, logged_at: "2026-11-17T15:00:00Z" },
+  ]);
+  assert.deepEqual(tied.sets.map((row) => row.id), [7, 8]);
+  assert.match(setGroupQuery({ user_id: "u", session_id: 4, exercise_id: 9, side: null, set_kind: "work" }), /user_id=eq\.u/);
+  assert.match(setGroupQuery({ user_id: "u", session_id: 4, exercise_id: 9, side: null, set_kind: "work" }), /side\.is\.null/);
+  assert.match(setGroupQuery({ user_id: "u", session_id: 4, exercise_id: 9, side: "L", set_kind: "heavy" }), /side=eq\.L/);
+  assert.match(setGroupQuery({ user_id: "u", session_id: 4, exercise_id: 9, side: "L", set_kind: "heavy" }), /set_kind=eq\.heavy/);
+
+  const queued = shiftQueuedSets([
+    { action: "set", session_id: 4, exercise_id: 9, side: null, set_kind: "work", set_number: 2, reps: 8 },
+    { action: "set", session_id: 4, exercise_id: 9, side: null, set_kind: "work", set_number: 3, reps: 6 },
+    { action: "set", session_id: 4, exercise_id: 8, side: null, set_kind: "work", set_number: 3, reps: 5 },
+  ], target);
+  assert.equal(queued.find((item) => item.exercise_id === 9 && item.reps === 8), undefined);
+  assert.equal(queued.find((item) => item.exercise_id === 9 && item.reps === 6).set_number, 2);
+  assert.equal(queued.find((item) => item.exercise_id === 8).set_number, 3);
+
+  assert.equal(nextSetDefaults([{ logged_at: "2026-11-17T15:00:00Z", load: 575, reps: 8 }, { logged_at: "2026-11-17T15:04:00Z", load: 605, reps: 6 }], { load: 575, reps: 8 }).load, 605);
+  assert.equal(nextSetDefaults([], { load: 575, reps: 8, seconds: null }).reps, 8);
 });
 
 test("history months run from September 2026 through this month, newest first", () => {

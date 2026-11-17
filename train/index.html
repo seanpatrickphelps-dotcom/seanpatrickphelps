@@ -353,7 +353,7 @@ body.focus .ex.on .top{align-items:center;gap:8px}
 body.focus .ex.on .nm{font-size:22px;line-height:1.1;letter-spacing:-.02em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 body.focus .ex.on .lt{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) auto;align-items:center;gap:8px;margin-top:4px}
 body.focus .ex.on .lt .v{font-size:13px;margin-top:1px}
-body.focus .ex.on .lt .v.today{font-size:15px}
+body.focus .ex.on .lt .v.today{font-size:15px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 body.focus .ex.on .lt .whyb{grid-column:auto;align-self:center;margin:0}
 body.focus .ex.on .whyb{align-self:center;width:auto;min-height:32px;height:32px;padding:0 12px;margin:0;font-size:11px}
 body.focus .ex.on .swapb{min-height:32px;height:32px;padding:0 12px;font-size:12px;letter-spacing:.06em}
@@ -406,6 +406,20 @@ body.focus .glide .complete{min-height:44px;margin-top:2px}
 .pills button{flex:1;min-width:0;height:32px;min-height:32px;padding:0;border:0;border-radius:999px;background:#24302c;color:#C9CFCB;font:600 14px/1 var(--sans);cursor:pointer}
 .pills button.on{background:var(--snow);color:#17211F}
 .glide .complete{margin-top:0}
+#padSheet{z-index:80}
+#setSheet .coverbody{padding-top:2px}
+#setSheet [hidden]{display:none !important}
+#setSheet .editglide .dial{grid-template-columns:44px minmax(3.2rem,1fr) 44px;min-height:44px}
+#setSheet .step{width:44px;height:44px}
+#setSheet .fig{min-height:44px}
+#setSheet .pills{margin:4px 0 8px}
+#setSheet .pills button{height:44px;min-height:44px}
+#setSheet .btn.danger,#setSheet .askrow .btn{width:100%;min-height:48px;margin:0;font-family:var(--sans);font-size:16px;font-weight:600;letter-spacing:0;text-transform:none}
+#setSheet .btn.danger{margin-top:8px;background:transparent;color:#E7B2A4;border:1px solid rgba(231,178,164,.55)}
+body.in #setSheet .btn.danger{background:transparent;color:#E7B2A4;border:1px solid rgba(231,178,164,.55)}
+body.in #setSheet .sheethead .btn.rust{background:var(--rust);color:var(--snow)}
+#setSheet .ask{margin:10px 0 0;text-align:center;color:#C9CFCB;font-size:15px}
+#setSheet .askrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 .pad button{min-height:56px;border:0;border-radius:16px;background:#24302c;color:var(--snow);font:600 22px/1 var(--sans);cursor:pointer}
 #padRead{font:560 64px/1 var(--sans);font-variant-numeric:tabular-nums;text-align:center;margin:8px 0}
@@ -552,7 +566,7 @@ body.in .pane.on{animation:rise .28s ease}
   <div class="coverbody" id="foodCard"></div>
 </div>
 <div id="setSheet" class="cover" hidden>
-  <div class="coverbar"><button type="button" id="closeSet">Close</button><span class="mono" id="setTitle">Set</span></div>
+  <div class="sheethead"><button type="button" class="x" id="closeSet" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg></button><span class="mono" id="setTitle">Set</span><button type="button" class="btn rust pill" id="saveEdit">Save</button></div>
   <div class="coverbody" id="setHost"></div>
 </div>
 <div id="swapShade" hidden></div>
@@ -574,6 +588,7 @@ const QKEY = "train_queue";
 const $ = (id) => document.getElementById(id);
 const show = (id) => {
   if (id !== "sHome" && $("mealSheet") && !$("mealSheet").hidden) { $("mealSheet").hidden = true; document.body.classList.remove("sheet-open"); }
+  if ($("setSheet") && !$("setSheet").hidden) closeSetEditor();
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));
   $(id).classList.add("on");
   const nav = $("appNav");
@@ -591,6 +606,7 @@ function showPane(name) {
     b.setAttribute("aria-current", on ? "page" : "false");
   });
   show("sHome");
+  if (state.viewsStale) refreshLoggedViews();
   if (name === "History" && state.histTab !== "board" && histView === "list") renderMonthList();
 }
 function openMeal() { $("mealSheet").hidden = false; document.body.classList.add("sheet-open"); $("closeMeal").focus(); }
@@ -640,6 +656,8 @@ function applyFocus() {
   $("focusChange").disabled = !card.querySelector(".swapopen");
   if ($("swapShade")) $("swapShade").hidden = state.swapOpen == null;
   layoutSets(true);
+  const live = document.querySelector("#exList .ex.on .set");
+  if (live) syncToday(live);
 }
 function stepFocus(dir) {
   const n = document.querySelectorAll("#exList .ex").length;
@@ -683,6 +701,7 @@ $("exList").addEventListener("pointercancel", () => { gesture = null; });
 $("exList").addEventListener("click", (e) => {
   const row = e.target.closest(".set");
   if (!row || !document.body.classList.contains("focus")) return;
+  if (e.target.closest(".sum") && row.classList.contains("checked")) { openSetEditor(row); return; }
   const step = e.target.closest("[data-step]");
   if (step) { bumpField(row, step.dataset.field, Number(step.dataset.step)); return; }
   const fig = e.target.closest("[data-fig]");
@@ -692,7 +711,11 @@ $("exList").addEventListener("click", (e) => {
   if (e.target.closest(".complete")) completeSet(row);
 });
 let padTarget = null;
-function closePad() { $("padSheet").hidden = true; document.body.classList.remove("sheet-open"); padTarget = null; }
+function closePad() {
+  $("padSheet").hidden = true;
+  padTarget = null;
+  if (!$("setSheet") || $("setSheet").hidden) document.body.classList.remove("sheet-open");
+}
 function openPad(row, field) {
   const el = row.querySelector("." + field);
   if (!el || el.disabled) return;
@@ -704,6 +727,16 @@ function openPad(row, field) {
 }
 function padKey(k) {
   if (!padTarget) return;
+  if (padTarget.editField) {
+    let v = editDraft[padTarget.editField] == null || editDraft[padTarget.editField] === "" ? "" : String(editDraft[padTarget.editField]);
+    if (k === "del") v = v.slice(0, -1);
+    else if (k === "." && (v.includes(".") || (padTarget.editField !== "load" && padTarget.editField !== "assist_load"))) return;
+    else v = (v + k).replace(/^0+(?=\d)/, "");
+    editDraft[padTarget.editField] = v === "" ? null : Number(v);
+    $("padRead").textContent = v || "0";
+    syncEditor();
+    return;
+  }
   const el = padTarget.row.querySelector("." + padTarget.field);
   let v = String(el.value || "");
   if (k === "del") v = v.slice(0, -1);
@@ -757,11 +790,14 @@ function syncGlide(row) {
     const assist = fieldEl(row, "assist");
     const av = assist && assist.value !== "" ? assist.value : "";
     const core = lv && (rv || unit) ? `${lv}x${rv}${unit}` : unit ? `${rv}${unit}` : av && rv ? `${rv}+${av}` : (rv || lv);
-    sum.textContent = `${side}${core}`.trim();
+    const painEl = fieldEl(row, "pain");
+    const rirBit = rir && rir.value !== "" ? ` @${rir.value}` : "";
+    const painBit = painEl && painEl.value !== "" && Number(painEl.value) > 0 ? ` p${painEl.value}` : "";
+    sum.textContent = `${side}${core}${rirBit}${painBit}`.trim();
     const chip = row.querySelector(".sum");
     if (chip) {
       const bits = [n && `Set ${n}`, lv && `${lv} lb`, rv && (unit ? `${rv} seconds` : `${rv} reps`), av && `assist ${av}`, rir && rir.value !== "" && `RIR ${rir.value}`].filter(Boolean);
-      chip.setAttribute("aria-label", bits.join(", "));
+      chip.setAttribute("aria-label", `Edit ${bits.join(", ")}`);
     }
   }
 }
@@ -811,7 +847,344 @@ function completeSet(row) {
   row.classList.remove("active");
   saveSet(row);
   layoutSets(false);
+  syncToday(row);
 }
+let editRow = null;
+let editDraft = null;
+let viewRefresh = null;
+function closeSetEditor() {
+  if ($("setSheet")) $("setSheet").hidden = true;
+  editRow = null;
+  editDraft = null;
+  const padOpen = $("padSheet") && !$("padSheet").hidden;
+  const mealOpen = $("mealSheet") && !$("mealSheet").hidden;
+  if (!padOpen && !mealOpen) document.body.classList.remove("sheet-open");
+}
+function groupKey(row) {
+  return { exercise_id: Number(row.dataset ? row.dataset.ex : row.exercise_id), side: (row.dataset ? row.dataset.side : row.side) || "", set_kind: (row.dataset ? row.dataset.kind : row.set_kind) || "work" };
+}
+function sameGroup(a, b) {
+  const A = a.dataset ? groupKey(a) : { exercise_id: Number(a.exercise_id), side: a.side || "", set_kind: a.set_kind || "work" };
+  const B = b.dataset ? groupKey(b) : { exercise_id: Number(b.exercise_id), side: b.side || "", set_kind: b.set_kind || "work" };
+  return A.exercise_id === B.exercise_id && A.side === B.side && A.set_kind === B.set_kind;
+}
+function groupSlots(row) {
+  return [...document.querySelectorAll("#exList .set")].filter(r => sameGroup(r, row));
+}
+function numField(row, cls) {
+  const el = fieldEl(row, cls);
+  if (!el || el.value === "") return null;
+  const n = Number(el.value);
+  return Number.isFinite(n) ? n : null;
+}
+function rowLogged(row) {
+  return {
+    id: row.dataset.id ? Number(row.dataset.id) : null,
+    exercise_id: Number(row.dataset.ex),
+    session_id: state.session && state.session.id,
+    set_number: Number(row.dataset.set),
+    side: row.dataset.side || null,
+    set_kind: row.dataset.kind || "work",
+    load: numField(row, "load"),
+    reps: numField(row, "reps"),
+    seconds: numField(row, "secs"),
+    rir: numField(row, "rir"),
+    pain: numField(row, "pain") ?? 0,
+    assist_load: numField(row, "assist"),
+    logged_at: row.dataset.loggedAt || null,
+  };
+}
+function putField(row, cls, val, zeroOk) {
+  const el = fieldEl(row, cls);
+  if (!el) return;
+  if (val == null || val === "") el.value = zeroOk ? "0" : "";
+  else el.value = String(val);
+}
+function applyLoggedValues(row, src) {
+  putField(row, "load", src.load);
+  putField(row, "reps", src.reps);
+  putField(row, "secs", src.seconds);
+  putField(row, "assist", src.assist_load);
+  putField(row, "rir", src.rir);
+  putField(row, "pain", src.pain ?? 0, true);
+}
+function rxFallback(row) {
+  const n = (v) => v == null || v === "" || !Number.isFinite(Number(v)) ? null : Number(v);
+  return { load: n(row.dataset.rxLoad), reps: n(row.dataset.rxReps), seconds: n(row.dataset.rxSecs), assist_load: null };
+}
+function rememberLogged(row) {
+  const L = rowLogged(row);
+  if (!L.id && L.reps == null && L.seconds == null) return;
+  if (!state.logged) state.logged = [];
+  const i = state.logged.findIndex(x => (L.id && Number(x.id) === L.id) || (sameGroup(x, L) && Number(x.set_number) === L.set_number));
+  if (i >= 0) state.logged[i] = { ...state.logged[i], ...L, id: L.id || state.logged[i].id, logged_at: L.logged_at || state.logged[i].logged_at };
+  else state.logged.push(L);
+}
+function syncToday(row) {
+  const card = row.closest(".ex");
+  const today = card && card.querySelector(".v.today");
+  if (!today) return;
+  const tags = [...card.querySelectorAll(".set.checked .sumt")].map(el => el.textContent.trim()).filter(Boolean);
+  today.textContent = tags.length ? tags.join(", ") : (today.dataset.rx || today.textContent);
+}
+function spreadNextDefaults(sourceRow, prev) {
+  const slots = groupSlots(sourceRow);
+  const checked = slots.filter(r => r.classList.contains("checked"));
+  const maxN = checked.reduce((m, r) => Math.max(m, Number(r.dataset.set)), 0);
+  if (!checked.length || Number(sourceRow.dataset.set) !== maxN) return;
+  const src = rowLogged(sourceRow);
+  if (prev && prev.load === src.load && prev.reps === src.reps && prev.seconds === src.seconds && prev.assist_load === src.assist_load) return;
+  for (const slot of slots) {
+    if (Number(slot.dataset.set) <= maxN) continue;
+    if (slot.classList.contains("checked") || slot.classList.contains("saved") || slot.dataset.dirty === "1") continue;
+    putField(slot, "load", src.load);
+    putField(slot, "reps", src.reps);
+    putField(slot, "secs", src.seconds);
+    putField(slot, "assist", src.assist_load);
+    syncGlide(slot);
+  }
+}
+function editorTitle(row) {
+  if ((row.dataset.kind || "work") === "heavy") return "Heavy set";
+  if (row.dataset.kind === "benchmark") return "Max set";
+  return `Set ${row.dataset.set}${row.dataset.side ? " " + row.dataset.side : ""}`;
+}
+function editorHtml(row, draft) {
+  const hasLoad = !!fieldEl(row, "load");
+  const secs = !!fieldEl(row, "secs");
+  const assist = !!fieldEl(row, "assist");
+  const show = (v) => v == null || v === "" ? "0" : String(v);
+  const pills = (field, val) => [0,1,2,3,4,5].map(n => `<button type="button" data-edit-pill="${n}" data-edit-field="${field}" class="${val != null && Number(val) === n ? "on" : ""}">${n}</button>`).join("");
+  const dial = (field, label, val) => `<div><div class="lbl">${label}</div><div class="dial"><button type="button" class="step" data-edit-step="-1" data-edit-field="${field}" aria-label="Decrease ${label}">-</button><button type="button" class="fig" data-edit-fig="${field}">${show(val)}</button><button type="button" class="step" data-edit-step="1" data-edit-field="${field}" aria-label="Increase ${label}">+</button></div></div>`;
+  const work = secs ? dial("seconds", "Seconds", draft.seconds) : dial("reps", "Reps", draft.reps);
+  return `<div class="glide editglide"><div class="pair">${hasLoad ? dial("load", "Weight", draft.load) : ""}${work}</div>${assist ? dial("assist_load", "Assist", draft.assist_load) : ""}<div class="lbl">RIR</div><div class="pills">${pills("rir", draft.rir)}</div><div class="lbl">Pain</div><div class="pills">${pills("pain", draft.pain ?? 0)}</div><button type="button" class="btn danger" id="deleteSet">Delete</button><div id="deleteAsk" hidden><p class="ask">Delete this set?</p><div class="askrow"><button type="button" class="btn ghost" id="keepSet">Keep</button><button type="button" class="btn danger" id="confirmDelete">Delete</button></div></div></div>`;
+}
+function syncEditor() {
+  const host = $("setHost");
+  if (!host || !editDraft) return;
+  host.querySelectorAll("[data-edit-fig]").forEach(b => {
+    const v = editDraft[b.dataset.editFig];
+    b.textContent = v == null || v === "" ? "0" : String(v);
+  });
+  host.querySelectorAll("[data-edit-pill]").forEach(b => {
+    const v = editDraft[b.dataset.editField];
+    b.classList.toggle("on", v != null && String(v) === String(b.dataset.editPill));
+  });
+}
+function bumpEdit(field, delta) {
+  if (!editDraft) return;
+  const cur = Number(editDraft[field]);
+  const base = Number.isFinite(cur) ? cur : 0;
+  let next = Math.max(0, base + delta);
+  if (field === "rir" || field === "pain") next = Math.min(5, next);
+  editDraft[field] = next;
+  syncEditor();
+}
+function openSetEditor(row) {
+  if (!row || !row.classList.contains("checked") || !state.session) return;
+  editRow = row;
+  editDraft = rowLogged(row);
+  $("setTitle").textContent = editorTitle(row);
+  $("setHost").innerHTML = editorHtml(row, editDraft);
+  $("setSheet").hidden = false;
+  document.body.classList.add("sheet-open");
+  $("closeSet").focus();
+}
+function markViewsStale() {
+  state.viewsStale = true;
+  refreshLoggedViews();
+}
+function refreshLoggedViews() {
+  if (!token) return null;
+  const run = (async () => {
+    try {
+      const d = await api("/train-next?board=1");
+      if ($("dash")) $("dash").innerHTML = dashHtml(d.dashboard);
+      if ($("board")) $("board").innerHTML = (d.cards || []).map(cardHtml).join("") || `<div class="small">No goals set yet. Tap Goals.</div>`;
+      await loadHistory();
+      if (histView === "cal") await loadCal(calMonth, { show: true });
+      if ($("sDetail").classList.contains("on") && state.detailSid && state.session && Number(state.detailSid) === Number(state.session.id)) await openSession(state.detailSid);
+      state.viewsStale = false;
+    } catch (e) { state.viewsStale = true; }
+  })();
+  viewRefresh = run;
+  return run;
+}
+function rewriteQueue(row, payload) {
+  const slot = rowLogged(row);
+  let hit = false;
+  const next = queueGet().map(item => {
+    if (!item || item.action !== "set" || !sameGroup(item, slot) || Number(item.set_number) !== slot.set_number) return item;
+    hit = true;
+    return { ...item, load: payload.load, reps: payload.reps, seconds: payload.seconds, rir: payload.rir, pain: payload.pain ?? 0, assist_load: payload.assist_load };
+  });
+  if (hit) queuePut(next);
+  return hit;
+}
+function mergeAfterDelete(anchor, deleted, serverSets) {
+  const local = groupSlots(anchor).map(s => ({ ...rowLogged(s), checked: s.classList.contains("checked"), dirty: s.dataset.dirty === "1", saved: s.classList.contains("saved") }));
+  const saved = (serverSets || []).map(s => {
+    const prev = local.find(L => L.id && String(L.id) === String(s.id));
+    return { ...s, side: s.side || null, set_kind: s.set_kind || "work", checked: prev ? prev.checked : true, dirty: prev ? prev.dirty && !prev.checked : false, saved: true };
+  });
+  const used = new Set(saved.map(s => Number(s.set_number)));
+  const queued = local.filter(L => !L.id && Number(L.set_number) !== Number(deleted.set_number) && (L.checked || L.saved || L.dirty))
+    .sort((a, b) => Number(a.set_number) - Number(b.set_number))
+    .map(L => {
+      let set_number = Number(L.set_number) > Number(deleted.set_number) ? Number(L.set_number) - 1 : Number(L.set_number);
+      while (used.has(set_number)) set_number += 1;
+      used.add(set_number);
+      return { ...L, set_number };
+    });
+  return [...saved, ...queued];
+}
+function syncQueueFromEntries(anchor, entries) {
+  const g = groupKey(anchor);
+  const rest = queueGet().filter(item => !(item && item.action === "set" && sameGroup(item, g)));
+  const rebuilt = entries.filter(L => !L.id).map(L => ({
+    action: "set", session_id: state.session.id, exercise_id: g.exercise_id, set_number: Number(L.set_number),
+    side: g.side || null, set_kind: g.set_kind, load: L.load, reps: L.reps, seconds: L.seconds, rir: L.rir, pain: L.pain ?? 0, assist_load: L.assist_load,
+  }));
+  queuePut([...rest, ...rebuilt]);
+}
+function paintGroup(anchor, entries) {
+  const slots = groupSlots(anchor);
+  const byNumber = new Map(entries.map(L => [Number(L.set_number), L]));
+  const checked = entries.filter(L => L.checked).sort((a, b) => Number(a.set_number) - Number(b.set_number));
+  const last = checked.at(-1) || null;
+  slots.forEach(slot => {
+    const L = byNumber.get(Number(slot.dataset.set));
+    if (!L) {
+      delete slot.dataset.id;
+      delete slot.dataset.loggedAt;
+      delete slot.dataset.buzzed;
+      slot.classList.remove("checked", "saved", "active");
+      delete slot.dataset.dirty;
+      const base = last || rxFallback(slot);
+      putField(slot, "load", base.load);
+      putField(slot, "reps", base.reps);
+      putField(slot, "secs", base.seconds);
+      putField(slot, "assist", base.assist_load);
+      putField(slot, "rir", null);
+      putField(slot, "pain", 0, true);
+      syncGlide(slot);
+      return;
+    }
+    applyLoggedValues(slot, L);
+    if (L.id) slot.dataset.id = String(L.id); else delete slot.dataset.id;
+    if (L.logged_at) slot.dataset.loggedAt = L.logged_at; else delete slot.dataset.loggedAt;
+    if (L.checked) {
+      slot.classList.add("checked", "saved");
+      delete slot.dataset.dirty;
+    } else {
+      slot.classList.remove("checked");
+      if (L.saved || L.id) slot.classList.add("saved");
+      if (L.dirty) slot.dataset.dirty = "1";
+    }
+    syncGlide(slot);
+  });
+  layoutSets(false);
+  syncToday(anchor);
+}
+function replaceGroup(anchor, entries) {
+  const g = groupKey(anchor);
+  const rest = (state.logged || []).filter(L => !sameGroup(L, g));
+  const kept = entries.filter(L => L.checked).map(L => ({
+    id: L.id || null, exercise_id: g.exercise_id, set_number: Number(L.set_number), side: g.side || null, set_kind: g.set_kind,
+    load: L.load, reps: L.reps, rir: L.rir, seconds: L.seconds, pain: L.pain ?? 0, assist_load: L.assist_load, logged_at: L.logged_at || null,
+  }));
+  state.logged = [...rest, ...kept];
+}
+async function saveEditedSet() {
+  const row = editRow;
+  if (!row || !editDraft) return;
+  if (row._save) { try { await row._save; } catch (e) {} }
+  if (editRow !== row || !editDraft) return;
+  if (editDraft.reps == null && editDraft.seconds == null) { say("Add reps first"); return; }
+  const payload = { load: editDraft.load, reps: editDraft.reps, seconds: editDraft.seconds, rir: editDraft.rir, pain: editDraft.pain ?? 0, assist_load: editDraft.assist_load };
+  const prev = rowLogged(row);
+  applyLoggedValues(row, payload);
+  syncGlide(row);
+  syncToday(row);
+  const btn = $("saveEdit");
+  btn.disabled = true;
+  try {
+    if (row.dataset.id) {
+      const d = await post({ action: "edit-set", id: Number(row.dataset.id), ...payload });
+      if (d.set) {
+        applyLoggedValues(row, d.set);
+        if (d.set.logged_at) row.dataset.loggedAt = d.set.logged_at;
+        syncGlide(row);
+      }
+    } else if (!rewriteQueue(row, payload)) {
+      const d = await post({ action: "set", session_id: state.session.id, exercise_id: Number(row.dataset.ex), set_number: Number(row.dataset.set), side: row.dataset.side || null, set_kind: row.dataset.kind || "work", load: payload.load, reps: payload.reps, seconds: payload.seconds, rir: payload.rir, pain: payload.pain, assist_load: payload.assist_load });
+      if (d.id) row.dataset.id = String(d.id);
+      if (d.logged_at) row.dataset.loggedAt = d.logged_at;
+    }
+    rememberLogged(row);
+    spreadNextDefaults(row, prev);
+    syncToday(row);
+    closeSetEditor();
+    say(Number(payload.pain) >= 3 ? "Saved. Pain 3+: that exercise holds." : "Saved");
+    markViewsStale();
+  } catch (e) {
+    applyLoggedValues(row, prev);
+    syncGlide(row);
+    syncToday(row);
+    say(e.message || "That set did not save. Try again.");
+  } finally { if (btn) btn.disabled = false; }
+}
+async function confirmDeleteSet() {
+  const row = editRow;
+  if (!row) return;
+  if (row._save) { try { await row._save; } catch (e) {} }
+  if (editRow !== row) return;
+  const deleted = rowLogged(row);
+  const btn = $("confirmDelete");
+  if (btn) btn.disabled = true;
+  try {
+    let serverSets;
+    if (deleted.id) {
+      const d = await post({ action: "delete-set", id: deleted.id });
+      serverSets = d.sets || [];
+    } else {
+      serverSets = groupSlots(row).map(rowLogged).filter(L => L.id && String(L.id) !== String(deleted.id));
+    }
+    const entries = mergeAfterDelete(row, deleted, serverSets);
+    syncQueueFromEntries(row, entries);
+    replaceGroup(row, entries);
+    paintGroup(row, entries);
+    closeSetEditor();
+    say("Deleted");
+    markViewsStale();
+  } catch (e) {
+    say(e.message || "That set did not delete. Try again.");
+    if (btn) btn.disabled = false;
+  }
+}
+$("setSheet").onclick = (e) => {
+  if (e.target === $("setSheet")) { closeSetEditor(); return; }
+  const step = e.target.closest("[data-edit-step]");
+  if (step) { bumpEdit(step.dataset.editField, Number(step.dataset.editStep)); return; }
+  const fig = e.target.closest("[data-edit-fig]");
+  if (fig) {
+    const field = fig.dataset.editFig;
+    padTarget = { editField: field };
+    $("padLabel").textContent = field === "load" ? "Weight" : field === "seconds" ? "Seconds" : field === "assist_load" ? "Assist" : "Reps";
+    const v = editDraft[field];
+    $("padRead").textContent = v == null || v === "" ? "0" : String(v);
+    $("padSheet").hidden = false;
+    document.body.classList.add("sheet-open");
+    return;
+  }
+  const pill = e.target.closest("[data-edit-pill]");
+  if (pill) { editDraft[pill.dataset.editField] = Number(pill.dataset.editPill); syncEditor(); return; }
+  if (e.target.closest("#deleteSet")) { const ask = $("deleteAsk"); const del = $("deleteSet"); if (del) del.hidden = true; if (ask) ask.hidden = false; return; }
+  if (e.target.closest("#keepSet")) { const ask = $("deleteAsk"); const del = $("deleteSet"); if (ask) ask.hidden = true; if (del) del.hidden = false; return; }
+  if (e.target.closest("#confirmDelete")) confirmDeleteSet();
+};
+$("saveEdit").onclick = () => saveEditedSet();
+$("closeSet").onclick = () => closeSetEditor();
 $("segMonth").onclick = () => showHist("month");
 $("segBoard").onclick = () => showHist("board");
 function showHist(which) {
@@ -827,6 +1200,7 @@ function showHist(which) {
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   if ($("padSheet") && !$("padSheet").hidden) { closePad(); return; }
+  if ($("setSheet") && !$("setSheet").hidden) { closeSetEditor(); return; }
   if ($("scanSheet") && !$("scanSheet").hidden) { $("closeScan").click(); return; }
   if ($("segSheet") && !$("segSheet").hidden) { $("closeSeg").click(); return; }
   if ($("waterSheet") && !$("waterSheet").hidden) { $("closeWater").click(); return; }
@@ -1119,6 +1493,7 @@ async function loadCal(month, opts = {}) {
 
 async function openSession(sid) {
   say("Loading session");
+  state.detailSid = sid;
   const d = await api("/train-next?session=" + sid);
   const s = d.session;
   $("dMeta").textContent = `${s.session_date} · Workout ${s.workout_day}${s.finished?"":" · unfinished"}`;
@@ -1780,6 +2155,8 @@ function renderWork() {
     if (!row) continue;
     const put = (c,v) => { const el = row.querySelector("."+c); if (el && v!=null && v!=="") el.value = v; };
     put("load", L.load); put("reps", L.reps); put("secs", L.seconds); put("rir", L.rir); put("pain", L.pain ?? 0); put("assist", L.assist_load);
+    if (L.id) row.dataset.id = String(L.id);
+    if (L.logged_at) row.dataset.loggedAt = L.logged_at;
     if ((L.reps != null && L.reps !== "") || (L.seconds != null && L.seconds !== "")) row.classList.add("saved");
   }
   wire();
@@ -1797,13 +2174,13 @@ function exHtml(ex, sg, started) {
   const lastBody = `${L && L.load!=null?L.load+" x ":""}${reps}${L && L.avg_rir!=null?` · RIR ${Math.round(L.avg_rir*10)/10}`:""}${L && L.max_pain!=null?` · pain ${L.max_pain}`:""}${L && L.heavy?` · heavy ${L.heavy.load}x${L.heavy.reps}`:""}${L && L.asymmetry!=null?` · L/R gap ${L.asymmetry}%`:""}`.replace(/^( · )+/, "");
   const last = L ? (lastBody || "No history") : "No history";
   const light = sg.light ? `<span class="tag lt-${sg.light}">${sg.status==="pain_hold"?"PAIN HOLD":sg.status}</span>` : "";
-  const heavyRow = sg.heavy ? `<div class="set heavy" data-ex="${logId}" data-set="1" data-kind="heavy"><div class="k">HVY</div><input class="n load" type="number" step="2.5" value="${fmt(sg.heavy.load)}" ${started?"":"disabled"}><input class="n reps" type="number" placeholder="${sg.heavy.reps}" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
+  const heavyRow = sg.heavy ? `<div class="set heavy" data-ex="${logId}" data-set="1" data-kind="heavy" data-rx-load="${esc(fmt(sg.heavy.load))}" data-rx-reps=""><div class="k">HVY</div><input class="n load" type="number" step="2.5" value="${fmt(sg.heavy.load)}" ${started?"":"disabled"}><input class="n reps" type="number" placeholder="${sg.heavy.reps}" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
   const benchRow = bw && sg.benchmark_due ? `<div class="todaynote">Benchmark due: one max clean set, stop when form breaks.</div><div class="set heavy" data-ex="${logId}" data-set="1" data-kind="benchmark"><div class="k">MAX</div><div></div><input class="n reps" type="number" placeholder="max" ${started?"":"disabled"}><input class="n rir" type="number" placeholder="RIR" ${started?"":"disabled"}>${painSel(started)}</div>` : "";
   const rows = [];
   const loadPh = sg.swapped && sg.load==null ? ` placeholder="load"` : "";
   for (let n=1; n<=sg.sets; n++) for (const side of (uni ? ["L","R"] : [null])) {
     const best = sg.last && sg.last.heavy && sg.last.heavy.load != null ? sg.last.heavy.load : "";
-    rows.push(`<div class="set" data-ex="${logId}" data-set="${n}" data-kind="work" data-best="${best}" ${side?`data-side="${side}"`:""}><div class="k">${n}${side?side:""}</div>
+    rows.push(`<div class="set" data-ex="${logId}" data-set="${n}" data-kind="work" data-best="${best}" data-rx-load="${esc(fmt(sg.load))}" data-rx-reps="${esc(fmt(sg.reps))}" data-rx-secs="${esc(fmt(sg.seconds))}" ${side?`data-side="${side}"`:""}><div class="k">${n}${side?side:""}</div>
       ${bw ? (pull ? `<input class="n assist" type="number" placeholder="assist" ${started?"":"disabled"}>` : `<div></div>`) : `<input class="n load" type="number" step="0.5" value="${fmt(sg.load)}"${loadPh} ${started?"":"disabled"}>`}
       ${carry ? `<input class="n secs" type="number" value="${fmt(sg.seconds)}" placeholder="${fmt(sg.seconds)}" ${started?"":"disabled"}>` : `<input class="n reps" type="number" value="${fmt(sg.reps)}" placeholder="${fmt(sg.reps)}" ${started?"":"disabled"}>`}
       <input class="n rir" type="number" placeholder="RIR" min="0" max="5" ${started?"":"disabled"}>${painSel(started)}</div>`);
@@ -1816,7 +2193,7 @@ function exHtml(ex, sg, started) {
     <button type="button" class="btn ghost swapcancel">Cancel</button></div>` : "";
   return `<div class="ex"><div class="top"><div><div class="nm">${esc(name)}</div>${sg.swapped?`<div class="swapfrom">In place of ${esc(sg.swap_from || ex.name)}</div>`:""}</div><div>${light}${acts}</div></div>
     ${panel}
-    <div class="lt"><div><div class="k">Last</div><div class="v">${last}</div></div><div><div class="k">Today</div><div class="v today">${rx}</div>${sg.heavy?`<div class="v">then ${sg.heavy.load} x ${sg.heavy.reps}</div>`:""}</div><button class="whyb" type="button">WHY?</button></div>
+    <div class="lt"><div><div class="k">Last</div><div class="v">${last}</div></div><div><div class="k">Today</div><div class="v today" data-rx="${esc(rx)}">${rx}</div>${sg.heavy?`<div class="v">then ${sg.heavy.load} x ${sg.heavy.reps}</div>`:""}</div><button class="whyb" type="button">WHY?</button></div>
     ${sg.today?`<div class="todaynote">${sg.today}</div>`:""}
     <div class="why">${sg.why||""}${ex.note?` ${ex.note}`:""}${sg.heavy?` ${sg.heavy.note}`:""}${uni?" Weak side goes first. The strong side never exceeds the weak side's reps.":""}</div>
     <div class="sets"><div class="hd"><div></div><div>${bw?(pull?"Assist":""):"Load"}</div><div>${carry?"Seconds":"Reps"}</div><div>RIR</div><div>Pain</div></div>
@@ -1863,7 +2240,8 @@ function captureSets() {
     const num = (v) => v === "" ? null : Number(v);
     const L = { exercise_id: Number(row.dataset.ex), set_number: Number(row.dataset.set), side: row.dataset.side || null, set_kind: row.dataset.kind || "work",
       load: num(g("load")), reps: g("reps") === "" ? null : Number(g("reps")), seconds: g("secs") === "" ? null : Number(g("secs")),
-      rir: g("rir") === "" ? null : Number(g("rir")), pain: g("pain") === "" ? 0 : Number(g("pain")), assist_load: g("assist") === "" ? null : Number(g("assist")) };
+      rir: g("rir") === "" ? null : Number(g("rir")), pain: g("pain") === "" ? 0 : Number(g("pain")), assist_load: g("assist") === "" ? null : Number(g("assist")),
+      id: row.dataset.id ? Number(row.dataset.id) : null, logged_at: row.dataset.loggedAt || null };
     byKey.set(key(L), L);
   });
   state.logged = [...byKey.values()];
@@ -1917,7 +2295,10 @@ async function writeSet(row) {
       load: g("load"), reps: g("reps"), seconds: g("secs"), rir: g("rir"), pain: g("pain")||0, assist_load: g("assist") };
   row.classList.add("saved"); delete row.dataset.dirty;
   try {
-    await post(item);
+    const d = await post(item);
+    if (d && d.id) row.dataset.id = String(d.id);
+    if (d && d.logged_at) row.dataset.loggedAt = d.logged_at;
+    if (row.classList.contains("checked")) rememberLogged(row);
     if (!row.dataset.buzzed) {
       row.dataset.buzzed = "1";
       if (navigator.vibrate && !matchMedia("(prefers-reduced-motion: reduce)").matches) navigator.vibrate(12);
@@ -1938,7 +2319,12 @@ async function writeSet(row) {
     }
     row.classList.remove("saved");
     row.classList.remove("checked");
-    if (document.body.classList.contains("focus")) layoutSets(false);
+    if (document.body.classList.contains("focus")) {
+      layoutSets(false);
+      syncToday(row);
+      const last = groupSlots(row).filter(r => r.classList.contains("checked")).sort((a, b) => Number(a.dataset.set) - Number(b.dataset.set)).at(-1);
+      if (last) spreadNextDefaults(last);
+    }
     say(fail.message);
     toast(fail.message, 4000);
   }
