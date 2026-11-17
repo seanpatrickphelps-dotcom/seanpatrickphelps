@@ -155,7 +155,7 @@ export default async function handler(req, res) {
       const repl = sw ? all.find((e) => e.id === sw.replacement_exercise_id) : null;
       return buildSlotSuggestion(ex, (hist[ex.id] || []).slice(0, 3), { strengthBench }, open ? { level: ready.level, deload: open.deload } : null, repl || null, repl ? (hist[repl.id] || []).slice(0, 3) : []);
     });
-    const logged = open ? sets.filter((s) => s.session_id === open.id).map(({ exercise_id, set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load }) => ({ exercise_id, set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load })) : [];
+    const logged = open ? sets.filter((s) => s.session_id === open.id).map(({ id, exercise_id, set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load, logged_at }) => ({ id, exercise_id, set_number, side, set_kind, load, reps, rir, seconds, pain, assist_load, logged_at })) : [];
     return json(res, 200, { user: { id: uid, email: user.email }, profile, last_bodyweight: lastBw, dashboard, deload, prehab: PREHAB[day] || null, open_session: open, readiness: ready, exercises, suggestions, logged });
   } catch (e) {
     return json(res, e.status || 500, { error: e.message });

@@ -7,7 +7,7 @@
 //   { action:"profile", display_name, goal_date, goal_bodyweight, start_bodyweight, target_calories, target_protein, target_carbs, target_fat } -> { ok }
 //   { action:"swap",   session_id, planned_exercise_id, replacement_name|null }  -> { suggestion }
 //   { action:"nutrition", date, calories, protein, carbs, fat }                  -> { nutrition }
-import { json, db, requireUser, ensureSeeded, suggest, historyByExercise, readiness, sessionStats, buildSlotSuggestion, substitutionOptions, normalizeName, replacementKind, cleanMacro, migrationError, saveSetRow } from "../lib/train.js";
+import { json, db, requireUser, ensureSeeded, suggest, historyByExercise, readiness, sessionStats, buildSlotSuggestion, substitutionOptions, normalizeName, replacementKind, cleanMacro, migrationError, saveSetRow, editSetPatch, setGroupQuery, renumberPlan, publicSet } from "../lib/train.js";
 import { PERSONA, VOICE } from "../lib/coach-kb.js";
 
 export default async function handler(req, res) {
@@ -38,8 +38,56 @@ export default async function handler(req, res) {
       };
       // sets_unique_v2 rejects a second insert for the same slot. Update in place,
       // and if a concurrent Complete set already inserted, patch that row.
-      await saveSetRow(db, row);
-      return json(res, 200, { ok: true });
+      const saved = await saveSetRow(db, row);
+      return json(res, 200, { ok: true, id: saved?.id || null, logged_at: saved?.logged_at || row.logged_at, set_number: saved?.set_number || row.set_number });
+    }
+
+    if (b.action === "edit-set") {
+      const id = Number(b.id);
+      if (!Number.isInteger(id) || id <= 0) return json(res, 400, { error: "Missing set." });
+      const target = (await db(`sets?id=eq.${id}&user_id=eq.${uid}&select=*`))[0];
+      if (!target) return json(res, 404, { error: "That set is not on your log." });
+      const sess = (await db(`sessions?id=eq.${target.session_id}&user_id=eq.${uid}&select=id,finished`))[0];
+      if (!sess) return json(res, 403, { error: "Not your session." });
+      if (sess.finished) return json(res, 400, { error: "This session is already finished." });
+      const edited = editSetPatch(b);
+      if (edited.error) return json(res, 400, { error: edited.error });
+      if (!Object.keys(edited.patch).length) return json(res, 400, { error: "Nothing to change." });
+      const reps = edited.patch.reps !== undefined ? edited.patch.reps : target.reps;
+      const seconds = edited.patch.seconds !== undefined ? edited.patch.seconds : target.seconds;
+      if (reps == null && seconds == null) return json(res, 400, { error: "Add reps first." });
+      const saved = await db(`sets?id=eq.${id}&user_id=eq.${uid}`, { method: "PATCH", body: edited.patch, prefer: "return=representation" });
+      const row = saved?.[0];
+      if (!row) return json(res, 404, { error: "That set is not on your log." });
+      return json(res, 200, { ok: true, set: publicSet(row) });
+    }
+
+    if (b.action === "delete-set") {
+      const id = Number(b.id);
+      if (!Number.isInteger(id) || id <= 0) return json(res, 400, { error: "Missing set." });
+      const target = (await db(`sets?id=eq.${id}&user_id=eq.${uid}&select=*`))[0];
+      if (!target) return json(res, 404, { error: "That set is not on your log." });
+      const sess = (await db(`sessions?id=eq.${target.session_id}&user_id=eq.${uid}&select=id,finished`))[0];
+      if (!sess) return json(res, 403, { error: "Not your session." });
+      if (sess.finished) return json(res, 400, { error: "This session is already finished." });
+      const group = await db(setGroupQuery({ ...target, user_id: uid })) || [];
+      await db(`sets?id=eq.${id}&user_id=eq.${uid}`, { method: "DELETE", prefer: "return=minimal" });
+      const plan = renumberPlan(group.filter((row) => row.id !== id));
+      for (const step of plan.park) {
+        await db(`sets?id=eq.${step.id}&user_id=eq.${uid}`, { method: "PATCH", body: { set_number: step.set_number }, prefer: "return=minimal" });
+      }
+      for (const step of plan.write) {
+        await db(`sets?id=eq.${step.id}&user_id=eq.${uid}`, { method: "PATCH", body: { set_number: step.set_number }, prefer: "return=minimal" });
+      }
+      return json(res, 200, {
+        ok: true,
+        deleted_id: id,
+        exercise_id: target.exercise_id,
+        session_id: target.session_id,
+        side: target.side || null,
+        set_kind: target.set_kind || "work",
+        sets: plan.sets.map(publicSet),
+      });
     }
 
     if (b.action === "prehab") {
